@@ -9,7 +9,6 @@ export interface Video {
   thumbnail: string;
   isPinned: boolean;
   addedAt: Date;
-  publishedAt: string;
   notes?: string[];
   boardId?: string;
 }
@@ -44,8 +43,7 @@ const fetchVideoDetails = async (videoId: string) => {
   
   return {
     title: data.title || 'Untitled Video',
-    thumbnail: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
-    publishedAt: format(new Date(), 'MM/dd/yyyy')
+    thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`, // Using hqdefault instead of maxresdefault
   };
 };
 
@@ -70,7 +68,6 @@ export const useVideos = create<VideosState>()(
               thumbnail: details.thumbnail,
               isPinned: false,
               addedAt: new Date(),
-              publishedAt: details.publishedAt,
               notes: [],
             },
             ...state.videos,
