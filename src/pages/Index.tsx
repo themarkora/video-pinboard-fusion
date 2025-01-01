@@ -1,41 +1,64 @@
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
-import { VideoCard } from "@/components/VideoCard";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, Pin, StickyNote, Target, Microscope } from "lucide-react";
 
 const Index = () => {
-  const videos = [
-    {
-      title: "How to Create Affiliate Marketing Videos on YouTube and Make 10K per Month",
-      channel: "Digital Sculler",
-      thumbnail: "/lovable-uploads/258455c0-6299-49d5-9459-b4b0f149abe8.png",
-      publishDate: "11/30/2024",
-    },
-    {
-      title: "My 12 Sources of Income! ($296,000/Month)",
-      channel: "Charlie Chang",
-      thumbnail: "/lovable-uploads/a1a0c76c-7c54-4d0b-b305-79991a2182bb.png",
-      publishDate: "11/29/2024",
-    },
-    {
-      title: "Earn $1,250+ Per WEEK With Pinterest Affiliate Marketing (FULL TUTORIAL)",
-      channel: "Wisdom Speaks",
-      thumbnail: "/lovable-uploads/6a0fad2e-4c68-4446-9de5-0cef7b9b4bb8.png",
-      publishDate: "11/29/2024",
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-background text-white">
       <AnimatedBackground />
       <Header />
-      <main className="max-w-7xl mx-auto px-6">
-        <Navigation />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
-          {videos.map((video, index) => (
-            <VideoCard key={index} {...video} />
-          ))}
+      <main className="max-w-3xl mx-auto px-6 text-center pt-16">
+        <div className="mb-16">
+          <img src="/lovable-uploads/4ec29862-7e48-44ec-8e24-268de758604c.png" alt="VidPin Logo" className="h-12 mx-auto mb-8" />
+          <div className="relative mb-6">
+            <Input
+              type="text"
+              placeholder="Paste YouTube video URL"
+              className="w-full bg-secondary/50 border-none h-12 pl-4 pr-32 text-base"
+            />
+            <Button className="absolute right-1 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 h-10">
+              <Pin className="mr-2 h-4 w-4" />
+              Pin Video
+            </Button>
+          </div>
+          
+          <h1 className="text-xl text-gray-300 mb-8">
+            Your personal YouTube video organizer for research and inspiration
+          </h1>
+          
+          <div className="space-y-4 text-gray-400 text-lg">
+            <div className="flex items-center justify-center gap-2">
+              <Pin className="h-5 w-5 text-primary" />
+              <span>Pin videos you want to reference later</span>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <StickyNote className="h-5 w-5 text-primary" />
+              <span>Add private notes and insights</span>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Target className="h-5 w-5 text-primary" />
+              <span>Organize your research and inspiration</span>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Microscope className="h-5 w-5 text-primary" />
+              <span>Quickly find videos when you need them</span>
+            </div>
+          </div>
         </div>
+
+        <div className="relative mb-8">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Search videos by title, channel, or notes..."
+            className="w-full bg-secondary/50 border-none h-12 pl-12 text-base"
+          />
+        </div>
+
+        <Navigation />
       </main>
     </div>
   );

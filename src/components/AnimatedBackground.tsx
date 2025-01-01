@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const Pin = ({ style }: { style: React.CSSProperties }) => (
   <div
-    className="absolute w-8 h-8 opacity-5 animate-float-pin"
+    className="absolute w-8 h-8 opacity-[0.03] animate-float-pin text-primary"
     style={style}
   >
     <svg viewBox="0 0 24 24" fill="currentColor">
@@ -15,10 +15,12 @@ export const AnimatedBackground = () => {
   const [pins, setPins] = useState<React.CSSProperties[]>([]);
 
   useEffect(() => {
-    const newPins = Array.from({ length: 20 }, () => ({
+    const newPins = Array.from({ length: 30 }, () => ({
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
+      transform: `rotate(${Math.random() * 360}deg)`,
       animationDelay: `${Math.random() * 5}s`,
+      animationDuration: `${6 + Math.random() * 4}s`,
     }));
     setPins(newPins);
   }, []);
