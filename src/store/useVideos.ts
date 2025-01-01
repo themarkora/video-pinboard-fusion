@@ -39,46 +39,14 @@ const getYouTubeVideoId = (url: string) => {
 };
 
 const fetchVideoDetails = async (videoId: string) => {
-  try {
-    // First try to get video info using oEmbed
-    const response = await fetch(
-      `https://noembed.com/embed?url=https://youtube.com/watch?v=${videoId}`
-    );
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch video details');
-    }
-
-    const data = await response.json();
-    
-    if (!data || !data.title) {
-      throw new Error('Invalid video data received');
-    }
-
-    // Get upload date from YouTube page
-    const pageResponse = await fetch(`https://youtube.com/watch?v=${videoId}`);
-    const pageHtml = await pageResponse.text();
-    
-    // Extract upload date from meta tags
-    const uploadDateMatch = pageHtml.match(/"uploadDate":"([^"]+)"/);
-    const uploadDate = uploadDateMatch ? new Date(uploadDateMatch[1]) : new Date();
-
-    return {
-      title: data.title,
-      publishedAt: format(uploadDate, 'MM/dd/yyyy'),
-      thumbnail: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
-      author: data.author_name,
-    };
-  } catch (error) {
-    console.error('Error fetching video details:', error);
-    // Fallback to basic info if fetch fails
-    return {
-      title: 'YouTube Video',
-      publishedAt: format(new Date(), 'MM/dd/yyyy'),
-      thumbnail: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
-      author: 'Unknown Creator'
-    };
-  }
+  const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+  const data = await response.json();
+  
+  return {
+    title: data.title || 'Untitled Video',
+    thumbnail: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+    publishedAt: format(new Date(), 'MM/dd/yyyy')
+  };
 };
 
 export const useVideos = create<VideosState>()(
