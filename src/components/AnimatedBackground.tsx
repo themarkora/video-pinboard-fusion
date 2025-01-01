@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const Pin = ({ style }: { style: React.CSSProperties }) => (
   <div
-    className="absolute opacity-[0.08] animate-float-pin text-white"
+    className="absolute text-white"
     style={style}
   >
     <svg 
@@ -24,17 +24,17 @@ export const AnimatedBackground = () => {
   const [pins, setPins] = useState<React.CSSProperties[]>([]);
 
   useEffect(() => {
-    const sizes = ['w-6 h-6', 'w-8 h-8', 'w-10 h-10'];
-    const newPins = Array.from({ length: 15 }, () => {
+    const sizes = ['1.5rem', '2rem', '2.5rem'];
+    const newPins = Array.from({ length: 12 }, () => {
       const size = sizes[Math.floor(Math.random() * sizes.length)];
       return {
         left: `${Math.random() * 100}%`,
         top: `${Math.random() * 100}%`,
         transform: `rotate(${Math.random() * 360}deg)`,
-        animationDelay: `${Math.random() * 5}s`,
-        animationDuration: `${8 + Math.random() * 4}s`,
-        width: size === 'w-6 h-6' ? '1.5rem' : size === 'w-8 h-8' ? '2rem' : '2.5rem',
-        height: size === 'w-6 h-6' ? '1.5rem' : size === 'w-8 h-8' ? '2rem' : '2.5rem',
+        animationDelay: `${Math.random() * 8}s`,
+        animationDuration: `${12 + Math.random() * 4}s`,
+        width: size,
+        height: size,
         animationName: `float-pin-${Math.floor(Math.random() * 3)}`,
       };
     });
