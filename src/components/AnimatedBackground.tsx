@@ -15,6 +15,7 @@ export const AnimatedBackground = () => {
   const [pins, setPins] = useState<React.CSSProperties[]>([]);
 
   useEffect(() => {
+    // Create fewer pins for a more elegant look
     const newPins = Array.from({ length: 30 }, () => ({
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
