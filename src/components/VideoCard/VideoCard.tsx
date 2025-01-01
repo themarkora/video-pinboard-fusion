@@ -29,13 +29,12 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
 
   return (
     <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">
-      <VideoPlayer
-        videoId={video.id}
-        thumbnail={video.thumbnail}
-        title={video.title}
-        isPlaying={isPlaying}
-        onPlay={handlePlay}
-      />
+      <div 
+        className="relative aspect-video cursor-pointer" 
+        onClick={handlePlay}
+      >
+        <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
+      </div>
       <div className="p-4">
         <h3 className="font-semibold text-white text-xl mb-4 line-clamp-2">
           {video.title}
@@ -48,6 +47,11 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
           onVote={handleVote}
         />
       </div>
+      <VideoPlayer
+        videoId={video.id}
+        isOpen={isPlaying}
+        onClose={() => setIsPlaying(false)}
+      />
     </Card>
   );
 };

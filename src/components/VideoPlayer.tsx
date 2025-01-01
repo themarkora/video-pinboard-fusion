@@ -7,9 +7,10 @@ interface VideoPlayerProps {
   videoId: string;
   isOpen: boolean;
   onClose: () => void;
+  thumbnail?: string; // Added thumbnail prop as optional
 }
 
-export const VideoPlayer = ({ videoId, isOpen, onClose }: VideoPlayerProps) => {
+export const VideoPlayer = ({ videoId, isOpen, onClose, thumbnail }: VideoPlayerProps) => {
   const [isLoading, setIsLoading] = useState(true);
 
   return (
