@@ -39,12 +39,25 @@ const getYouTubeVideoId = (url: string) => {
 };
 
 const fetchVideoDetails = async (videoId: string) => {
-  // Since we don't have YouTube API, we'll simulate fetching details
-  // In a real app, you'd want to use the YouTube API here
-  return {
-    title: "YouTube Video",
-    publishedAt: format(new Date(), 'MM/d/yyyy'),
-  };
+  try {
+    const response = await fetch(
+      `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`
+    );
+    const data = await response.json();
+    
+    return {
+      title: data.title,
+      publishedAt: format(new Date(), 'MM/dd/yyyy'),
+      thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+    };
+  } catch (error) {
+    console.error('Error fetching video details:', error);
+    return {
+      title: 'YouTube Video',
+      publishedAt: format(new Date(), 'MM/dd/yyyy'),
+      thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+    };
+  }
 };
 
 export const useVideos = create<VideosState>()(
@@ -63,7 +76,7 @@ export const useVideos = create<VideosState>()(
           id: videoId,
           url,
           title: details.title,
-          thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          thumbnail: details.thumbnail,
           isPinned: false,
           addedAt: new Date(),
           publishedAt: details.publishedAt,
