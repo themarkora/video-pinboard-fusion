@@ -33,8 +33,6 @@ export const useVideos = create<VideosState>()(
         const videoId = getYouTubeVideoId(url);
         if (!videoId) return;
 
-        const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=YOUR_API_KEY&part=snippet`;
-        // For now, we'll use placeholder data since we don't have an API key
         const newVideo: Video = {
           id: videoId,
           url,
