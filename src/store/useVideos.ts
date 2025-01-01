@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { format } from 'date-fns';
 
 export interface Video {
   id: string;
@@ -27,7 +26,7 @@ interface VideosState {
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
   addNote: (videoId: string, note: string) => void;
   addToBoard: (videoId: string, boardId: string) => void;
-  addBoard: (name: string) => void;
+  addBoard: (name: string) => string;
   deleteVideo: (id: string) => void;
 }
 
@@ -43,7 +42,7 @@ const fetchVideoDetails = async (videoId: string) => {
   
   return {
     title: data.title || 'Untitled Video',
-    thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`, // Using hqdefault instead of maxresdefault
+    thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
   };
 };
 
@@ -95,10 +94,13 @@ export const useVideos = create<VideosState>()(
             video.id === videoId ? { ...video, boardId } : video
           ),
         })),
-      addBoard: (name: string) =>
+      addBoard: (name: string) => {
+        const boardId = crypto.randomUUID();
         set((state) => ({
-          boards: [...state.boards, { id: crypto.randomUUID(), name }],
-        })),
+          boards: [...state.boards, { id: boardId, name }],
+        }));
+        return boardId;
+      },
       deleteVideo: (id: string) =>
         set((state) => ({
           videos: state.videos.filter((video) => video.id !== id),
