@@ -40,22 +40,43 @@ const getYouTubeVideoId = (url: string) => {
 
 const fetchVideoDetails = async (videoId: string) => {
   try {
+    // First try to get video info using oEmbed
     const response = await fetch(
-      `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`
+      `https://noembed.com/embed?url=https://youtube.com/watch?v=${videoId}`
     );
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch video details');
+    }
+
     const data = await response.json();
     
+    if (!data || !data.title) {
+      throw new Error('Invalid video data received');
+    }
+
+    // Get upload date from YouTube page
+    const pageResponse = await fetch(`https://youtube.com/watch?v=${videoId}`);
+    const pageHtml = await pageResponse.text();
+    
+    // Extract upload date from meta tags
+    const uploadDateMatch = pageHtml.match(/"uploadDate":"([^"]+)"/);
+    const uploadDate = uploadDateMatch ? new Date(uploadDateMatch[1]) : new Date();
+
     return {
       title: data.title,
-      publishedAt: format(new Date(), 'MM/dd/yyyy'),
-      thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+      publishedAt: format(uploadDate, 'MM/dd/yyyy'),
+      thumbnail: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+      author: data.author_name,
     };
   } catch (error) {
     console.error('Error fetching video details:', error);
+    // Fallback to basic info if fetch fails
     return {
       title: 'YouTube Video',
       publishedAt: format(new Date(), 'MM/dd/yyyy'),
-      thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+      thumbnail: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+      author: 'Unknown Creator'
     };
   }
 };
@@ -72,55 +93,51 @@ export const useVideos = create<VideosState>()(
 
         const details = await fetchVideoDetails(videoId);
         
-        const newVideo: Video = {
-          id: videoId,
-          url,
-          title: details.title,
-          thumbnail: details.thumbnail,
-          isPinned: false,
-          addedAt: new Date(),
-          publishedAt: details.publishedAt,
-          notes: [],
-        };
-
         set((state) => ({
-          videos: [newVideo, ...state.videos],
+          videos: [
+            {
+              id: videoId,
+              url,
+              title: details.title,
+              thumbnail: details.thumbnail,
+              isPinned: false,
+              addedAt: new Date(),
+              publishedAt: details.publishedAt,
+              notes: [],
+            },
+            ...state.videos,
+          ],
         }));
       },
-      togglePin: (id: string) => {
+      togglePin: (id: string) =>
         set((state) => ({
           videos: state.videos.map((video) =>
             video.id === id ? { ...video, isPinned: !video.isPinned } : video
           ),
-        }));
-      },
+        })),
       setActiveTab: (tab) => set({ activeTab: tab }),
-      addNote: (videoId: string, note: string) => {
+      addNote: (videoId: string, note: string) =>
         set((state) => ({
           videos: state.videos.map((video) =>
             video.id === videoId
               ? { ...video, notes: [...(video.notes || []), note] }
               : video
           ),
-        }));
-      },
-      addToBoard: (videoId: string, boardId: string) => {
+        })),
+      addToBoard: (videoId: string, boardId: string) =>
         set((state) => ({
           videos: state.videos.map((video) =>
             video.id === videoId ? { ...video, boardId } : video
           ),
-        }));
-      },
-      addBoard: (name: string) => {
+        })),
+      addBoard: (name: string) =>
         set((state) => ({
           boards: [...state.boards, { id: crypto.randomUUID(), name }],
-        }));
-      },
-      deleteVideo: (id: string) => {
+        })),
+      deleteVideo: (id: string) =>
         set((state) => ({
           videos: state.videos.filter((video) => video.id !== id),
-        }));
-      },
+        })),
     }),
     {
       name: 'videos-storage',
