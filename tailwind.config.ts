@@ -1,14 +1,9 @@
-import type { Config } from "tailwindcss";
+import { type Config } from "tailwindcss";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
   darkMode: ["class"],
-  content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
-  ],
-  prefix: "",
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     container: {
       center: true,
@@ -19,48 +14,33 @@ export default {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: {
-          top: "#10111C",
-          bottom: "#492A81",
-        },
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "#9334E9",
-          foreground: "#ffffff",
-        },
-        secondary: {
-          DEFAULT: "#2A2F3C",
-          foreground: "#ffffff",
-        },
-        destructive: {
-          DEFAULT: "#dc2626",
-          foreground: "#ffffff",
-        },
-        muted: {
-          DEFAULT: "#374151",
-          foreground: "#9CA3AF",
-        },
-        accent: {
-          DEFAULT: "#6D28D9",
-          foreground: "#ffffff",
-        },
-        card: {
-          DEFAULT: "#2A2F3C",
-          foreground: "#ffffff",
-        },
+        // Add your custom colors here
+      },
+      fontFamily: {
+        // Add your custom font families here
       },
       keyframes: {
-        "float-pin": {
-          "0%": { transform: "translateY(0) rotate(0deg)" },
-          "50%": { transform: "translateY(-20px) rotate(45deg)" },
-          "100%": { transform: "translateY(0) rotate(90deg)" },
+        "float-pin-0": {
+          "0%": { transform: "translateY(0) translateX(0) rotate(0deg)" },
+          "33%": { transform: "translateY(-30px) translateX(20px) rotate(45deg)" },
+          "66%": { transform: "translateY(10px) translateX(-20px) rotate(90deg)" },
+          "100%": { transform: "translateY(0) translateX(0) rotate(360deg)" },
+        },
+        "float-pin-1": {
+          "0%": { transform: "translateY(0) translateX(0) rotate(0deg)" },
+          "33%": { transform: "translateY(20px) translateX(-30px) rotate(120deg)" },
+          "66%": { transform: "translateY(-15px) translateX(25px) rotate(240deg)" },
+          "100%": { transform: "translateY(0) translateX(0) rotate(360deg)" },
+        },
+        "float-pin-2": {
+          "0%": { transform: "translateY(0) translateX(0) rotate(0deg)" },
+          "33%": { transform: "translateY(-25px) translateX(-25px) rotate(90deg)" },
+          "66%": { transform: "translateY(20px) translateX(30px) rotate(180deg)" },
+          "100%": { transform: "translateY(0) translateX(0) rotate(360deg)" },
         },
       },
       animation: {
-        "float-pin": "float-pin 8s ease-in-out infinite",
+        "float-pin": "float-pin-0 8s ease-in-out infinite",
       },
     },
   },
