@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
-import { useVideos } from '@/store/useVideos';
+import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
-import { Card } from './ui/card';
+import { useVideos } from '@/store/useVideos';
 
 interface BoardCardProps {
   id: string;
@@ -13,7 +13,7 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { videos } = useVideos();
 
-  const boardVideos = videos.filter(video => video.boardId === id);
+  const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
   return (
     <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">

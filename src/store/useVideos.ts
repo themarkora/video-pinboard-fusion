@@ -9,12 +9,15 @@ export interface Video {
   isPinned: boolean;
   addedAt: Date;
   notes?: string[];
-  boardId?: string;
+  boardIds?: string[];
+  views?: number;
+  votes?: number;
 }
 
 interface Board {
   id: string;
   name: string;
+  createdAt: Date;
 }
 
 interface VideosState {
@@ -28,6 +31,8 @@ interface VideosState {
   addToBoard: (videoId: string, boardId: string) => void;
   addBoard: (name: string) => string;
   deleteVideo: (id: string) => void;
+  addVote: (videoId: string) => void;
+  addView: (videoId: string) => void;
 }
 
 const getYouTubeVideoId = (url: string) => {
@@ -68,6 +73,9 @@ export const useVideos = create<VideosState>()(
               isPinned: false,
               addedAt: new Date(),
               notes: [],
+              boardIds: [],
+              views: 0,
+              votes: 0,
             },
             ...state.videos,
           ],
@@ -91,19 +99,41 @@ export const useVideos = create<VideosState>()(
       addToBoard: (videoId: string, boardId: string) =>
         set((state) => ({
           videos: state.videos.map((video) =>
-            video.id === videoId ? { ...video, boardId } : video
+            video.id === videoId
+              ? { ...video, boardIds: [...(video.boardIds || []), boardId] }
+              : video
           ),
         })),
       addBoard: (name: string) => {
         const boardId = crypto.randomUUID();
         set((state) => ({
-          boards: [...state.boards, { id: boardId, name }],
+          boards: [...state.boards, { 
+            id: boardId, 
+            name,
+            createdAt: new Date()
+          }],
         }));
         return boardId;
       },
       deleteVideo: (id: string) =>
         set((state) => ({
           videos: state.videos.filter((video) => video.id !== id),
+        })),
+      addVote: (videoId: string) =>
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === videoId
+              ? { ...video, votes: (video.votes || 0) + 1 }
+              : video
+          ),
+        })),
+      addView: (videoId: string) =>
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === videoId
+              ? { ...video, views: (video.views || 0) + 1 }
+              : video
+          ),
         })),
     }),
     {

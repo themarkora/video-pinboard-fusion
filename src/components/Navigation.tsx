@@ -3,7 +3,11 @@ import { Clock, Pin, StickyNote, FolderOpen } from "lucide-react";
 import { useVideos } from "@/store/useVideos";
 
 export const Navigation = () => {
-  const { activeTab, setActiveTab } = useVideos();
+  const { activeTab, setActiveTab, videos, boards } = useVideos();
+
+  const pinnedCount = videos.filter(v => v.isPinned).length;
+  const notesCount = videos.filter(v => v.notes && v.notes.length > 0).length;
+  const boardsCount = boards.length;
 
   return (
     <nav className="flex items-center justify-center w-full max-w-[1200px] mx-auto px-4">
@@ -27,7 +31,7 @@ export const Navigation = () => {
           onClick={() => setActiveTab('pinned')}
         >
           <Pin className="h-5 w-5" />
-          Pinned Videos
+          Pinned Videos ({pinnedCount})
         </Button>
         
         <Button 
@@ -38,7 +42,7 @@ export const Navigation = () => {
           onClick={() => setActiveTab('notes')}
         >
           <StickyNote className="h-5 w-5" />
-          Videos with Notes
+          Videos with Notes ({notesCount})
         </Button>
         
         <Button 
@@ -49,7 +53,7 @@ export const Navigation = () => {
           onClick={() => setActiveTab('boards')}
         >
           <FolderOpen className="h-5 w-5" />
-          Boards (13)
+          Boards ({boardsCount})
         </Button>
       </div>
     </nav>
