@@ -1,9 +1,14 @@
-import { type Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
+import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
+  prefix: "",
   theme: {
     container: {
       center: true,
@@ -18,115 +23,44 @@ export default {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: {
-          top: "hsl(var(--background-top))",
-          bottom: "hsl(var(--background-bottom))",
+          top: "#10111C",
+          bottom: "#492A81",
         },
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#9334E9",
+          foreground: "#ffffff",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#2A2F3C",
+          foreground: "#ffffff",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "#dc2626",
+          foreground: "#ffffff",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "#374151",
+          foreground: "#9CA3AF",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "#6D28D9",
+          foreground: "#ffffff",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "#2A2F3C",
+          foreground: "#ffffff",
         },
       },
       keyframes: {
-        "float-pin-0": {
-          "0%": { 
-            transform: "translateY(0) translateX(0) rotate(0deg)",
-            opacity: "0"
-          },
-          "10%": {
-            opacity: "0.08"
-          },
-          "33%": { 
-            transform: "translateY(-50px) translateX(30px) rotate(180deg)",
-            opacity: "0.08"
-          },
-          "66%": { 
-            transform: "translateY(30px) translateX(-40px) rotate(360deg)",
-            opacity: "0.08"
-          },
-          "90%": {
-            opacity: "0.08"
-          },
-          "100%": { 
-            transform: "translateY(0) translateX(0) rotate(720deg)",
-            opacity: "0"
-          },
-        },
-        "float-pin-1": {
-          "0%": { 
-            transform: "translateY(0) translateX(0) rotate(0deg)",
-            opacity: "0"
-          },
-          "10%": {
-            opacity: "0.08"
-          },
-          "33%": { 
-            transform: "translateY(40px) translateX(-50px) rotate(240deg)",
-            opacity: "0.08"
-          },
-          "66%": { 
-            transform: "translateY(-25px) translateX(35px) rotate(480deg)",
-            opacity: "0.08"
-          },
-          "90%": {
-            opacity: "0.08"
-          },
-          "100%": { 
-            transform: "translateY(0) translateX(0) rotate(720deg)",
-            opacity: "0"
-          },
-        },
-        "float-pin-2": {
-          "0%": { 
-            transform: "translateY(0) translateX(0) rotate(0deg)",
-            opacity: "0"
-          },
-          "10%": {
-            opacity: "0.08"
-          },
-          "33%": { 
-            transform: "translateY(-35px) translateX(-35px) rotate(180deg)",
-            opacity: "0.08"
-          },
-          "66%": { 
-            transform: "translateY(45px) translateX(40px) rotate(360deg)",
-            opacity: "0.08"
-          },
-          "90%": {
-            opacity: "0.08"
-          },
-          "100%": { 
-            transform: "translateY(0) translateX(0) rotate(720deg)",
-            opacity: "0"
-          },
+        "float-pin": {
+          "0%": { transform: "translateY(0) rotate(0deg)" },
+          "50%": { transform: "translateY(-20px) rotate(45deg)" },
+          "100%": { transform: "translateY(0) rotate(90deg)" },
         },
       },
       animation: {
-        "float-pin": "float-pin-0 12s ease-in-out infinite",
+        "float-pin": "float-pin 8s ease-in-out infinite",
       },
     },
   },
