@@ -6,6 +6,7 @@ import { useVideos } from "@/store/useVideos";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
 
 const Index = () => {
   const { videos, togglePin, activeTab, boards } = useVideos();
@@ -25,9 +26,10 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#0F1116] text-white">
+    <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
+      <AnimatedBackground />
       <Header />
-      <main className="max-w-7xl mx-auto px-6">
+      <main className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center pt-16 mb-12">
           <div className="flex items-center justify-center mb-4">
             <img src="/lovable-uploads/4ec29862-7e48-44ec-8e24-268de758604c.png" alt="VidPin Logo" className="h-10" />
