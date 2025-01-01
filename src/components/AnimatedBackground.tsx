@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const Pin = ({ style }: { style: React.CSSProperties }) => (
   <div
-    className="absolute w-8 h-8 opacity-[0.02] animate-float-pin text-primary"
+    className="absolute w-8 h-8 opacity-[0.08] animate-float-pin text-purple-400"
     style={style}
   >
     <svg viewBox="0 0 24 24" fill="currentColor">
