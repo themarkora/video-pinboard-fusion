@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pin, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { VideoPlayer } from './VideoPlayer';
 import { Video } from '@/store/useVideos';
+import { Pin } from './icons/Pin';
+import { PinOff } from './icons/PinOff';
 
 interface VideoCardProps {
   video: Video;
@@ -27,14 +29,25 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
           <div className="flex gap-2 mt-4">
             <Button 
               size="sm" 
-              variant="secondary" 
-              className={`flex-1 ${video.isPinned ? 'bg-primary text-white' : ''}`}
+              className={`flex-1 ${video.isPinned ? 'bg-[#9b87f5] hover:bg-[#9b87f5]/90' : 'bg-[#9b87f5] hover:bg-[#9b87f5]/90'}`}
               onClick={() => onTogglePin(video.id)}
             >
-              <Pin className="mr-2 h-4 w-4" />
-              {video.isPinned ? 'Pinned' : 'Pin Video'}
+              {video.isPinned ? (
+                <>
+                  <PinOff className="mr-2" size={16} color="white" />
+                  Unpin
+                </>
+              ) : (
+                <>
+                  <Pin className="mr-2" size={16} color="white" />
+                  Pin Video
+                </>
+              )}
             </Button>
-            <Button size="sm" variant="ghost" className="px-2 text-destructive">
+            <Button 
+              size="sm" 
+              className="px-3 bg-[#ea384c] hover:bg-[#ea384c]/90"
+            >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
