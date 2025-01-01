@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export interface Video {
   id: string;
@@ -23,34 +24,41 @@ const getYouTubeVideoId = (url: string) => {
   return match ? match[1] : null;
 };
 
-export const useVideos = create<VideosState>((set) => ({
-  videos: [],
-  activeTab: 'recent',
-  addVideo: async (url: string) => {
-    const videoId = getYouTubeVideoId(url);
-    if (!videoId) return;
+export const useVideos = create<VideosState>()(
+  persist(
+    (set) => ({
+      videos: [],
+      activeTab: 'recent',
+      addVideo: async (url: string) => {
+        const videoId = getYouTubeVideoId(url);
+        if (!videoId) return;
 
-    const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=YOUR_API_KEY&part=snippet`;
-    // For now, we'll use placeholder data since we don't have an API key
-    const newVideo: Video = {
-      id: videoId,
-      url,
-      title: 'YouTube Video',
-      thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-      isPinned: true,
-      addedAt: new Date(),
-    };
+        const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=YOUR_API_KEY&part=snippet`;
+        // For now, we'll use placeholder data since we don't have an API key
+        const newVideo: Video = {
+          id: videoId,
+          url,
+          title: 'YouTube Video',
+          thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          isPinned: true,
+          addedAt: new Date(),
+        };
 
-    set((state) => ({
-      videos: [newVideo, ...state.videos],
-    }));
-  },
-  togglePin: (id: string) => {
-    set((state) => ({
-      videos: state.videos.map((video) =>
-        video.id === id ? { ...video, isPinned: !video.isPinned } : video
-      ),
-    }));
-  },
-  setActiveTab: (tab) => set({ activeTab: tab }),
-}));
+        set((state) => ({
+          videos: [newVideo, ...state.videos],
+        }));
+      },
+      togglePin: (id: string) => {
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === id ? { ...video, isPinned: !video.isPinned } : video
+          ),
+        }));
+      },
+      setActiveTab: (tab) => set({ activeTab: tab }),
+    }),
+    {
+      name: 'videos-storage',
+    }
+  )
+);
