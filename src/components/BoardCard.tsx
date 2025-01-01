@@ -22,7 +22,7 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center space-x-3">
-          <Folder className="w-6 h-6 text-primary" />
+          <Folder className="w-6 h-6 text-purple-500" />
           <h3 className="text-lg font-semibold text-white">{name}</h3>
         </div>
         <div className="flex items-center space-x-3">

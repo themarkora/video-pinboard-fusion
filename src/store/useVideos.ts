@@ -54,7 +54,7 @@ export const useVideos = create<VideosState>()(
       activeTab: 'recent',
       addVideo: async (url: string) => {
         const videoId = getYouTubeVideoId(url);
-        if (!videoId) return;
+        if (!videoId) throw new Error('Invalid YouTube URL');
 
         const details = await fetchVideoDetails(videoId);
         
