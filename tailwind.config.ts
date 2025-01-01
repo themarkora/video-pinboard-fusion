@@ -54,12 +54,13 @@ export default {
       },
       keyframes: {
         "float-pin": {
-          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
-          "50%": { transform: "translateY(-20px) rotate(5deg)" },
+          "0%": { transform: "translateY(0) rotate(0deg)" },
+          "50%": { transform: "translateY(-20px) rotate(45deg)" },
+          "100%": { transform: "translateY(0) rotate(90deg)" },
         },
       },
       animation: {
-        "float-pin": "float-pin 6s ease-in-out infinite",
+        "float-pin": "float-pin 8s ease-in-out infinite",
       },
     },
   },
