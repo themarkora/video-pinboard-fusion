@@ -15,7 +15,7 @@ export const Navigation = () => {
         
         <Button 
           variant="secondary" 
-          className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-6 py-2 h-12 rounded-2xl flex items-center gap-3 text-base font-medium"
+          className="bg-primary hover:bg-primary/90 text-white px-6 py-2 h-12 rounded-2xl flex items-center gap-3 text-base font-medium"
         >
           <Pin className="h-5 w-5" />
           Pinned Videos
