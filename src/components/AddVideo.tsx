@@ -35,18 +35,18 @@ export function AddVideo() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex gap-2 max-w-2xl mx-auto">
       <Input
         type="text"
         value={videoUrl}
         onChange={(e) => setVideoUrl(e.target.value)}
         placeholder="Paste YouTube video URL"
-        className="flex-1 bg-[#2a2f3e] text-white h-12 pl-4 pr-32"
+        className="flex-1 bg-[#1A1F2E] border-none h-12 text-gray-300"
         disabled={isLoading}
       />
       <Button 
         type="submit"
-        className="bg-purple-600 hover:bg-purple-700 h-12"
+        className="bg-purple-600 hover:bg-purple-700 h-12 px-6"
         disabled={isLoading || !videoUrl.trim()}
       >
         {isLoading ? (
