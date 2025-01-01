@@ -12,6 +12,8 @@ export interface Video {
   boardIds?: string[];
   views?: number;
   votes?: number;
+  channel?: string;
+  publishedAt?: string;
 }
 
 interface Board {

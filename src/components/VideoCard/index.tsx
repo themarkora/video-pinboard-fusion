@@ -51,7 +51,7 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
         <VideoInfo
           title={video.title}
           channel={video.channel || 'Unknown Channel'}
-          publishedAt={video.publishedAt || new Date().toISOString()}
+          publishedAt={video.publishedAt || video.addedAt.toISOString()}
         />
         <VideoActions
           isPinned={video.isPinned}
