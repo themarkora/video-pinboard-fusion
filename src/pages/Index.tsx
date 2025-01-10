@@ -73,7 +73,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
       <AnimatedBackground />
       <Header />
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-32"> {/* Added pb-32 here */}
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-32">
         <div className="text-center pt-12 sm:pt-16 mb-8 sm:mb-12">
           <div className="flex items-center justify-center mb-4">
             <img src="/lovable-uploads/4ec29862-7e48-44ec-8e24-268de758604c.png" alt="VidPin Logo" className="h-8 sm:h-10" />
@@ -102,7 +102,7 @@ const Index = () => {
         <div className="relative max-w-2xl mx-auto mb-8">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input 
-            placeholder="Search videos by title, channel, or notes..." 
+            placeholder="Search videos by title, tags, or notes..." 
             className="w-full bg-[#1A1F2E] border-none pl-10 h-12 text-gray-300 rounded-xl"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
