@@ -51,9 +51,9 @@ export function AddVideo() {
         disabled={isLoading || !videoUrl.trim()}
       >
         {isLoading ? (
-          <Loader2 size={18} className="animate-spin mr-1" />
+          <Loader2 size={18} className="animate-spin mr-0.5" />
         ) : (
-          <Pin size={18} className="mr-1" />
+          <Pin size={18} className="mr-0.5" />
         )}
         Pin Video
       </Button>
