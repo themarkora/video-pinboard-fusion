@@ -125,7 +125,6 @@ export const useVideos = create<VideosState>()(
         set((state) => {
           let relevantVideos = [...state.videos];
           
-          // Filter videos based on list type
           if (listType === 'pinned') {
             relevantVideos = relevantVideos.filter(v => v.isPinned);
           } else if (listType === 'notes') {
@@ -136,24 +135,19 @@ export const useVideos = create<VideosState>()(
               .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
           }
 
-          // Perform the reorder
           const [movedVideo] = relevantVideos.splice(sourceIndex, 1);
           relevantVideos.splice(destinationIndex, 0, movedVideo);
 
-          // Create a map of the reordered videos with their new indices
-          const reorderedMap = new Map(
-            relevantVideos.map((video, index) => [video.id, index])
-          );
+          const updatedVideos = relevantVideos.map((video, index) => ({
+            ...video,
+            order: index
+          }));
 
-          // Update the main videos array while preserving other videos' order
+          const updatedVideoMap = new Map(updatedVideos.map(video => [video.id, video]));
+
           const finalVideos = state.videos.map(video => {
-            if (reorderedMap.has(video.id)) {
-              return {
-                ...video,
-                order: reorderedMap.get(video.id)
-              };
-            }
-            return video;
+            const updatedVideo = updatedVideoMap.get(video.id);
+            return updatedVideo || { ...video, order: video.order ?? 999999 };
           });
 
           return { videos: finalVideos };
@@ -169,12 +163,10 @@ export const useVideos = create<VideosState>()(
             if (video.id === videoId) {
               let newBoardIds = [...(video.boardIds || [])];
               
-              // Remove from source board if it's a board (not a tab)
               if (sourceBoardId !== 'recent' && sourceBoardId !== 'pinned' && sourceBoardId !== 'notes') {
                 newBoardIds = newBoardIds.filter(id => id !== sourceBoardId);
               }
               
-              // Add to destination board if not already present
               if (!newBoardIds.includes(destinationBoardId)) {
                 newBoardIds.push(destinationBoardId);
               }
@@ -182,7 +174,7 @@ export const useVideos = create<VideosState>()(
               return { 
                 ...video, 
                 boardIds: newBoardIds,
-                order: destinationBoardVideos.length // Place at the end of the destination board
+                order: destinationBoardVideos.length 
               };
             }
             return video;

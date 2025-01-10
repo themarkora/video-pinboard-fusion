@@ -14,7 +14,6 @@ const Index = () => {
   const { videos, togglePin, activeTab, setActiveTab, boards, reorderVideos } = useVideos();
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter videos based on search query and active tab
   const filteredVideos = useMemo(() => {
     let filtered = videos;
 
@@ -40,7 +39,7 @@ const Index = () => {
         default:
           return true;
       }
-    });
+    }).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }, [videos, searchQuery, activeTab]);
 
   const handleDragEnd = (result: any) => {
@@ -49,7 +48,7 @@ const Index = () => {
     const sourceIndex = result.source.index;
     const destinationIndex = result.destination.index;
     
-    if (activeTab === 'boards') return; // Don't handle reordering in boards view
+    if (activeTab === 'boards') return;
     
     reorderVideos(activeTab, sourceIndex, destinationIndex);
   };
@@ -154,6 +153,12 @@ const Index = () => {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
+                          style={{
+                            ...provided.draggableProps.style,
+                            transform: snapshot.isDragging
+                              ? provided.draggableProps.style?.transform
+                              : 'none',
+                          }}
                           className={`transition-transform duration-200 ${
                             snapshot.isDragging ? 'scale-105 z-50' : ''
                           }`}
