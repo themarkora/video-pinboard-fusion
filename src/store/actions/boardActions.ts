@@ -11,16 +11,6 @@ export const boardActions = (set: any) => ({
     return boardId;
   },
   
-  deleteBoard: (boardId: string) =>
-    set((state: any) => ({
-      boards: state.boards.filter((board: any) => board.id !== boardId),
-      // Also remove the board reference from any videos
-      videos: state.videos.map((video: any) => ({
-        ...video,
-        boardIds: video.boardIds?.filter((id: string) => id !== boardId) || []
-      }))
-    })),
-  
   addToBoard: (videoId: string, boardId: string) =>
     set((state: any) => ({
       videos: state.videos.map((video: any) =>
