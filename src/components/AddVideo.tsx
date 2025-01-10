@@ -47,7 +47,7 @@ export function AddVideo() {
       />
       <Button 
         type="submit"
-        className="bg-purple-600 hover:bg-purple-700 h-12 px-6 rounded-2xl"
+        className="bg-purple-600 hover:bg-purple-700 h-12 px-4 rounded-2xl min-w-[120px]"
         disabled={isLoading || !videoUrl.trim()}
       >
         {isLoading ? (
