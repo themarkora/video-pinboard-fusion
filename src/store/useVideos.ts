@@ -36,7 +36,36 @@ export const useVideos = create<VideosState>()(
       activeTab: 'recent',
       ...addVideoActions(set),
       ...boardActions(set),
-      setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
+
+      reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => {
+        set((state) => {
+          // Get the filtered list based on the active tab
+          let filteredVideos = [...state.videos];
+          if (listType === 'pinned') {
+            filteredVideos = state.videos.filter(v => v.isPinned);
+          } else if (listType === 'notes') {
+            filteredVideos = state.videos.filter(v => Array.isArray(v.notes) && v.notes.length > 0);
+          }
+
+          // Get the video being moved
+          const [movedVideo] = filteredVideos.splice(sourceIndex, 1);
+          filteredVideos.splice(destinationIndex, 0, movedVideo);
+
+          // Update order for all videos in the filtered list
+          const updatedFilteredVideos = filteredVideos.map((video, index) => ({
+            ...video,
+            order: index * 1000 // Use multiplier to prevent order conflicts
+          }));
+
+          // Merge the updated orders back into the full video list
+          const finalVideos = state.videos.map(video => {
+            const updatedVideo = updatedFilteredVideos.find(v => v.id === video.id);
+            return updatedVideo || video;
+          });
+
+          return { videos: finalVideos };
+        });
+      },
 
       removeTag: (videoId: string, tag: string) =>
         set((state) => ({
@@ -115,33 +144,6 @@ export const useVideos = create<VideosState>()(
               : video
           ),
         })),
-
-      reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => {
-        set((state) => {
-          let filteredVideos = state.videos;
-          
-          if (listType === 'pinned') {
-            filteredVideos = state.videos.filter(v => v.isPinned);
-          } else if (listType === 'notes') {
-            filteredVideos = state.videos.filter(v => Array.isArray(v.notes) && v.notes.length > 0);
-          }
-          
-          const [movedVideo] = filteredVideos.splice(sourceIndex, 1);
-          filteredVideos.splice(destinationIndex, 0, movedVideo);
-          
-          const updatedVideos = filteredVideos.map((video, index) => ({
-            ...video,
-            order: index,
-          }));
-          
-          const finalVideos = state.videos.map(video => {
-            const updatedVideo = updatedVideos.find(v => v.id === video.id);
-            return updatedVideo || video;
-          });
-          
-          return { videos: finalVideos };
-        });
-      },
 
       reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => {
         set((state) => {
