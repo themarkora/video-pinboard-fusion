@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
@@ -12,33 +12,20 @@ interface BoardCardProps {
 
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { videos, reorderVideosInBoard } = useVideos();
-  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const { videos } = useVideos();
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
-  const handleMouseEnter = (isDraggingOver: boolean) => {
-    if (isDraggingOver && !isExpanded) {
-      hoverTimerRef.current = setTimeout(() => {
-        setIsExpanded(true);
-      }, 1000); // 1 second delay
+  const handleDragEnter = (e: React.DragEvent, isDraggingOver: boolean) => {
+    e.preventDefault();
+    if (!isExpanded) {
+      setIsExpanded(true);
     }
   };
 
-  const handleMouseLeave = () => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault(); // This is crucial for allowing drops
   };
-
-  useEffect(() => {
-    return () => {
-      if (hoverTimerRef.current) {
-        clearTimeout(hoverTimerRef.current);
-      }
-    };
-  }, []);
 
   return (
     <Droppable droppableId={id} type="VIDEO">
@@ -49,8 +36,8 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
           } overflow-hidden transition-all duration-200`}
           ref={provided.innerRef}
           {...provided.droppableProps}
-          onMouseEnter={() => handleMouseEnter(snapshot.isDraggingOver)}
-          onMouseLeave={handleMouseLeave}
+          onDragEnter={(e) => handleDragEnter(e, snapshot.isDraggingOver)}
+          onDragOver={handleDragOver}
         >
           <div 
             className={`p-4 flex items-center justify-between ${
