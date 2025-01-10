@@ -45,7 +45,10 @@ export const useVideos = create<VideosState>()(
         set((state) => ({
           videos: state.videos.map((video) =>
             video.id === videoId
-              ? { ...video, tags: [...(video.tags || []), tag] }
+              ? {
+                  ...video,
+                  tags: [...new Set([...(video.tags || []), tag])]
+                }
               : video
           ),
         })),

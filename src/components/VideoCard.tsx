@@ -74,12 +74,14 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   };
 
   const handleSelectTag = (tag: string) => {
-    addTag(video.id, tag);
-    setIsTagDialogOpen(false);
-    toast({
-      title: "Tag added",
-      description: "Selected tag has been added to the video.",
-    });
+    if (tag) {
+      addTag(video.id, tag);
+      setIsTagDialogOpen(false);
+      toast({
+        title: "Tag added",
+        description: "Selected tag has been added to the video.",
+      });
+    }
   };
 
   // Get all unique tags from all videos
@@ -142,52 +144,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
               }
             }}
           />
-
-          <Dialog>
-            <DialogContent className="bg-[#2A2F3C] text-white border-none">
-              <DialogHeader>
-                <DialogTitle>Select or Create Board</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3 mt-4">
-                {boards.map((board) => (
-                  <Button
-                    key={board.id}
-                    variant="secondary"
-                    className="w-full justify-start rounded-xl"
-                    onClick={() => {
-                      addToBoard(video.id, board.id);
-                      toast({
-                        title: "Video added to board",
-                        description: `Added to "${board.name}"`,
-                      });
-                    }}
-                  >
-                    {board.name}
-                  </Button>
-                ))}
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Create new board..."
-                    className="bg-secondary/50 border-none rounded-xl"
-                    value={newBoardName}
-                    onChange={(e) => setNewBoardName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleCreateBoard();
-                      }
-                    }}
-                  />
-                  <Button
-                    variant="secondary"
-                    className="rounded-xl"
-                    onClick={handleCreateBoard}
-                  >
-                    Create
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
 
           <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
             <DialogContent className="bg-[#2A2F3C] text-white border-none">
