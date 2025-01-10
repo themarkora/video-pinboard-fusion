@@ -74,8 +74,14 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
+                        style={{
+                          ...provided.draggableProps.style,
+                          transform: snapshot.isDragging 
+                            ? provided.draggableProps.style?.transform 
+                            : 'none'
+                        }}
                         className={`transition-transform duration-200 ${
-                          snapshot.isDragging ? 'scale-105 rotate-2' : ''
+                          snapshot.isDragging ? 'scale-105 rotate-2 z-50' : ''
                         }`}
                       >
                         <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
