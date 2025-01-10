@@ -146,19 +146,23 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
           />
 
           <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
-            <DialogContent className="bg-[#2A2F3C] text-white border-none">
+            <DialogContent className="bg-[#2A2F3C] text-white border-none max-w-md mx-auto">
               <DialogHeader>
-                <DialogTitle>Add Tag</DialogTitle>
+                <DialogTitle className="text-xl font-semibold">Add Tag</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 {allTags.length > 0 && (
                   <Select onValueChange={handleSelectTag}>
-                    <SelectTrigger className="bg-secondary/50 border-none">
+                    <SelectTrigger className="w-full bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl">
                       <SelectValue placeholder="Select existing tag" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-[#1A1F2E] border-none text-gray-200">
                       {allTags.map((tag) => (
-                        <SelectItem key={tag} value={tag}>
+                        <SelectItem 
+                          key={tag} 
+                          value={tag}
+                          className="hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer"
+                        >
                           {tag}
                         </SelectItem>
                       ))}
@@ -168,7 +172,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
                 <div className="flex gap-2">
                   <Input
                     placeholder="Create new tag..."
-                    className="bg-secondary/50 border-none rounded-xl"
+                    className="flex-1 bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl placeholder:text-gray-400"
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
                     onKeyDown={(e) => {
@@ -179,7 +183,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
                   />
                   <Button
                     variant="secondary"
-                    className="rounded-xl"
+                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
                     onClick={handleTagSubmit}
                   >
                     Add
