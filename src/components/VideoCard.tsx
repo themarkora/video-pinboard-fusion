@@ -57,35 +57,35 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
         >
           <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
         </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-white text-xl mb-4 line-clamp-2">{video.title}</h3>
+        <div className="p-4 space-y-4">
+          <h3 className="font-semibold text-white text-xl line-clamp-2">{video.title}</h3>
           
           {video.notes && video.notes.length > 0 && (
-            <div className="mb-4 p-3 bg-[#2A2F3C] rounded-lg">
+            <div className="p-3 bg-[#2A2F3C] rounded-lg space-y-2">
               {video.notes.map((note, index) => (
                 <div key={index} className="flex items-start gap-2 text-gray-300">
                   <MessageSquare className="w-4 h-4 mt-1 shrink-0" />
-                  <p>{note}</p>
+                  <p className="text-sm">{note}</p>
                 </div>
               ))}
             </div>
           )}
           
-          <div className="grid grid-cols-3 gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-2">
             <Button 
               variant="secondary"
-              className="w-full bg-[#9334E9] hover:bg-[#9334E9]/90 text-white"
+              className="w-full bg-[#9334E9] hover:bg-[#9334E9]/90 text-white h-10 px-3 sm:px-4"
               onClick={() => onTogglePin(video.id)}
             >
               {video.isPinned ? (
                 <>
-                  <PinOff className="mr-2" size={18} />
-                  Unpin
+                  <PinOff className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Unpin</span>
                 </>
               ) : (
                 <>
-                  <Pin className="mr-2" size={18} />
-                  Pin
+                  <Pin className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Pin</span>
                 </>
               )}
             </Button>
@@ -94,10 +94,10 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
               <DialogTrigger asChild>
                 <Button 
                   variant="secondary"
-                  className="w-full bg-[#9334E9] hover:bg-[#9334E9]/90 text-white"
+                  className="w-full bg-[#9334E9] hover:bg-[#9334E9]/90 text-white h-10 px-3 sm:px-4"
                 >
-                  <Plus className="mr-2" size={18} />
-                  Add to Board
+                  <Plus className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Add to Board</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-[#2A2F3C] text-white border-none">
@@ -146,7 +146,7 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
 
             <Button 
               variant="destructive"
-              className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90"
+              className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90 h-10 px-3 sm:px-4"
               onClick={() => {
                 deleteVideo(video.id);
                 toast({
@@ -155,22 +155,22 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
                 });
               }}
             >
-              <Trash2 className="mr-2" size={18} />
-              Delete
+              <Trash2 className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Delete</span>
             </Button>
           </div>
 
           <Button 
             variant="secondary"
-            className="w-full bg-[#2A2F3C] hover:bg-[#2A2F3C]/90 text-gray-300"
+            className="w-full bg-[#2A2F3C] hover:bg-[#2A2F3C]/90 text-gray-300 h-10"
             onClick={() => setIsAddingNote(true)}
           >
-            <MessageSquare className="mr-2" size={18} />
+            <MessageSquare className="h-4 w-4 mr-2" />
             Add Note
           </Button>
 
           {isAddingNote && (
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-2">
               <Input
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
