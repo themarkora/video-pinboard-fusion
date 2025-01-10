@@ -42,12 +42,12 @@ export function AddVideo() {
         value={videoUrl}
         onChange={(e) => setVideoUrl(e.target.value)}
         placeholder="Paste YouTube video URL"
-        className="flex-1 bg-[#1A1F2E] border-none h-12 text-gray-300"
+        className="flex-1 bg-[#1A1F2E] border-none h-12 text-gray-300 rounded-2xl text-base"
         disabled={isLoading}
       />
       <Button 
         type="submit"
-        className="bg-purple-600 hover:bg-purple-700 h-12 px-6 rounded-xl"
+        className="bg-purple-600 hover:bg-purple-700 h-12 px-6 rounded-2xl"
         disabled={isLoading || !videoUrl.trim()}
       >
         {isLoading ? (
