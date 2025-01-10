@@ -73,7 +73,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
       {notes && notes.length > 0 && (
         <div className="p-3 bg-[#2A2F3C] rounded-xl space-y-2">
           {notes.map((noteText, index) => (
-            <div key={index} className="flex items-start gap-2 text-gray-300 group">
+            <div key={`${videoId}-note-${index}`} className="flex items-start gap-2 text-gray-300 group">
               <MessageSquare className="w-4 h-4 mt-1 shrink-0" />
               {editingIndex === index ? (
                 <div className="flex-1 flex gap-2">
