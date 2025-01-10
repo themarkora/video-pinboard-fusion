@@ -49,6 +49,11 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     }
   };
 
+  const handleAddToBoard = () => {
+    // This function will be passed to VideoActions
+    // The dialog will be opened by the button in VideoActions
+  };
+
   return (
     <>
       <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
@@ -66,7 +71,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
           <VideoActions
             isPinned={video.isPinned}
             onTogglePin={() => onTogglePin(video.id)}
-            onAddToBoard={() => {}}
+            onAddToBoard={handleAddToBoard}
             onDelete={() => {
               deleteVideo(video.id);
               toast({
@@ -88,14 +93,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
           />
 
           <Dialog>
-            <DialogTrigger asChild>
-              <Button 
-                variant="secondary"
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
-              >
-                Add to Board
-              </Button>
-            </DialogTrigger>
             <DialogContent className="bg-[#2A2F3C] text-white border-none">
               <DialogHeader>
                 <DialogTitle>Select or Create Board</DialogTitle>
