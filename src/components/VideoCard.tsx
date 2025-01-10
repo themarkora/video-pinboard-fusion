@@ -50,15 +50,15 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
 
   return (
     <>
-      <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">
+      <Card className="bg-[#1A1F2E] border-none overflow-hidden">
         <div 
           className="relative aspect-video cursor-pointer" 
           onClick={() => setIsPlaying(true)}
         >
           <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
         </div>
-        <div className="p-6">
-          <h3 className="font-semibold text-white text-xl mb-6 line-clamp-2">{video.title}</h3>
+        <div className="p-4">
+          <h3 className="font-semibold text-white text-xl mb-4 line-clamp-2">{video.title}</h3>
           
           {video.notes && video.notes.length > 0 && (
             <div className="mb-4 p-3 bg-[#2A2F3C] rounded-lg">
@@ -71,84 +71,82 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
             </div>
           )}
           
-          <div className="space-y-3">
-            <div className="flex gap-3">
-              <Button 
-                size="lg"
-                className={`flex-1 ${video.isPinned ? 'bg-[#9b87f5] hover:bg-[#9b87f5]/90' : 'bg-[#9b87f5] hover:bg-[#9b87f5]/90'}`}
-                onClick={() => onTogglePin(video.id)}
-              >
-                {video.isPinned ? (
-                  <>
-                    <PinOff className="mr-2" size={20} color="white" />
-                    Unpin
-                  </>
-                ) : (
-                  <>
-                    <Pin className="mr-2" size={20} color="white" />
-                    Pin Video
-                  </>
-                )}
-              </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              variant="secondary"
+              className="bg-[#9334E9] hover:bg-[#9334E9]/90 text-white"
+              onClick={() => onTogglePin(video.id)}
+            >
+              {video.isPinned ? (
+                <>
+                  <PinOff className="mr-2" size={18} />
+                  Unpin
+                </>
+              ) : (
+                <>
+                  <Pin className="mr-2" size={18} />
+                  Pin Video
+                </>
+              )}
+            </Button>
 
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button 
-                    size="lg"
-                    className="flex-1 bg-[#9b87f5] hover:bg-[#9b87f5]/90"
-                  >
-                    <Plus className="mr-2 h-5 w-5" />
-                    Add to Board
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-[#2A2F3C] text-white border-none">
-                  <DialogHeader>
-                    <DialogTitle>Select or Create Board</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-3 mt-4">
-                    {boards.map((board) => (
-                      <Button
-                        key={board.id}
-                        variant="secondary"
-                        className="w-full justify-start"
-                        onClick={() => {
-                          addToBoard(video.id, board.id);
-                          toast({
-                            title: "Video added to board",
-                            description: `Added to "${board.name}"`,
-                          });
-                        }}
-                      >
-                        {board.name}
-                      </Button>
-                    ))}
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Create new board..."
-                        className="bg-secondary/50 border-none"
-                        value={newBoardName}
-                        onChange={(e) => setNewBoardName(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleCreateBoard();
-                          }
-                        }}
-                      />
-                      <Button
-                        variant="secondary"
-                        onClick={handleCreateBoard}
-                      >
-                        Create
-                      </Button>
-                    </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="secondary"
+                  className="bg-[#9334E9] hover:bg-[#9334E9]/90 text-white"
+                >
+                  <Plus className="mr-2" size={18} />
+                  Add to Board
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-[#2A2F3C] text-white border-none">
+                <DialogHeader>
+                  <DialogTitle>Select or Create Board</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-3 mt-4">
+                  {boards.map((board) => (
+                    <Button
+                      key={board.id}
+                      variant="secondary"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        addToBoard(video.id, board.id);
+                        toast({
+                          title: "Video added to board",
+                          description: `Added to "${board.name}"`,
+                        });
+                      }}
+                    >
+                      {board.name}
+                    </Button>
+                  ))}
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Create new board..."
+                      className="bg-secondary/50 border-none"
+                      value={newBoardName}
+                      onChange={(e) => setNewBoardName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleCreateBoard();
+                        }
+                      }}
+                    />
+                    <Button
+                      variant="secondary"
+                      onClick={handleCreateBoard}
+                    >
+                      Create
+                    </Button>
                   </div>
-                </DialogContent>
-              </Dialog>
-            </div>
+                </div>
+              </DialogContent>
+            </Dialog>
 
             <Button 
-              size="lg"
-              className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90"
+              variant="destructive"
+              className="bg-[#ea384c] hover:bg-[#ea384c]/90"
               onClick={() => {
                 deleteVideo(video.id);
                 toast({
@@ -157,38 +155,37 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
                 });
               }}
             >
-              <Trash2 className="mr-2 h-5 w-5" />
+              <Trash2 className="mr-2" size={18} />
               Delete
             </Button>
 
-            {isAddingNote ? (
-              <div className="flex gap-2">
-                <Input
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="Add a note..."
-                  className="bg-secondary/50 border-none"
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddNote()}
-                />
-                <Button
-                  variant="secondary"
-                  onClick={handleAddNote}
-                >
-                  Add
-                </Button>
-              </div>
-            ) : (
-              <Button 
-                size="lg"
-                variant="secondary"
-                className="w-full bg-[#2A2F3C] hover:bg-[#2A2F3C]/90"
-                onClick={() => setIsAddingNote(true)}
-              >
-                <MessageSquare className="mr-2 h-5 w-5" />
-                Add Note
-              </Button>
-            )}
+            <Button 
+              variant="secondary"
+              className="bg-[#2A2F3C] hover:bg-[#2A2F3C]/90 text-purple-300"
+              onClick={() => setIsAddingNote(true)}
+            >
+              <MessageSquare className="mr-2" size={18} />
+              Add Note
+            </Button>
           </div>
+
+          {isAddingNote && (
+            <div className="flex gap-2 mt-4">
+              <Input
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Add a note..."
+                className="bg-secondary/50 border-none"
+                onKeyDown={(e) => e.key === 'Enter' && handleAddNote()}
+              />
+              <Button
+                variant="secondary"
+                onClick={handleAddNote}
+              >
+                Add
+              </Button>
+            </div>
+          )}
         </div>
       </Card>
       <VideoPlayer
