@@ -20,7 +20,6 @@ const Index = () => {
 
     if (result.type === "VIDEO") {
       if (result.source.droppableId === result.destination.droppableId) {
-        // Reordering within the same list
         reorderVideos(activeTab, sourceIndex, destinationIndex);
       }
     } else if (result.type === "BOARD") {
@@ -123,25 +122,43 @@ const Index = () => {
               )}
             </div>
           ) : (
-            <Droppable droppableId={activeTab} type="VIDEO">
+            <Droppable 
+              droppableId={activeTab} 
+              type="VIDEO"
+              direction="horizontal"
+            >
               {(provided, snapshot) => (
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 ${
-                    snapshot.isDraggingOver ? 'bg-purple-500/10 rounded-xl p-4' : ''
+                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 p-4 rounded-xl transition-colors duration-200 ${
+                    snapshot.isDraggingOver ? 'bg-purple-500/10' : ''
                   }`}
+                  style={{
+                    display: 'grid',
+                    minHeight: '200px'
+                  }}
                 >
                   {filteredVideos.map((video, index) => (
-                    <Draggable key={video.id} draggableId={video.id} index={index}>
+                    <Draggable 
+                      key={video.id} 
+                      draggableId={video.id} 
+                      index={index}
+                    >
                       {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`transition-transform duration-200 ${
-                            snapshot.isDragging ? 'scale-105 rotate-2' : ''
+                          className={`transition-all duration-200 ${
+                            snapshot.isDragging 
+                              ? 'scale-105 rotate-2 shadow-2xl' 
+                              : 'hover:scale-[1.02]'
                           }`}
+                          style={{
+                            ...provided.draggableProps.style,
+                            transformOrigin: 'center'
+                          }}
                         >
                           <VideoCard
                             video={video}
