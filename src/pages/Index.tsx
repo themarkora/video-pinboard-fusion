@@ -134,9 +134,12 @@ const Index = () => {
                   }`}
                   style={{
                     display: 'grid',
-                    gridAutoFlow: 'row dense',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                    gap: '1.5rem',
+                    alignItems: 'start',
+                    justifyContent: 'center',
                     minHeight: '200px',
-                    gridAutoRows: 'min-content',
+                    transition: 'background-color 0.2s ease',
                   }}
                 >
                   {filteredVideos.map((video, index) => (
@@ -153,13 +156,15 @@ const Index = () => {
                           style={{
                             ...provided.draggableProps.style,
                             transition: snapshot.isDragging 
-                              ? 'none' 
+                              ? 'none'
                               : 'all 0.2s cubic-bezier(0.2, 0, 0, 1)',
                             transform: snapshot.isDragging 
                               ? `${provided.draggableProps.style?.transform} scale(1.02)`
                               : provided.draggableProps.style?.transform,
                             zIndex: snapshot.isDragging ? 999 : 1,
-                            height: '100%',
+                            margin: 0,
+                            height: 'auto',
+                            gridColumn: 'span 1',
                           }}
                         >
                           <VideoCard
