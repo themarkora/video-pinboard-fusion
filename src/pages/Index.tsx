@@ -14,6 +14,7 @@ const Index = () => {
   const { videos, togglePin, activeTab, setActiveTab, boards, moveVideoToBoard, reorderVideos } = useVideos();
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Filter videos based on search query and active tab
   const filteredVideos = useMemo(() => {
     let filtered = videos;
 
@@ -69,11 +70,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
+      <AnimatedBackground />
       <Header />
-      <div className="bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
-        <AnimatedBackground />
-        <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-32">
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-32">
+
         <div className="text-center pt-12 sm:pt-16 mb-8 sm:mb-12">
           <AddVideo />
           <p className="text-gray-400 mt-4 text-sm">
@@ -192,8 +193,7 @@ const Index = () => {
             </Droppable>
           )}
         </DragDropContext>
-        </main>
-      </div>
+      </main>
     </div>
   );
 };
