@@ -41,6 +41,14 @@ export const useVideos = create<VideosState>()(
               : video
           ),
         })),
+      addTag: (videoId: string, tag: string) =>
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === videoId
+              ? { ...video, tags: [...(video.tags || []), tag] }
+              : video
+          ),
+        })),
       reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => {
         set((state) => {
           let filteredVideos = state.videos;

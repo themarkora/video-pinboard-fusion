@@ -12,6 +12,7 @@ export interface Video {
   channel?: string;
   publishedAt?: string;
   order?: number;
+  tags?: string[];
 }
 
 export interface Board {
@@ -32,6 +33,7 @@ export interface VideosState {
   addVote: (videoId: string) => void;
   addView: (videoId: string) => void;
   addNote: (videoId: string, note: string) => void;
+  addTag: (videoId: string, tag: string) => void;
   
   // Board actions
   addBoard: (name: string) => string;
