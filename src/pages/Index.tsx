@@ -134,8 +134,9 @@ const Index = () => {
                   }`}
                   style={{
                     display: 'grid',
-                    gridAutoFlow: 'dense',
+                    gridAutoFlow: 'row dense',
                     minHeight: '200px',
+                    gridAutoRows: 'min-content',
                   }}
                 >
                   {filteredVideos.map((video, index) => (
@@ -151,11 +152,14 @@ const Index = () => {
                           {...provided.dragHandleProps}
                           style={{
                             ...provided.draggableProps.style,
-                            transition: snapshot.isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
+                            transition: snapshot.isDragging 
+                              ? 'none' 
+                              : 'all 0.2s cubic-bezier(0.2, 0, 0, 1)',
                             transform: snapshot.isDragging 
                               ? `${provided.draggableProps.style?.transform} scale(1.02)`
                               : provided.draggableProps.style?.transform,
-                            zIndex: snapshot.isDragging ? 999 : 'auto',
+                            zIndex: snapshot.isDragging ? 999 : 1,
+                            height: '100%',
                           }}
                         >
                           <VideoCard
