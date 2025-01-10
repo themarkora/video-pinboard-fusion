@@ -77,21 +77,21 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
                         style={{
                           ...provided.draggableProps.style,
                           transform: snapshot.isDragging ? provided.draggableProps.style?.transform : 'none',
+                          opacity: snapshot.isDragging ? 0 : 1,
                         }}
                       >
-                        <div style={{ opacity: snapshot.isDragging ? 0.5 : 1 }}>
-                          <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
-                        </div>
+                        <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
                         {snapshot.isDragging && (
                           <div
                             style={{
                               position: 'fixed',
                               pointerEvents: 'none',
-                              width: 'auto',
-                              height: 'auto',
+                              width: provided.draggableProps?.style?.width,
+                              height: provided.draggableProps?.style?.height,
                               top: 0,
                               left: 0,
                               transform: provided.draggableProps.style?.transform,
+                              zIndex: 9999,
                             }}
                           >
                             <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
