@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
@@ -12,9 +12,46 @@ interface BoardCardProps {
 
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { videos, reorderVideosInBoard } = useVideos();
+  const { videos } = useVideos();
+  const expandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isDraggingOverRef = useRef(false);
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
+
+  const handleMouseEnter = (isDraggingOver: boolean) => {
+    if (!isDraggingOver || isExpanded) return;
+    
+    isDraggingOverRef.current = true;
+    
+    // Clear any existing timeout
+    if (expandTimeoutRef.current) {
+      clearTimeout(expandTimeoutRef.current);
+    }
+
+    // Set new timeout to expand after 800ms
+    expandTimeoutRef.current = setTimeout(() => {
+      if (isDraggingOverRef.current) {
+        setIsExpanded(true);
+      }
+    }, 800);
+  };
+
+  const handleMouseLeave = () => {
+    isDraggingOverRef.current = false;
+    if (expandTimeoutRef.current) {
+      clearTimeout(expandTimeoutRef.current);
+      expandTimeoutRef.current = null;
+    }
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (expandTimeoutRef.current) {
+        clearTimeout(expandTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <Droppable droppableId={id} type="VIDEO">
@@ -25,6 +62,8 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
           } overflow-hidden transition-colors duration-200`}
           ref={provided.innerRef}
           {...provided.droppableProps}
+          onMouseEnter={() => handleMouseEnter(snapshot.isDraggingOver)}
+          onMouseLeave={handleMouseLeave}
         >
           <div 
             className="p-4 flex items-center justify-between cursor-pointer hover:bg-secondary/50"
