@@ -34,7 +34,6 @@ export const useVideos = create<VideosState>()(
       boards: [],
       activeTab: 'recent',
 
-      // Video management actions
       deleteVideo: (id: string) => 
         set((state) => ({
           videos: state.videos.filter((video) => video.id !== id)
@@ -122,35 +121,36 @@ export const useVideos = create<VideosState>()(
 
       setActiveTab: (tab) => set({ activeTab: tab }),
 
-      // Include actions from separate files
-      ...addVideoActions(set),
-      ...boardActions(set),
-
-      // Reordering functionality
       reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) =>
         set((state) => {
           let relevantVideos = [...state.videos];
           
+          // Filter videos based on list type
           if (listType === 'pinned') {
             relevantVideos = relevantVideos.filter(v => v.isPinned);
           } else if (listType === 'notes') {
             relevantVideos = relevantVideos.filter(v => Array.isArray(v.notes) && v.notes.length > 0);
           } else if (listType !== 'recent') {
-            relevantVideos = relevantVideos.filter(v => v.boardIds?.includes(listType))
-              .sort((a, b) => (a.order || 0) - (b.order || 0));
+            // For board-specific reordering
+            relevantVideos = relevantVideos
+              .filter(v => v.boardIds?.includes(listType))
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
           }
 
+          // Perform the reorder
           const [movedVideo] = relevantVideos.splice(sourceIndex, 1);
           relevantVideos.splice(destinationIndex, 0, movedVideo);
 
+          // Update order for all affected videos
           const updatedRelevantVideos = relevantVideos.map((video, index) => ({
             ...video,
             order: index
           }));
 
+          // Merge back into the full video list
           const finalVideos = state.videos.map(video => {
             const updatedVideo = updatedRelevantVideos.find(v => v.id === video.id);
-            return updatedVideo || video;
+            return updatedVideo || { ...video, order: video.order ?? 0 };
           });
 
           return { videos: finalVideos };
@@ -162,22 +162,25 @@ export const useVideos = create<VideosState>()(
             if (video.id === videoId) {
               let newBoardIds = [...(video.boardIds || [])];
               
+              // Remove from source board if it's a board (not a tab)
               if (sourceBoardId !== 'recent' && sourceBoardId !== 'pinned' && sourceBoardId !== 'notes') {
                 newBoardIds = newBoardIds.filter(id => id !== sourceBoardId);
               }
               
+              // Add to destination board if not already present
               if (!newBoardIds.includes(destinationBoardId)) {
                 newBoardIds.push(destinationBoardId);
               }
 
+              // Calculate new order based on destination board's videos
               const destinationBoardVideos = state.videos
                 .filter(v => v.boardIds?.includes(destinationBoardId))
-                .sort((a, b) => (a.order || 0) - (b.order || 0));
+                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
               
               return { 
                 ...video, 
                 boardIds: newBoardIds,
-                order: destinationBoardVideos.length
+                order: destinationBoardVideos.length // Place at the end of the destination board
               };
             }
             return video;
@@ -185,6 +188,11 @@ export const useVideos = create<VideosState>()(
 
           return { videos: updatedVideos };
         }),
+
+      // ... keep existing code (other actions)
+
+      ...addVideoActions(set),
+      ...boardActions(set),
     }),
     {
       name: 'videos-storage',
