@@ -12,12 +12,16 @@ import { useState, useMemo } from "react";
 const Index = () => {
   const { videos, togglePin, activeTab, setActiveTab, boards } = useVideos();
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeBoard, setActiveBoard] = useState<string | null>(null);
+
+  const handleBoardClick = (boardId: string) => {
+    setActiveBoard(activeBoard === boardId ? null : boardId);
+  };
 
   // Filter videos based on search query and active tab
   const filteredVideos = useMemo(() => {
     let filtered = videos;
 
-    // First apply search filter if there's a query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(video => {
@@ -29,7 +33,6 @@ const Index = () => {
       });
     }
 
-    // Then apply tab filter
     return filtered.filter((video) => {
       switch (activeTab) {
         case 'pinned':
@@ -113,7 +116,13 @@ const Index = () => {
         {activeTab === 'boards' ? (
           <div className="grid gap-6 mt-8">
             {boards.map((board) => (
-              <BoardCard key={board.id} id={board.id} name={board.name} />
+              <BoardCard 
+                key={board.id} 
+                id={board.id} 
+                name={board.name}
+                activeBoard={activeBoard}
+                onBoardClick={handleBoardClick}
+              />
             ))}
             {boards.length === 0 && (
               <p className="text-center text-gray-400 py-8">No boards created yet.</p>
