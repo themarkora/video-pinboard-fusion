@@ -25,6 +25,8 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   const { updateNote, deleteNote } = useVideos();
   const { toast } = useToast();
   const [showInput, setShowInput] = useState(false);
+  
+  const MAX_CHARS = 280;
 
   const handleEditClick = (index: number, currentNote: string) => {
     setEditingIndex(index);
@@ -52,6 +54,12 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
     });
   };
 
+  const handleNoteChange = (value: string) => {
+    if (value.length <= MAX_CHARS) {
+      onNoteChange(value);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {!showInput ? (
@@ -67,7 +75,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
           <div className="relative">
             <textarea
               value={note}
-              onChange={(e) => onNoteChange(e.target.value)}
+              onChange={(e) => handleNoteChange(e.target.value)}
               placeholder="Add a note... (Press Enter to save)"
               className="w-full min-h-[100px] bg-[#1A1F2E] border border-purple-500/30 rounded-xl p-4 text-gray-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               onKeyDown={(e) => {
@@ -77,24 +85,30 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
                   setShowInput(false);
                 }
               }}
+              maxLength={MAX_CHARS}
             />
-            <div className="absolute bottom-4 right-4 flex gap-2">
-              <Button
-                variant="ghost"
-                className="text-gray-400 hover:text-gray-300"
-                onClick={() => setShowInput(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-                onClick={() => {
-                  onAddNote();
-                  setShowInput(false);
-                }}
-              >
-                Save
-              </Button>
+            <div className="absolute bottom-4 right-4 flex items-center gap-4">
+              <span className="text-sm text-gray-400">
+                {note.length}/{MAX_CHARS}
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  className="text-gray-400 hover:text-gray-300"
+                  onClick={() => setShowInput(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                  onClick={() => {
+                    onAddNote();
+                    setShowInput(false);
+                  }}
+                >
+                  Save
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -109,10 +123,11 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
                 <div className="flex-1 flex gap-2">
                   <Input
                     value={editedNote}
-                    onChange={(e) => setEditedNote(e.target.value)}
+                    onChange={(e) => setEditedNote(e.target.value.slice(0, MAX_CHARS))}
                     className="flex-1 bg-[#1A1F2E] border-none rounded-xl h-8 text-sm text-gray-200"
                     onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(index)}
                     autoFocus
+                    maxLength={MAX_CHARS}
                   />
                   <Button
                     variant="secondary"
@@ -133,7 +148,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
                 </div>
               ) : (
                 <div className="flex-1 flex items-start justify-between">
-                  <p className="text-sm">{noteText}</p>
+                  <p className="text-sm break-words">{noteText}</p>
                   <div className="flex gap-1">
                     <Button
                       variant="ghost"
