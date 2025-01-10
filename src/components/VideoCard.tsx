@@ -154,10 +154,10 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             onAddToBoard={handleAddToBoard}
             onDelete={() => {
               deleteVideo(video.id);
-              showSuccessToast({
-                title: "Video deleted",
-                description: "The video has been removed from your collection.",
-              });
+              showSuccessToast(
+                "Video deleted",
+                "The video has been removed from your collection."
+              );
             }}
             onAddNote={() => setIsAddingNote(true)}
             onAddTag={handleAddTag}
@@ -165,10 +165,10 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             onRemoveFromBoard={() => {
               if (boardId) {
                 removeFromBoard(video.id, boardId);
-                showSuccessToast({
-                  title: "Video removed",
-                  description: "Video has been removed from the board",
-                });
+                showSuccessToast(
+                  "Video removed",
+                  "Video has been removed from the board"
+                );
               }
             }}
           />
