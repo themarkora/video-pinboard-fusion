@@ -14,9 +14,10 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { videos } = useVideos();
 
+  // Ensure videos are properly sorted by order
   const boardVideos = videos
     .filter(video => video.boardIds?.includes(id))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();

@@ -36,154 +36,41 @@ export const useVideos = create<VideosState>()(
       activeTab: 'recent',
       ...addVideoActions(set),
       ...boardActions(set),
-      setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
-
-      removeTag: (videoId: string, tag: string) =>
-        set((state) => ({
-          videos: state.videos.map((video) =>
-            video.id === videoId
-              ? {
-                  ...video,
-                  tags: video.tags?.filter((t) => t !== tag) || []
-                }
-              : video
-          ),
-        })),
-
-      deleteVideo: (id: string) =>
-        set((state) => ({
-          videos: state.videos.filter((video) => video.id !== id),
-        })),
-
-      addNote: (videoId: string, note: string) =>
-        set((state) => ({
-          videos: state.videos.map((video) =>
-            video.id === videoId
-              ? { ...video, notes: [...(video.notes || []), note] }
-              : video
-          ),
-        })),
-
-      updateNote: (videoId: string, noteIndex: number, updatedNote: string) =>
-        set((state) => ({
-          videos: state.videos.map((video) =>
-            video.id === videoId
-              ? {
-                  ...video,
-                  notes: video.notes?.map((note, index) =>
-                    index === noteIndex ? updatedNote : note
-                  ) || [],
-                }
-              : video
-          ),
-        })),
-
-      deleteNote: (videoId: string, noteIndex: number) =>
-        set((state) => ({
-          videos: state.videos.map((video) =>
-            video.id === videoId
-              ? {
-                  ...video,
-                  notes: video.notes?.filter((_, index) => index !== noteIndex) || [],
-                }
-              : video
-          ),
-        })),
-
-      addVote: (videoId: string) =>
-        set((state) => ({
-          videos: state.videos.map((video) =>
-            video.id === videoId
-              ? { ...video, votes: (video.votes || 0) + 1 }
-              : video
-          ),
-        })),
-
-      addView: (videoId: string) =>
-        set((state) => ({
-          videos: state.videos.map((video) =>
-            video.id === videoId
-              ? { ...video, views: (video.views || 0) + 1 }
-              : video
-          ),
-        })),
-
-      addTag: (videoId: string, tag: string) =>
-        set((state) => ({
-          videos: state.videos.map((video) =>
-            video.id === videoId
-              ? {
-                  ...video,
-                  tags: [...new Set([...(video.tags || []), tag])]
-                }
-              : video
-          ),
-        })),
 
       reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => {
         set((state) => {
-          let filteredVideos = [...state.videos];
+          // Get the relevant videos based on list type
+          let relevantVideos = [...state.videos];
           
-          // Filter videos based on the list type
           if (listType === 'pinned') {
-            filteredVideos = filteredVideos.filter(v => v.isPinned);
+            relevantVideos = relevantVideos.filter(v => v.isPinned);
           } else if (listType === 'notes') {
-            filteredVideos = filteredVideos.filter(v => Array.isArray(v.notes) && v.notes.length > 0);
+            relevantVideos = relevantVideos.filter(v => Array.isArray(v.notes) && v.notes.length > 0);
+          } else if (listType !== 'recent') {
+            // Handle board reordering
+            relevantVideos = relevantVideos.filter(v => v.boardIds?.includes(listType))
+              .sort((a, b) => (a.order || 0) - (b.order || 0));
           }
-          
+
           // Perform the reorder
-          const [movedVideo] = filteredVideos.splice(sourceIndex, 1);
-          filteredVideos.splice(destinationIndex, 0, movedVideo);
-          
-          // Update the order property for all videos in the filtered list
-          const updatedFilteredVideos = filteredVideos.map((video, index) => ({
+          const [movedVideo] = relevantVideos.splice(sourceIndex, 1);
+          relevantVideos.splice(destinationIndex, 0, movedVideo);
+
+          // Update order for all affected videos
+          const updatedRelevantVideos = relevantVideos.map((video, index) => ({
             ...video,
             order: index
           }));
-          
-          // Merge the updated filtered videos back into the main videos array
+
+          // Merge back into the main videos array
           const finalVideos = state.videos.map(video => {
-            const updatedVideo = updatedFilteredVideos.find(v => v.id === video.id);
-            return updatedVideo || video;
+            const updatedVideo = updatedRelevantVideos.find(v => v.id === video.id);
+            return updatedVideo || { ...video };
           });
-          
+
           return { videos: finalVideos };
         });
       },
-
-      reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => {
-        set((state) => {
-          // Get videos in this board and maintain their current order
-          const boardVideos = state.videos
-            .filter(video => video.boardIds?.includes(boardId))
-            .sort((a, b) => (a.order || 0) - (b.order || 0));
-          
-          // Perform the reorder within board videos
-          const [movedVideo] = boardVideos.splice(sourceIndex, 1);
-          boardVideos.splice(destinationIndex, 0, movedVideo);
-          
-          // Update order for all videos in this board
-          const updatedBoardVideos = boardVideos.map((video, index) => ({
-            ...video,
-            order: index
-          }));
-          
-          // Merge the updated board videos back into the main videos array
-          const finalVideos = state.videos.map(video => {
-            const updatedVideo = updatedBoardVideos.find(v => v.id === video.id);
-            return updatedVideo || video;
-          });
-          
-          return { videos: finalVideos };
-        });
-      },
-
-      togglePin: (id: string) =>
-        set((state) => ({
-          videos: state.videos.map((video) =>
-            video.id === id ? { ...video, isPinned: !video.isPinned } : video
-          ),
-        })),
 
       moveVideoToBoard: (videoId: string, sourceBoardId: string, destinationBoardId: string) => {
         set((state) => {
@@ -200,8 +87,17 @@ export const useVideos = create<VideosState>()(
               if (!newBoardIds.includes(destinationBoardId)) {
                 newBoardIds.push(destinationBoardId);
               }
+
+              // Reset order when moving to a new board
+              const destinationBoardVideos = state.videos
+                .filter(v => v.boardIds?.includes(destinationBoardId))
+                .sort((a, b) => (a.order || 0) - (b.order || 0));
               
-              return { ...video, boardIds: newBoardIds };
+              return { 
+                ...video, 
+                boardIds: newBoardIds,
+                order: destinationBoardVideos.length // Put at the end of the destination board
+              };
             }
             return video;
           });
