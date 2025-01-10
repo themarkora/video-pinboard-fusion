@@ -7,21 +7,26 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
-import { DragDropContext } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const Index = () => {
-  const { videos, togglePin, activeTab, setActiveTab, boards, moveVideoToBoard } = useVideos();
+  const { videos, togglePin, activeTab, setActiveTab, boards, moveVideoToBoard, reorderVideos } = useVideos();
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
 
     const sourceIndex = result.source.index;
     const destinationIndex = result.destination.index;
-    const sourceBoardId = result.source.droppableId;
-    const destinationBoardId = result.destination.droppableId;
 
-    if (sourceBoardId !== destinationBoardId) {
+    if (result.type === "VIDEO") {
+      if (result.source.droppableId === result.destination.droppableId) {
+        // Reordering within the same list
+        reorderVideos(activeTab, sourceIndex, destinationIndex);
+      }
+    } else if (result.type === "BOARD") {
       const videoId = result.draggableId;
+      const sourceBoardId = result.source.droppableId;
+      const destinationBoardId = result.destination.droppableId;
       moveVideoToBoard(videoId, sourceBoardId, destinationBoardId);
     }
   };
@@ -118,18 +123,38 @@ const Index = () => {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
-              {filteredVideos.map((video) => (
-                <VideoCard
-                  key={video.id}
-                  video={video}
-                  onTogglePin={togglePin}
-                />
-              ))}
-              {filteredVideos.length === 0 && (
-                <p className="text-center text-gray-400 py-8 col-span-full">No videos available in this tab.</p>
+            <Droppable droppableId={activeTab} type="VIDEO">
+              {(provided, snapshot) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 ${
+                    snapshot.isDraggingOver ? 'bg-purple-500/10 rounded-xl p-4' : ''
+                  }`}
+                >
+                  {filteredVideos.map((video, index) => (
+                    <Draggable key={video.id} draggableId={video.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`transition-transform duration-200 ${
+                            snapshot.isDragging ? 'scale-105 rotate-2' : ''
+                          }`}
+                        >
+                          <VideoCard
+                            video={video}
+                            onTogglePin={togglePin}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
               )}
-            </div>
+            </Droppable>
           )}
         </DragDropContext>
       </main>

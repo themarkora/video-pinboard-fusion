@@ -39,6 +39,7 @@ interface VideosState {
   reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => void;
   moveVideoToBoard: (videoId: string, sourceBoardId: string, destinationBoardId: string) => void;
   removeFromBoard: (videoId: string, boardId: string) => void;
+  reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => void;
 }
 
 const getYouTubeVideoId = (url: string) => {
@@ -93,7 +94,6 @@ export const useVideos = create<VideosState>()(
             video.id === id ? { ...video, isPinned: !video.isPinned } : video
           );
           
-          // If we're in the pinned tab and unpinning a video, switch to recent tab
           if (state.activeTab === 'pinned' && !updatedVideos.find(v => v.id === id)?.isPinned) {
             return {
               videos: updatedVideos,
@@ -176,12 +176,10 @@ export const useVideos = create<VideosState>()(
           const updatedVideos = state.videos.map(video => {
             if (video.id === videoId) {
               const newBoardIds = [...(video.boardIds || [])];
-              // Remove from source board
               const sourceIndex = newBoardIds.indexOf(sourceBoardId);
               if (sourceIndex !== -1) {
                 newBoardIds.splice(sourceIndex, 1);
               }
-              // Add to destination board
               if (!newBoardIds.includes(destinationBoardId)) {
                 newBoardIds.push(destinationBoardId);
               }
@@ -204,6 +202,32 @@ export const useVideos = create<VideosState>()(
               : video
           ),
         })),
+      reorderVideos: (listType, sourceIndex, destinationIndex) => {
+        set((state) => {
+          let filteredVideos = state.videos;
+          
+          if (listType === 'pinned') {
+            filteredVideos = state.videos.filter(v => v.isPinned);
+          } else if (listType === 'notes') {
+            filteredVideos = state.videos.filter(v => Array.isArray(v.notes) && v.notes.length > 0);
+          }
+          
+          const [movedVideo] = filteredVideos.splice(sourceIndex, 1);
+          filteredVideos.splice(destinationIndex, 0, movedVideo);
+          
+          const updatedVideos = filteredVideos.map((video, index) => ({
+            ...video,
+            order: index,
+          }));
+          
+          const finalVideos = state.videos.map(video => {
+            const updatedVideo = updatedVideos.find(v => v.id === video.id);
+            return updatedVideo || video;
+          });
+          
+          return { videos: finalVideos };
+        });
+      },
     }),
     {
       name: 'videos-storage',
