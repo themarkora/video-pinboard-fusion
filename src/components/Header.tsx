@@ -8,7 +8,7 @@ export const Header = () => {
         <div className="flex items-center gap-3">
           <Pin 
             size={32} 
-            className="text-primary animate-float-pin"
+            className="text-primary"
             strokeWidth={2.5}
           />
           <span className="text-2xl font-bold">VidPin</span>
