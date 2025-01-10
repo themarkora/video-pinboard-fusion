@@ -71,20 +71,20 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
             </div>
           )}
           
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2">
             <Button 
               variant="secondary"
-              className="w-full bg-[#9334E9] hover:bg-[#9334E9]/90 text-white h-12 rounded-xl font-medium transition-colors"
+              className="w-full bg-[#9334E9] hover:bg-[#9334E9]/80 text-white h-10 rounded-md font-medium transition-colors"
               onClick={() => onTogglePin(video.id)}
             >
               {video.isPinned ? (
                 <>
-                  <PinOff className="h-5 w-5 sm:mr-2" />
+                  <PinOff className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Unpin</span>
                 </>
               ) : (
                 <>
-                  <Pin className="h-5 w-5 sm:mr-2" />
+                  <Pin className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Pin</span>
                 </>
               )}
@@ -94,9 +94,9 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
               <DialogTrigger asChild>
                 <Button 
                   variant="secondary"
-                  className="w-full bg-[#9334E9] hover:bg-[#9334E9]/90 text-white h-12 rounded-xl font-medium transition-colors"
+                  className="w-full bg-[#9334E9] hover:bg-[#9334E9]/80 text-white h-10 rounded-md font-medium transition-colors"
                 >
-                  <Plus className="h-5 w-5 sm:mr-2" />
+                  <Plus className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Add to Board</span>
                 </Button>
               </DialogTrigger>
@@ -146,7 +146,7 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
 
             <Button 
               variant="destructive"
-              className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90 h-12 rounded-xl font-medium transition-colors"
+              className="w-full bg-[#ea384c] hover:bg-[#ea384c]/80 h-10 rounded-md font-medium transition-colors"
               onClick={() => {
                 deleteVideo(video.id);
                 toast({
@@ -155,17 +155,17 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
                 });
               }}
             >
-              <Trash2 className="h-5 w-5 sm:mr-2" />
+              <Trash2 className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Delete</span>
             </Button>
           </div>
 
           <Button 
             variant="secondary"
-            className="w-full bg-[#2A2F3C] hover:bg-[#2A2F3C]/90 text-gray-300 h-12 rounded-xl font-medium transition-colors"
+            className="w-full bg-[#2A2F3C] hover:bg-[#2A2F3C]/80 text-gray-300 h-10 rounded-md font-medium transition-colors"
             onClick={() => setIsAddingNote(true)}
           >
-            <MessageSquare className="h-5 w-5 mr-2" />
+            <MessageSquare className="h-4 w-4 mr-2" />
             Add Note
           </Button>
 
