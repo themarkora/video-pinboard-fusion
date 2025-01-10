@@ -16,7 +16,7 @@ export const Navigation = () => {
           variant="secondary" 
           className={`${
             activeTab === 'recent' ? 'bg-primary' : 'bg-transparent'
-          } hover:bg-primary/90 text-white px-6 py-2 h-12 rounded-2xl flex items-center gap-3 text-base font-medium`}
+          } hover:bg-white/[0.1] text-white px-6 py-2 h-12 rounded-2xl flex items-center gap-3 text-base font-medium transition-colors duration-200`}
           onClick={() => setActiveTab('recent')}
         >
           <Clock className="h-5 w-5" />
@@ -27,7 +27,7 @@ export const Navigation = () => {
           variant="secondary" 
           className={`${
             activeTab === 'pinned' ? 'bg-primary' : 'bg-transparent'
-          } hover:bg-primary/90 text-white px-6 py-2 h-12 rounded-2xl flex items-center gap-3 text-base font-medium`}
+          } hover:bg-white/[0.1] text-white px-6 py-2 h-12 rounded-2xl flex items-center gap-3 text-base font-medium transition-colors duration-200`}
           onClick={() => setActiveTab('pinned')}
         >
           <Pin className="h-5 w-5" />
@@ -38,7 +38,7 @@ export const Navigation = () => {
           variant="secondary" 
           className={`${
             activeTab === 'notes' ? 'bg-primary' : 'bg-transparent'
-          } hover:bg-primary/90 text-white px-6 py-2 h-12 rounded-2xl flex items-center gap-3 text-base font-medium`}
+          } hover:bg-white/[0.1] text-white px-6 py-2 h-12 rounded-2xl flex items-center gap-3 text-base font-medium transition-colors duration-200`}
           onClick={() => setActiveTab('notes')}
         >
           <StickyNote className="h-5 w-5" />
@@ -49,7 +49,7 @@ export const Navigation = () => {
           variant="secondary" 
           className={`${
             activeTab === 'boards' ? 'bg-primary' : 'bg-transparent'
-          } hover:bg-primary/90 text-white px-6 py-2 h-12 rounded-2xl flex items-center gap-3 text-base font-medium`}
+          } hover:bg-white/[0.1] text-white px-6 py-2 h-12 rounded-2xl flex items-center gap-3 text-base font-medium transition-colors duration-200`}
           onClick={() => setActiveTab('boards')}
         >
           <FolderOpen className="h-5 w-5" />
