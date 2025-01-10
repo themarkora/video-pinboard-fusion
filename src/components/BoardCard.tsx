@@ -13,11 +13,25 @@ interface BoardCardProps {
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { videos, reorderVideosInBoard } = useVideos();
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
+  const handleDragEnter = () => {
+    if (!isExpanded) {
+      setIsExpanded(true);
+    }
+  };
+
   return (
-    <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">
+    <Card 
+      className={`bg-[#1A1F2E] border-2 transition-colors duration-200 ${
+        isDraggingOver 
+          ? 'border-purple-500 bg-purple-500/10' 
+          : 'border-[#2A2F3C]'
+      } overflow-hidden`}
+      onDragEnter={handleDragEnter}
+    >
       <div 
         className="p-4 flex items-center justify-between cursor-pointer hover:bg-secondary/50"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -35,17 +49,24 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
           )}
         </div>
       </div>
-      {isExpanded && (
-        <div className="p-4 bg-background border-t border-[#2A2F3C]">
-          <Droppable droppableId={id} type="VIDEO">
-            {(provided, snapshot) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className={`grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${
-                  snapshot.isDraggingOver ? 'bg-purple-500/10 rounded-xl p-4' : ''
-                }`}
-              >
+      <Droppable 
+        droppableId={id} 
+        type="VIDEO"
+        isDropDisabled={!isExpanded}
+      >
+        {(provided, snapshot) => (
+          <div
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+            className={`transition-all duration-200 ${
+              isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+            }`}
+            onDragEnter={() => setIsDraggingOver(true)}
+            onDragLeave={() => setIsDraggingOver(false)}
+            onDragEnd={() => setIsDraggingOver(false)}
+          >
+            <div className="p-4 bg-background border-t border-[#2A2F3C]">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {boardVideos.map((video, index) => (
                   <Draggable key={video.id} draggableId={video.id} index={index}>
                     {(provided, snapshot) => (
@@ -64,13 +85,13 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
                 ))}
                 {provided.placeholder}
               </div>
-            )}
-          </Droppable>
-          {boardVideos.length === 0 && (
-            <p className="text-gray-400 text-center py-4">No videos in this board yet.</p>
-          )}
-        </div>
-      )}
+              {boardVideos.length === 0 && (
+                <p className="text-gray-400 text-center py-4">No videos in this board yet.</p>
+              )}
+            </div>
+          </div>
+        )}
+      </Droppable>
     </Card>
   );
 };
