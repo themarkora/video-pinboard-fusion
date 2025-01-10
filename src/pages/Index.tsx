@@ -137,7 +137,9 @@ const Index = () => {
                   style={{
                     display: 'grid',
                     gridAutoFlow: 'dense',
-                    minHeight: '200px'
+                    minHeight: '200px',
+                    position: 'relative',
+                    willChange: 'transform'
                   }}
                 >
                   {filteredVideos.map((video, index) => (
@@ -151,14 +153,15 @@ const Index = () => {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`transition-all duration-200 ${
+                          className={`transition-transform duration-200 ${
                             snapshot.isDragging 
-                              ? 'scale-105 z-50 shadow-2xl' 
-                              : 'hover:scale-[1.02]'
+                              ? 'scale-[1.02] z-50 shadow-2xl' 
+                              : ''
                           }`}
                           style={{
                             ...provided.draggableProps.style,
                             transformOrigin: 'center',
+                            position: snapshot.isDragging ? 'relative' : 'relative',
                             gridRow: 'auto',
                           }}
                         >
