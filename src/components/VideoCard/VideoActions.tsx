@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, MessageSquare, X, Trash2 } from "lucide-react";
+import { MessageSquare, Tag, Trash2, X } from "lucide-react";
 import { Pin } from '@/components/icons/Pin';
 import { PinOff } from '@/components/icons/PinOff';
 
@@ -10,6 +10,7 @@ interface VideoActionsProps {
   onAddToBoard: () => void;
   onDelete: () => void;
   onAddNote: () => void;
+  onAddTag?: () => void;
   boardId?: string;
   onRemoveFromBoard?: () => void;
 }
@@ -20,6 +21,7 @@ export const VideoActions: React.FC<VideoActionsProps> = ({
   onAddToBoard,
   onDelete,
   onAddNote,
+  onAddTag,
   boardId,
   onRemoveFromBoard,
 }) => {
@@ -57,10 +59,10 @@ export const VideoActions: React.FC<VideoActionsProps> = ({
       <Button 
         variant="secondary"
         className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
-        onClick={onAddToBoard}
+        onClick={onAddTag}
       >
-        <Plus className="h-5 w-5" />
-        <span className="hidden sm:inline">Add</span>
+        <Tag className="h-5 w-5" />
+        <span className="hidden sm:inline">Tag</span>
       </Button>
 
       <Button 
@@ -79,6 +81,14 @@ export const VideoActions: React.FC<VideoActionsProps> = ({
       >
         <MessageSquare className="h-5 w-5" />
         <span>Add Note</span>
+      </Button>
+
+      <Button 
+        variant="secondary"
+        className="w-full col-span-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
+        onClick={onAddToBoard}
+      >
+        <span>Add to Board</span>
       </Button>
     </div>
   );
