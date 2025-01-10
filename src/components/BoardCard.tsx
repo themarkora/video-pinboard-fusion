@@ -14,10 +14,13 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { videos, reorderVideosInBoard } = useVideos();
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isDraggingRef = useRef(false);
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
   const handleMouseEnter = (isDraggingOver: boolean) => {
+    isDraggingRef.current = isDraggingOver;
+    
     if (isDraggingOver && !isExpanded) {
       // Clear any existing timer first
       if (hoverTimerRef.current) {
@@ -25,12 +28,15 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
       }
       // Set new timer
       hoverTimerRef.current = setTimeout(() => {
-        setIsExpanded(true);
+        if (isDraggingRef.current) { // Only expand if still dragging
+          setIsExpanded(true);
+        }
       }, 1000);
     }
   };
 
   const handleMouseLeave = () => {
+    isDraggingRef.current = false;
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = null;
