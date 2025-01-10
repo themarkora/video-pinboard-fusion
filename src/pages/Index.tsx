@@ -110,7 +110,7 @@ const Index = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full flex flex-col items-center">
-          <TabsList className="bg-transparent border-b border-gray-800 justify-center gap-2 h-auto pb-4 overflow-x-auto">
+          <TabsList className="bg-transparent justify-center gap-2 h-auto pb-4 overflow-x-auto">
             <TabsTrigger 
               value="recent"
               className="data-[state=active]:bg-purple-600 data-[state=active]:text-white px-4 py-2 rounded-xl whitespace-nowrap"
