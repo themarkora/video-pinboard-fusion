@@ -26,7 +26,7 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-[#130F21] to-[#4A2B82] text-white relative overflow-hidden">
       <AnimatedBackground />
       <Header />
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -36,39 +36,39 @@ const Index = () => {
             <h1 className="text-xl sm:text-2xl font-bold ml-2">VidPin</h1>
           </div>
           <AddVideo />
-          <p className="text-gray-400 mt-4 text-sm">
+          <p className="text-gray-400 mt-6 text-lg">
             Your personal YouTube video organizer for research and inspiration
           </p>
-          <div className="flex flex-col gap-6 mt-8 max-w-2xl mx-auto text-lg text-gray-300">
-            <div className="flex items-center gap-3">
-              <span className="text-purple-500 text-2xl">📌</span>
+          <div className="flex flex-col gap-8 mt-12 max-w-2xl mx-auto text-xl text-gray-300">
+            <div className="flex items-center gap-4">
+              <span className="text-purple-500">📌</span>
               <span>Pin videos you want to reference later</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-purple-500 text-2xl">📝</span>
+            <div className="flex items-center gap-4">
+              <span className="text-purple-500">📝</span>
               <span>Add private notes and insights</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-purple-500 text-2xl">🎯</span>
+            <div className="flex items-center gap-4">
+              <span className="text-purple-500">🎯</span>
               <span>Organize your research and inspiration</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-purple-500 text-2xl">🔍</span>
+            <div className="flex items-center gap-4">
+              <span className="text-purple-500">🔍</span>
               <span>Quickly find videos when you need them</span>
             </div>
           </div>
         </div>
 
         <div className="relative max-w-2xl mx-auto mb-8">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <Input 
             placeholder="Search videos by title, channel, or notes..." 
-            className="w-full bg-[#1A1F2E] border-none pl-10 h-12 text-gray-300 rounded-xl"
+            className="w-full bg-[#1A1F2E]/50 border-none pl-12 h-14 text-gray-300 rounded-2xl text-lg"
           />
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full flex flex-col items-center">
-          <TabsList className="bg-transparent border-b border-gray-800 justify-center gap-2 h-auto pb-4 overflow-x-auto">
+          <TabsList className="bg-transparent border-b border-gray-800 justify-center gap-2 h-auto pb-4">
             <TabsTrigger 
               value="recent"
               className="data-[state=active]:bg-purple-600 data-[state=active]:text-white px-4 py-2 rounded-xl whitespace-nowrap"

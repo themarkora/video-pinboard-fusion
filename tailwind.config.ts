@@ -23,8 +23,8 @@ export default {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: {
-          top: "#10111C",
-          bottom: "#492A81",
+          top: "#130F21",
+          bottom: "#4A2B82",
         },
         foreground: "hsl(var(--foreground))",
         primary: {
