@@ -14,7 +14,7 @@ const Index = () => {
   const filteredVideos = videos.filter((video) => {
     switch (activeTab) {
       case 'pinned':
-        return Boolean(video.isPinned); // Explicitly convert to boolean to ensure proper filtering
+        return video.isPinned === true; // Strict comparison to ensure only pinned videos are shown
       case 'notes':
         return video.notes && video.notes.length > 0;
       case 'boards':
