@@ -7,15 +7,18 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useState, useMemo } from "react";
 
 const Index = () => {
-  const { videos, togglePin, activeTab, setActiveTab, boards } = useVideos();
+  const { videos, togglePin, activeTab, setActiveTab, boards, moveVideoToBoard, reorderVideos } = useVideos();
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Filter videos based on search query and active tab
   const filteredVideos = useMemo(() => {
     let filtered = videos;
 
+    // First apply search filter if there's a query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(video => {
@@ -27,6 +30,7 @@ const Index = () => {
       });
     }
 
+    // Then apply tab filter
     return filtered.filter((video) => {
       switch (activeTab) {
         case 'pinned':
@@ -42,11 +46,35 @@ const Index = () => {
     });
   }, [videos, searchQuery, activeTab]);
 
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
+
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+    const sourceDroppableId = result.source.droppableId;
+    const destinationDroppableId = result.destination.droppableId;
+
+    // If dragging within the same board or list
+    if (sourceDroppableId === destinationDroppableId) {
+      if (activeTab === 'boards') {
+        reorderVideos(sourceDroppableId, sourceIndex, destinationIndex);
+      } else {
+        reorderVideos(activeTab, sourceIndex, destinationIndex);
+      }
+    } 
+    // If dragging between different boards
+    else if (result.type === "VIDEO") {
+      const videoId = result.draggableId;
+      moveVideoToBoard(videoId, sourceDroppableId, destinationDroppableId);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
       <AnimatedBackground />
       <Header />
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-32">
+
         <div className="text-center pt-12 sm:pt-16 mb-8 sm:mb-12">
           <AddVideo />
           <p className="text-gray-400 mt-4 text-sm">
@@ -107,31 +135,64 @@ const Index = () => {
           </TabsList>
         </Tabs>
 
-        {activeTab === 'boards' ? (
-          <div className="grid gap-6 mt-8">
-            {boards.map((board) => (
-              <BoardCard key={board.id} id={board.id} name={board.name} />
-            ))}
-            {boards.length === 0 && (
-              <p className="text-center text-gray-400 py-8">No boards created yet.</p>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
-            {filteredVideos.map((video) => (
-              <VideoCard
-                key={video.id}
-                video={video}
-                onTogglePin={togglePin}
-              />
-            ))}
-            {filteredVideos.length === 0 && (
-              <div className="col-span-full text-center text-gray-400 py-8">
-                No videos found matching your search criteria.
-              </div>
-            )}
-          </div>
-        )}
+        <DragDropContext onDragEnd={handleDragEnd}>
+          {activeTab === 'boards' ? (
+            <div className="grid gap-6 mt-8">
+              {boards.map((board) => (
+                <BoardCard key={board.id} id={board.id} name={board.name} />
+              ))}
+              {boards.length === 0 && (
+                <p className="text-center text-gray-400 py-8">No boards created yet.</p>
+              )}
+            </div>
+          ) : (
+            <Droppable 
+              droppableId={activeTab} 
+              type="VIDEO"
+              direction="horizontal"
+            >
+              {(provided, snapshot) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 p-4 rounded-xl transition-colors duration-200 ${
+                    snapshot.isDraggingOver ? 'bg-purple-500/10' : ''
+                  }`}
+                >
+                  {filteredVideos.map((video, index) => (
+                    <Draggable 
+                      key={video.id} 
+                      draggableId={video.id} 
+                      index={index}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`transition-transform duration-200 ${
+                            snapshot.isDragging ? 'scale-105 z-50' : ''
+                          }`}
+                        >
+                          <VideoCard
+                            video={video}
+                            onTogglePin={togglePin}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                  {filteredVideos.length === 0 && (
+                    <div className="col-span-full text-center text-gray-400 py-8">
+                      No videos found matching your search criteria.
+                    </div>
+                  )}
+                </div>
+              )}
+            </Droppable>
+          )}
+        </DragDropContext>
       </main>
     </div>
   );

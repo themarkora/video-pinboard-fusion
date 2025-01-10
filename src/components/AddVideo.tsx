@@ -4,8 +4,7 @@ import { Pin } from '@/components/icons/Pin';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useVideos } from '@/store/useVideos';
-import { useToast } from "@/hooks/use-toast";
-import { Check, AlertCircle } from 'lucide-react';
+import { useToast } from "@/components/ui/use-toast";
 
 export function AddVideo() {
   const [videoUrl, setVideoUrl] = useState('');
@@ -18,29 +17,17 @@ export function AddVideo() {
     if (videoUrl.trim() && !isLoading) {
       setIsLoading(true);
       try {
-        await addVideo(videoUrl.trim(), true);
+        await addVideo(videoUrl.trim(), true); // Pass true to set isPinned
         setVideoUrl('');
         toast({
           title: "Video pinned successfully",
           description: "Your video has been added to your collection.",
-          className: "bg-secondary border-2 border-[#2A2F3C] text-white",
-          action: (
-            <div className="h-6 w-6 bg-purple-600 rounded-full flex items-center justify-center">
-              <Check className="h-4 w-4 text-white" />
-            </div>
-          ),
         });
       } catch (error) {
         toast({
           title: "Error adding video",
           description: "Please check the URL and try again.",
           variant: "destructive",
-          className: "bg-secondary border-2 border-[#2A2F3C] text-red-400",
-          action: (
-            <div className="h-6 w-6 bg-red-600 rounded-full flex items-center justify-center">
-              <AlertCircle className="h-4 w-4 text-white" />
-            </div>
-          ),
         });
       } finally {
         setIsLoading(false);

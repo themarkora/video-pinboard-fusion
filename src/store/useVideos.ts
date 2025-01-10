@@ -22,7 +22,10 @@ export interface VideosState {
   addToBoard: (videoId: string, boardId: string) => void;
   removeFromBoard: (videoId: string, boardId: string) => void;
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
+  reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => void;
+  reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => void;
   togglePin: (id: string) => void;
+  moveVideoToBoard: (videoId: string, sourceBoardId: string, destinationBoardId: string) => void;
 }
 
 export const useVideos = create<VideosState>()(
@@ -113,11 +116,82 @@ export const useVideos = create<VideosState>()(
           ),
         })),
 
+      reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => {
+        set((state) => {
+          let filteredVideos = state.videos;
+          
+          if (listType === 'pinned') {
+            filteredVideos = state.videos.filter(v => v.isPinned);
+          } else if (listType === 'notes') {
+            filteredVideos = state.videos.filter(v => Array.isArray(v.notes) && v.notes.length > 0);
+          }
+          
+          const [movedVideo] = filteredVideos.splice(sourceIndex, 1);
+          filteredVideos.splice(destinationIndex, 0, movedVideo);
+          
+          const updatedVideos = filteredVideos.map((video, index) => ({
+            ...video,
+            order: index,
+          }));
+          
+          const finalVideos = state.videos.map(video => {
+            const updatedVideo = updatedVideos.find(v => v.id === video.id);
+            return updatedVideo || video;
+          });
+          
+          return { videos: finalVideos };
+        });
+      },
+
+      reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => {
+        set((state) => {
+          const boardVideos = state.videos.filter(video => video.boardIds?.includes(boardId));
+          
+          const [movedVideo] = boardVideos.splice(sourceIndex, 1);
+          boardVideos.splice(destinationIndex, 0, movedVideo);
+          
+          const updatedVideos = boardVideos.map((video, index) => ({
+            ...video,
+            order: index,
+          }));
+          
+          const finalVideos = state.videos.map(video => {
+            const updatedVideo = updatedVideos.find(v => v.id === video.id);
+            return updatedVideo || video;
+          });
+          
+          return { videos: finalVideos };
+        });
+      },
+
       togglePin: (id: string) =>
         set((state) => ({
           videos: state.videos.map((video) =>
             video.id === id ? { ...video, isPinned: !video.isPinned } : video
           ),
+        })),
+
+      moveVideoToBoard: (videoId: string, sourceBoardId: string, destinationBoardId: string) =>
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === videoId
+              ? {
+                  ...video,
+                  boardIds: video.boardIds
+                    ? [...video.boardIds.filter(id => id !== sourceBoardId), destinationBoardId]
+                    : [destinationBoardId],
+                }
+              : video
+          ),
+        })),
+
+      deleteBoard: (id: string) =>
+        set((state) => ({
+          boards: state.boards.filter((board) => board.id !== id),
+          videos: state.videos.map((video) => ({
+            ...video,
+            boardIds: video.boardIds?.filter((boardId) => boardId !== id) || [],
+          })),
         })),
     }),
     {

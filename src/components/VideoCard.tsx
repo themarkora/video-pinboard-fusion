@@ -34,9 +34,9 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     toast({
       title,
       description,
-      className: "bg-secondary border-2 border-[#2A2F3C] text-white",
+      className: "bg-purple-600/90 text-white border-none",
       action: (
-        <div className="h-6 w-6 bg-purple-600 rounded-full flex items-center justify-center">
+        <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
           <Check className="h-4 w-4 text-white" />
         </div>
       ),
@@ -48,9 +48,9 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
       title,
       description,
       variant: "destructive",
-      className: "bg-secondary border-2 border-[#2A2F3C] text-red-400",
+      className: "bg-red-600/90 text-white border-none",
       action: (
-        <div className="h-6 w-6 bg-red-600 rounded-full flex items-center justify-center">
+        <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
           <AlertCircle className="h-4 w-4 text-white" />
         </div>
       ),
@@ -141,8 +141,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     )
   );
 
-  const shouldShowNotes = (video.notes && video.notes.length > 0) || isAddingNote;
-
   return (
     <>
       <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
@@ -152,8 +150,8 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
           onClick={() => setIsPlaying(true)}
         />
         
-        <div className={`p-4 ${shouldShowNotes ? 'space-y-4' : 'space-y-2'}`}>
-          <h3 className="font-semibold text-white text-lg md:text-xl line-clamp-2">
+        <div className="p-4 space-y-4">
+          <h3 className="font-semibold text-white text-lg md:text-xl line-clamp-2 min-h-[3.5rem]">
             {video.title}
           </h3>
 
@@ -202,115 +200,112 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             }}
           />
 
-          {shouldShowNotes && (
-            <VideoNotes
-              notes={video.notes || []}
-              isAddingNote={isAddingNote}
-              note={note}
-              onNoteChange={setNote}
-              onAddNote={handleAddNote}
-              videoId={video.id}
-            />
-          )}
+          <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
+            <DialogContent className="bg-[#2A2F3C] text-white border-none max-w-md mx-auto">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold">Add Tag</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                {allTags.length > 0 && (
+                  <Select onValueChange={handleSelectTag}>
+                    <SelectTrigger className="w-full bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl">
+                      <SelectValue placeholder="Select existing tag" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#1A1F2E] border-none text-gray-200">
+                      {allTags.map((tag) => (
+                        <SelectItem 
+                          key={tag} 
+                          value={tag}
+                          className="hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer"
+                        >
+                          {tag}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Create new tag..."
+                    className="flex-1 bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl placeholder:text-gray-400"
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleTagSubmit();
+                      }
+                    }}
+                  />
+                  <Button
+                    variant="secondary"
+                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
+                    onClick={handleTagSubmit}
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={isBoardDialogOpen} onOpenChange={setIsBoardDialogOpen}>
+            <DialogContent className="bg-[#2A2F3C] text-white border-none max-w-md mx-auto">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold">Add to Board</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                {boards.length > 0 && (
+                  <Select onValueChange={handleSelectBoard}>
+                    <SelectTrigger className="w-full bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl">
+                      <SelectValue placeholder="Select a board" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#1A1F2E] border-none text-gray-200">
+                      {boards.map((board) => (
+                        <SelectItem 
+                          key={board.id} 
+                          value={board.id}
+                          className="hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer"
+                        >
+                          {board.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Create new board..."
+                    className="flex-1 bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl placeholder:text-gray-400"
+                    value={newBoardName}
+                    onChange={(e) => setNewBoardName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleCreateBoard();
+                      }
+                    }}
+                  />
+                  <Button
+                    variant="secondary"
+                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
+                    onClick={handleCreateBoard}
+                  >
+                    Create
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <VideoNotes
+            notes={video.notes || []}
+            isAddingNote={isAddingNote}
+            note={note}
+            onNoteChange={setNote}
+            onAddNote={handleAddNote}
+            videoId={video.id}
+          />
         </div>
       </Card>
-
-      <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
-        <DialogContent className="bg-[#2A2F3C] text-white border-none max-w-md mx-auto">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Add Tag</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 mt-4">
-            {allTags.length > 0 && (
-              <Select onValueChange={handleSelectTag}>
-                <SelectTrigger className="w-full bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl">
-                  <SelectValue placeholder="Select existing tag" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1A1F2E] border-none text-gray-200">
-                  {allTags.map((tag) => (
-                    <SelectItem 
-                      key={tag} 
-                      value={tag}
-                      className="hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer"
-                    >
-                      {tag}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-            <div className="flex gap-2">
-              <Input
-                placeholder="Create new tag..."
-                className="flex-1 bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl placeholder:text-gray-400"
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleTagSubmit();
-                  }
-                }}
-              />
-              <Button
-                variant="secondary"
-                className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
-                onClick={handleTagSubmit}
-              >
-                Add
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isBoardDialogOpen} onOpenChange={setIsBoardDialogOpen}>
-        <DialogContent className="bg-[#2A2F3C] text-white border-none max-w-md mx-auto">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Add to Board</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 mt-4">
-            {boards.length > 0 && (
-              <Select onValueChange={handleSelectBoard}>
-                <SelectTrigger className="w-full bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl">
-                  <SelectValue placeholder="Select a board" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1A1F2E] border-none text-gray-200">
-                  {boards.map((board) => (
-                    <SelectItem 
-                      key={board.id} 
-                      value={board.id}
-                      className="hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer"
-                    >
-                      {board.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-            <div className="flex gap-2">
-              <Input
-                placeholder="Create new board..."
-                className="flex-1 bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl placeholder:text-gray-400"
-                value={newBoardName}
-                onChange={(e) => setNewBoardName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleCreateBoard();
-                  }
-                }}
-              />
-              <Button
-                variant="secondary"
-                className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
-                onClick={handleCreateBoard}
-              >
-                Create
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       <VideoPlayer
         videoId={video.id}
         isOpen={isPlaying}
