@@ -80,6 +80,34 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
           <h3 className="font-semibold text-white text-lg md:text-xl line-clamp-2 min-h-[3.5rem]">
             {video.title}
           </h3>
+
+          <Button 
+            variant="secondary"
+            className="w-full bg-[#2A2F3C] hover:bg-[#353B4A] text-gray-300 rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
+            onClick={() => setIsAddingNote(true)}
+          >
+            <MessageSquare className="h-5 w-5" />
+            <span>Add Note</span>
+          </Button>
+
+          {isAddingNote && (
+            <div className="flex gap-2">
+              <Input
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Add a note..."
+                className="bg-secondary/50 border-none rounded-xl flex-1"
+                onKeyDown={(e) => e.key === 'Enter' && handleAddNote()}
+              />
+              <Button
+                variant="secondary"
+                className="rounded-xl whitespace-nowrap"
+                onClick={handleAddNote}
+              >
+                Add
+              </Button>
+            </div>
+          )}
           
           {video.notes && video.notes.length > 0 && (
             <div className="p-3 bg-[#2A2F3C] rounded-xl space-y-2">
@@ -192,34 +220,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
               <span className="hidden sm:inline">Delete</span>
             </Button>
           </div>
-
-          <Button 
-            variant="secondary"
-            className="w-full bg-[#2A2F3C] hover:bg-[#353B4A] text-gray-300 rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
-            onClick={() => setIsAddingNote(true)}
-          >
-            <MessageSquare className="h-5 w-5" />
-            <span>Add Note</span>
-          </Button>
-
-          {isAddingNote && (
-            <div className="flex gap-2">
-              <Input
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Add a note..."
-                className="bg-secondary/50 border-none rounded-xl flex-1"
-                onKeyDown={(e) => e.key === 'Enter' && handleAddNote()}
-              />
-              <Button
-                variant="secondary"
-                className="rounded-xl whitespace-nowrap"
-                onClick={handleAddNote}
-              >
-                Add
-              </Button>
-            </div>
-          )}
         </div>
       </Card>
       <VideoPlayer
