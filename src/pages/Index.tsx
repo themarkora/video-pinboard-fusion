@@ -11,26 +11,23 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useState, useMemo } from "react";
 
 const Index = () => {
-  const { videos, togglePin, activeTab, setActiveTab, boards, moveVideoToBoard, reorderVideos } = useVideos();
+  const { videos, togglePin, activeTab, setActiveTab, boards, reorderVideos } = useVideos();
   const [searchQuery, setSearchQuery] = useState("");
 
   // Filter videos based on search query and active tab
   const filteredVideos = useMemo(() => {
     let filtered = videos;
 
-    // First apply search filter if there's a query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(video => {
         const titleMatch = video.title.toLowerCase().includes(query);
         const tagsMatch = video.tags?.some(tag => tag.toLowerCase().includes(query)) || false;
         const notesMatch = video.notes?.some(note => note.toLowerCase().includes(query)) || false;
-        
         return titleMatch || tagsMatch || notesMatch;
       });
     }
 
-    // Then apply tab filter
     return filtered.filter((video) => {
       switch (activeTab) {
         case 'pinned':
@@ -48,25 +45,13 @@ const Index = () => {
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
-
+    
     const sourceIndex = result.source.index;
     const destinationIndex = result.destination.index;
-    const sourceDroppableId = result.source.droppableId;
-    const destinationDroppableId = result.destination.droppableId;
-
-    // If dragging within the same board or list
-    if (sourceDroppableId === destinationDroppableId) {
-      if (activeTab === 'boards') {
-        reorderVideos(sourceDroppableId, sourceIndex, destinationIndex);
-      } else {
-        reorderVideos(activeTab, sourceIndex, destinationIndex);
-      }
-    } 
-    // If dragging between different boards
-    else if (result.type === "VIDEO") {
-      const videoId = result.draggableId;
-      moveVideoToBoard(videoId, sourceDroppableId, destinationDroppableId);
-    }
+    
+    if (activeTab === 'boards') return; // Don't handle reordering in boards view
+    
+    reorderVideos(activeTab, sourceIndex, destinationIndex);
   };
 
   return (
@@ -74,7 +59,6 @@ const Index = () => {
       <AnimatedBackground />
       <Header />
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-32">
-
         <div className="text-center pt-12 sm:pt-16 mb-8 sm:mb-12">
           <AddVideo />
           <p className="text-gray-400 mt-4 text-sm">

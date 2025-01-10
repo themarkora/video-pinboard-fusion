@@ -125,7 +125,7 @@ export const useVideos = create<VideosState>()(
         set((state) => {
           let relevantVideos = [...state.videos];
           
-          // Filter and sort videos based on list type
+          // Filter videos based on list type
           if (listType === 'pinned') {
             relevantVideos = relevantVideos.filter(v => v.isPinned);
           } else if (listType === 'notes') {
@@ -140,22 +140,20 @@ export const useVideos = create<VideosState>()(
           const [movedVideo] = relevantVideos.splice(sourceIndex, 1);
           relevantVideos.splice(destinationIndex, 0, movedVideo);
 
-          // Update order for all affected videos
-          const updatedRelevantVideos = relevantVideos.map((video, index) => ({
-            ...video,
-            order: index,
-            boardIds: video.boardIds || []
-          }));
-
-          // Create a map for quick lookup of updated videos
-          const updatedVideoMap = new Map(
-            updatedRelevantVideos.map(video => [video.id, video])
+          // Create a map of the reordered videos with their new indices
+          const reorderedMap = new Map(
+            relevantVideos.map((video, index) => [video.id, index])
           );
 
-          // Merge back into the full video list
+          // Update the main videos array while preserving other videos' order
           const finalVideos = state.videos.map(video => {
-            const updatedVideo = updatedVideoMap.get(video.id);
-            return updatedVideo || video;
+            if (reorderedMap.has(video.id)) {
+              return {
+                ...video,
+                order: reorderedMap.get(video.id)
+              };
+            }
+            return video;
           });
 
           return { videos: finalVideos };
