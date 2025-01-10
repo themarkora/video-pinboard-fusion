@@ -49,6 +49,7 @@ const Index = () => {
       <AnimatedBackground />
       <Header />
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center pt-12 sm:pt-16 mb-8 sm:mb-12">
           <div className="flex items-center justify-center mb-4">
             <img src="/lovable-uploads/4ec29862-7e48-44ec-8e24-268de758604c.png" alt="VidPin Logo" className="h-8 sm:h-10" />
             <h1 className="text-xl sm:text-2xl font-bold ml-2">VidPin</h1>
@@ -71,6 +72,7 @@ const Index = () => {
               <span className="text-purple-500">⚡</span> Quick access
             </div>
           </div>
+        </div>
 
         <div className="relative max-w-2xl mx-auto mb-8">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -129,17 +131,15 @@ const Index = () => {
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 p-4 rounded-xl ${
+                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 p-4 rounded-xl transition-colors duration-200 ${
                     snapshot.isDraggingOver ? 'bg-purple-500/10' : ''
                   }`}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                    gap: '1.5rem',
-                    alignItems: 'start',
-                    justifyContent: 'center',
+                    gridAutoFlow: 'dense',
                     minHeight: '200px',
-                    transition: 'background-color 0.2s ease',
+                    position: 'relative',
+                    willChange: 'transform'
                   }}
                 >
                   {filteredVideos.map((video, index) => (
@@ -153,18 +153,16 @@ const Index = () => {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
+                          className={`transition-transform duration-200 ${
+                            snapshot.isDragging 
+                              ? 'scale-[1.02] z-50 shadow-2xl' 
+                              : ''
+                          }`}
                           style={{
                             ...provided.draggableProps.style,
-                            transition: snapshot.isDragging 
-                              ? 'none'
-                              : 'all 0.2s cubic-bezier(0.2, 0, 0, 1)',
-                            transform: snapshot.isDragging 
-                              ? `${provided.draggableProps.style?.transform} scale(1.02)`
-                              : provided.draggableProps.style?.transform,
-                            zIndex: snapshot.isDragging ? 999 : 1,
-                            margin: 0,
-                            height: 'auto',
-                            gridColumn: 'span 1',
+                            transformOrigin: 'center',
+                            position: snapshot.isDragging ? 'relative' : 'relative',
+                            gridRow: 'auto',
                           }}
                         >
                           <VideoCard
