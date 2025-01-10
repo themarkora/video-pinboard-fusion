@@ -23,24 +23,14 @@ export function AddVideo() {
         toast({
           title: "Video pinned successfully",
           description: "Your video has been added to your collection.",
-          className: "bg-[#492A81] text-white border-none",
-          action: (
-            <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
-              <Check className="h-4 w-4 text-white" />
-            </div>
-          ),
+          className: "bg-[#1A1F2E] border-2 border-[#2A2F3C] text-white",
         });
       } catch (error) {
         toast({
           title: "Error adding video",
           description: "Please check the URL and try again.",
           variant: "destructive",
-          className: "bg-red-600 text-white border-none",
-          action: (
-            <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
-              <AlertCircle className="h-4 w-4 text-white" />
-            </div>
-          ),
+          className: "bg-[#1A1F2E] border-2 border-[#2A2F3C] text-red-400",
         });
       } finally {
         setIsLoading(false);
