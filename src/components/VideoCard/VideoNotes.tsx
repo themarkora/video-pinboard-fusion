@@ -55,14 +55,13 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   return (
     <div className="space-y-4">
       {!showInput ? (
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 px-0"
+        <button
+          className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors duration-200 bg-transparent hover:bg-transparent focus:outline-none group"
           onClick={() => setShowInput(true)}
         >
-          <Pencil className="w-4 h-4" />
-          Add Note
-        </Button>
+          <Pencil className="w-4 h-4 group-hover:text-purple-300 transition-colors duration-200" />
+          <span className="group-hover:text-purple-300 transition-colors duration-200">Add Note</span>
+        </button>
       ) : (
         <div className="space-y-2">
           <div className="relative">
