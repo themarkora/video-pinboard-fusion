@@ -1,85 +1,69 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, MessageSquare, X, Trash2 } from "lucide-react";
-import { Pin } from '@/components/icons/Pin';
-import { PinOff } from '@/components/icons/PinOff';
+import { Pin, PinOff, Trash2, MessageSquare, FolderPlus } from 'lucide-react';
 
 interface VideoActionsProps {
   isPinned: boolean;
   onTogglePin: () => void;
-  onAddToBoard: () => void;
   onDelete: () => void;
   onAddNote: () => void;
-  boardId?: string;
-  onRemoveFromBoard?: () => void;
+  onAddToBoard: () => void;
 }
 
 export const VideoActions: React.FC<VideoActionsProps> = ({
   isPinned,
   onTogglePin,
-  onAddToBoard,
   onDelete,
   onAddNote,
-  boardId,
-  onRemoveFromBoard,
+  onAddToBoard,
 }) => {
   return (
-    <div className="grid grid-cols-3 gap-3">
-      {boardId ? (
-        <Button 
-          variant="destructive"
-          className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
-          onClick={onRemoveFromBoard}
-        >
-          <X className="h-5 w-5" />
-          <span className="hidden sm:inline">Remove</span>
-        </Button>
-      ) : (
-        <Button 
+    <div className="p-4 space-y-2">
+      <div className="flex gap-2">
+        <Button
           variant="secondary"
-          className={`w-full ${isPinned ? 'bg-purple-600 hover:bg-purple-700' : 'bg-[#2A2F3C] hover:bg-[#353B4A]'} text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2`}
+          className={`flex-1 ${isPinned ? 'bg-purple-600 hover:bg-purple-700' : 'bg-[#2A2F3C] hover:bg-[#353B4A]'}`}
           onClick={onTogglePin}
         >
           {isPinned ? (
             <>
-              <PinOff className="h-5 w-5" />
-              <span className="hidden sm:inline">Unpin</span>
+              <PinOff className="mr-2 h-4 w-4" />
+              Unpin
             </>
           ) : (
             <>
-              <Pin className="h-5 w-5" />
-              <span className="hidden sm:inline">Pin</span>
+              <Pin className="mr-2 h-4 w-4" />
+              Pin
             </>
           )}
         </Button>
-      )}
-
-      <Button 
-        variant="secondary"
-        className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
-        onClick={onAddToBoard}
-      >
-        <Plus className="h-5 w-5" />
-        <span className="hidden sm:inline">Add</span>
-      </Button>
-
-      <Button 
-        variant="destructive"
-        className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
-        onClick={onDelete}
-      >
-        <Trash2 className="h-5 w-5" />
-        <span className="hidden sm:inline">Delete</span>
-      </Button>
-
-      <Button 
-        variant="secondary"
-        className="w-full col-span-3 bg-[#2A2F3C] hover:bg-[#353B4A] text-gray-300 rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
-        onClick={onAddNote}
-      >
-        <MessageSquare className="h-5 w-5" />
-        <span>Add Note</span>
-      </Button>
+        <Button
+          variant="secondary"
+          className="flex-1 bg-[#2A2F3C] hover:bg-[#353B4A]"
+          onClick={onAddToBoard}
+        >
+          <FolderPlus className="mr-2 h-4 w-4" />
+          Add to Board
+        </Button>
+      </div>
+      <div className="flex gap-2">
+        <Button
+          variant="secondary"
+          className="flex-1 bg-[#2A2F3C] hover:bg-[#353B4A]"
+          onClick={onAddNote}
+        >
+          <MessageSquare className="mr-2 h-4 w-4" />
+          Add Note
+        </Button>
+        <Button
+          variant="destructive"
+          className="flex-1"
+          onClick={onDelete}
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </Button>
+      </div>
     </div>
   );
 };
