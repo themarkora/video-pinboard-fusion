@@ -71,10 +71,10 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
             </div>
           )}
           
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 gap-2 mb-2">
             <Button 
               variant="secondary"
-              className="bg-[#9334E9] hover:bg-[#9334E9]/90 text-white"
+              className="w-full bg-[#9334E9] hover:bg-[#9334E9]/90 text-white"
               onClick={() => onTogglePin(video.id)}
             >
               {video.isPinned ? (
@@ -94,7 +94,7 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
               <DialogTrigger asChild>
                 <Button 
                   variant="secondary"
-                  className="bg-[#9334E9] hover:bg-[#9334E9]/90 text-white"
+                  className="w-full bg-[#9334E9] hover:bg-[#9334E9]/90 text-white"
                 >
                   <Plus className="mr-2" size={18} />
                   Add to Board
@@ -143,31 +143,31 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
                 </div>
               </DialogContent>
             </Dialog>
-
-            <Button 
-              variant="destructive"
-              className="bg-[#ea384c] hover:bg-[#ea384c]/90"
-              onClick={() => {
-                deleteVideo(video.id);
-                toast({
-                  title: "Video deleted",
-                  description: "The video has been removed from your collection.",
-                });
-              }}
-            >
-              <Trash2 className="mr-2" size={18} />
-              Delete
-            </Button>
-
-            <Button 
-              variant="secondary"
-              className="bg-[#2A2F3C] hover:bg-[#2A2F3C]/90 text-purple-300"
-              onClick={() => setIsAddingNote(true)}
-            >
-              <MessageSquare className="mr-2" size={18} />
-              Add Note
-            </Button>
           </div>
+
+          <Button 
+            variant="destructive"
+            className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90 mb-2"
+            onClick={() => {
+              deleteVideo(video.id);
+              toast({
+                title: "Video deleted",
+                description: "The video has been removed from your collection.",
+              });
+            }}
+          >
+            <Trash2 className="mr-2" size={18} />
+            Delete
+          </Button>
+
+          <Button 
+            variant="secondary"
+            className="w-full bg-[#2A2F3C] hover:bg-[#2A2F3C]/90 text-gray-300"
+            onClick={() => setIsAddingNote(true)}
+          >
+            <MessageSquare className="mr-2" size={18} />
+            Add Note
+          </Button>
 
           {isAddingNote && (
             <div className="flex gap-2 mt-4">
