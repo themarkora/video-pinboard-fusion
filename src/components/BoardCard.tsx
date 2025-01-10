@@ -12,7 +12,8 @@ interface BoardCardProps {
 
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { videos } = useVideos();
+  const { videos, reorderVideosInBoard } = useVideos();
+
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
   return (
@@ -20,26 +21,16 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
       {(provided, snapshot) => (
         <Card 
           className={`bg-[#1A1F2E] border-2 ${
-            snapshot.isDraggingOver ? 'border-purple-500' : 'border-[#2A2F3C]'
-          } overflow-hidden transition-colors duration-200`}
+            snapshot.isDraggingOver ? 'border-purple-500 bg-purple-500/10' : 'border-[#2A2F3C]'
+          } overflow-hidden transition-all duration-200`}
           ref={provided.innerRef}
           {...provided.droppableProps}
-          onDragOver={(e) => {
-            // Prevent default to allow drop
-            e.preventDefault();
-            if (!isExpanded) {
-              setIsExpanded(true);
-            }
-          }}
-          onMouseEnter={() => {
-            if (snapshot.isDraggingOver && !isExpanded) {
-              setIsExpanded(true);
-            }
-          }}
         >
           <div 
-            className="p-4 flex items-center justify-between cursor-pointer hover:bg-secondary/50"
-            onClick={() => setIsExpanded(!isExpanded)}
+            className={`p-4 flex items-center justify-between ${
+              !isExpanded && 'cursor-pointer hover:bg-secondary/50'
+            }`}
+            onClick={() => !snapshot.isDraggingOver && setIsExpanded(!isExpanded)}
           >
             <div className="flex items-center space-x-3">
               <Folder className={`w-6 h-6 ${snapshot.isDraggingOver ? 'text-purple-400' : 'text-purple-500'}`} />
@@ -47,10 +38,12 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
             </div>
             <div className="flex items-center space-x-3">
               <span className="text-sm text-gray-400">{boardVideos.length} videos</span>
-              {isExpanded ? (
-                <ChevronUp className="w-5 h-5 text-gray-400" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-gray-400" />
+              {!snapshot.isDraggingOver && (
+                isExpanded ? (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                )
               )}
             </div>
           </div>
