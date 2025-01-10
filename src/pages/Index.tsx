@@ -49,7 +49,6 @@ const Index = () => {
       <AnimatedBackground />
       <Header />
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center pt-12 sm:pt-16 mb-8 sm:mb-12">
           <div className="flex items-center justify-center mb-4">
             <img src="/lovable-uploads/4ec29862-7e48-44ec-8e24-268de758604c.png" alt="VidPin Logo" className="h-8 sm:h-10" />
             <h1 className="text-xl sm:text-2xl font-bold ml-2">VidPin</h1>
@@ -72,7 +71,6 @@ const Index = () => {
               <span className="text-purple-500">⚡</span> Quick access
             </div>
           </div>
-        </div>
 
         <div className="relative max-w-2xl mx-auto mb-8">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -139,7 +137,6 @@ const Index = () => {
                     gridAutoFlow: 'dense',
                     minHeight: '200px',
                     position: 'relative',
-                    willChange: 'transform'
                   }}
                 >
                   {filteredVideos.map((video, index) => (
@@ -153,15 +150,11 @@ const Index = () => {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`transition-transform duration-200 ${
-                            snapshot.isDragging 
-                              ? 'scale-[1.02] z-50 shadow-2xl' 
-                              : ''
-                          }`}
+                          className={snapshot.isDragging ? 'z-50 shadow-2xl scale-[1.02]' : ''}
                           style={{
                             ...provided.draggableProps.style,
                             transformOrigin: 'center',
-                            position: snapshot.isDragging ? 'relative' : 'relative',
+                            position: 'relative',
                             gridRow: 'auto',
                           }}
                         >
