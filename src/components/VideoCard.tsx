@@ -152,8 +152,8 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
           onClick={() => setIsPlaying(true)}
         />
         
-        <div className="p-4 space-y-4">
-          <h3 className="font-semibold text-white text-lg md:text-xl line-clamp-2 min-h-[3.5rem]">
+        <div className={`p-4 ${shouldShowNotes ? 'space-y-4' : 'space-y-2'}`}>
+          <h3 className="font-semibold text-white text-lg md:text-xl line-clamp-2">
             {video.title}
           </h3>
 
