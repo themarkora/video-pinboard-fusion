@@ -53,6 +53,18 @@ export const useVideos = create<VideosState>()(
           ),
         })),
 
+      deleteNote: (videoId: string, noteIndex: number) =>
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === videoId
+              ? {
+                  ...video,
+                  notes: video.notes?.filter((_, index) => index !== noteIndex),
+                }
+              : video
+          ),
+        })),
+
       updateNote: (videoId: string, noteIndex: number, updatedNote: string) =>
         set((state) => ({
           videos: state.videos.map((video) =>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, Edit2 } from 'lucide-react';
+import { MessageSquare, Edit2, X } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useVideos } from '@/store/useVideos';
@@ -24,7 +24,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
 }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editedNote, setEditedNote] = useState("");
-  const { updateNote } = useVideos();
+  const { updateNote, deleteNote } = useVideos();
   const { toast } = useToast();
 
   const handleEditClick = (index: number, currentNote: string) => {
@@ -42,6 +42,15 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
         className: "bg-purple-600/90 text-white border-none",
       });
     }
+  };
+
+  const handleDeleteNote = (index: number) => {
+    deleteNote(videoId, index);
+    toast({
+      title: "Note deleted",
+      description: "Your note has been deleted successfully.",
+      className: "bg-purple-600/90 text-white border-none",
+    });
   };
 
   return (
@@ -87,18 +96,36 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
                   >
                     Save
                   </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => handleDeleteNote(index)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
               ) : (
                 <div className="flex-1 flex items-start justify-between">
                   <p className="text-sm">{noteText}</p>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6"
-                    onClick={() => handleEditClick(index, noteText)}
-                  >
-                    <Edit2 className="h-3 w-3 text-gray-400 hover:text-white transition-colors" />
-                  </Button>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6"
+                      onClick={() => handleEditClick(index, noteText)}
+                    >
+                      <Edit2 className="h-3 w-3 text-gray-400 hover:text-white transition-colors" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6"
+                      onClick={() => handleDeleteNote(index)}
+                    >
+                      <X className="h-3 w-3 text-red-500 hover:text-red-400 transition-colors" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
