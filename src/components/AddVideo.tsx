@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { Pin } from '@/components/icons/Pin';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useVideos } from '@/store/useVideos';
@@ -46,13 +47,13 @@ export function AddVideo() {
       />
       <Button 
         type="submit"
-        className="bg-purple-600 hover:bg-purple-700 h-12 px-6"
+        className="bg-purple-600 hover:bg-purple-700 h-12 px-6 rounded-xl"
         disabled={isLoading || !videoUrl.trim()}
       >
         {isLoading ? (
           <Loader2 size={18} className="animate-spin mr-2" />
         ) : (
-          <Plus size={18} className="mr-2" />
+          <Pin size={18} className="mr-2" />
         )}
         Pin Video
       </Button>
