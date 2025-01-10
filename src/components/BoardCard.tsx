@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
 import { useVideos } from '@/store/useVideos';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface BoardCardProps {
   id: string;
@@ -12,26 +12,9 @@ interface BoardCardProps {
 
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { videos, reorderVideosInBoard, moveVideoToBoard } = useVideos();
+  const { videos, reorderVideosInBoard } = useVideos();
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
-
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-
-    const sourceIndex = result.source.index;
-    const destinationIndex = result.destination.index;
-    const sourceBoardId = result.source.droppableId;
-    const destinationBoardId = result.destination.droppableId;
-
-    if (sourceBoardId === destinationBoardId) {
-      if (sourceIndex === destinationIndex) return;
-      reorderVideosInBoard(id, sourceIndex, destinationIndex);
-    } else {
-      const videoId = result.draggableId;
-      moveVideoToBoard(videoId, sourceBoardId, destinationBoardId);
-    }
-  };
 
   return (
     <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">

@@ -7,9 +7,24 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { DragDropContext } from "react-beautiful-dnd";
 
 const Index = () => {
-  const { videos, togglePin, activeTab, setActiveTab, boards } = useVideos();
+  const { videos, togglePin, activeTab, setActiveTab, boards, moveVideoToBoard } = useVideos();
+
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
+
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+    const sourceBoardId = result.source.droppableId;
+    const destinationBoardId = result.destination.droppableId;
+
+    if (sourceBoardId !== destinationBoardId) {
+      const videoId = result.draggableId;
+      moveVideoToBoard(videoId, sourceBoardId, destinationBoardId);
+    }
+  };
 
   const filteredVideos = videos.filter((video) => {
     switch (activeTab) {
@@ -92,29 +107,31 @@ const Index = () => {
           </TabsList>
         </Tabs>
 
-        {activeTab === 'boards' ? (
-          <div className="grid gap-6 mt-8">
-            {boards.map((board) => (
-              <BoardCard key={board.id} id={board.id} name={board.name} />
-            ))}
-            {boards.length === 0 && (
-              <p className="text-center text-gray-400 py-8">No boards created yet.</p>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
-            {filteredVideos.map((video) => (
-              <VideoCard
-                key={video.id}
-                video={video}
-                onTogglePin={togglePin}
-              />
-            ))}
-            {filteredVideos.length === 0 && (
-              <p className="text-center text-gray-400 py-8 col-span-full">No videos available in this tab.</p>
-            )}
-          </div>
-        )}
+        <DragDropContext onDragEnd={handleDragEnd}>
+          {activeTab === 'boards' ? (
+            <div className="grid gap-6 mt-8">
+              {boards.map((board) => (
+                <BoardCard key={board.id} id={board.id} name={board.name} />
+              ))}
+              {boards.length === 0 && (
+                <p className="text-center text-gray-400 py-8">No boards created yet.</p>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
+              {filteredVideos.map((video) => (
+                <VideoCard
+                  key={video.id}
+                  video={video}
+                  onTogglePin={togglePin}
+                />
+              ))}
+              {filteredVideos.length === 0 && (
+                <p className="text-center text-gray-400 py-8 col-span-full">No videos available in this tab.</p>
+              )}
+            </div>
+          )}
+        </DragDropContext>
       </main>
     </div>
   );
