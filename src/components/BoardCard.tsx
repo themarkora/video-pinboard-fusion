@@ -19,9 +19,14 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
 
   const handleMouseEnter = (isDraggingOver: boolean) => {
     if (isDraggingOver && !isExpanded) {
+      // Clear any existing timer first
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+      // Set new timer
       hoverTimerRef.current = setTimeout(() => {
         setIsExpanded(true);
-      }, 1000); // 1 second delay
+      }, 1000);
     }
   };
 
@@ -32,6 +37,7 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
     }
   };
 
+  // Cleanup timer on unmount
   useEffect(() => {
     return () => {
       if (hoverTimerRef.current) {
@@ -54,7 +60,7 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
         >
           <div 
             className={`p-4 flex items-center justify-between ${
-              !isExpanded && 'cursor-pointer hover:bg-secondary/50'
+              !isExpanded && !snapshot.isDraggingOver && 'cursor-pointer hover:bg-secondary/50'
             }`}
             onClick={() => !snapshot.isDraggingOver && setIsExpanded(!isExpanded)}
           >
