@@ -39,22 +39,18 @@ const Index = () => {
           <p className="text-gray-400 mt-4 text-sm">
             Your personal YouTube video organizer for research and inspiration
           </p>
-          <div className="flex flex-wrap justify-center gap-8 mt-8 text-lg text-gray-300 max-w-3xl mx-auto">
-            <div className="flex items-center gap-3">
-              <span className="text-purple-500 text-2xl">📌</span>
-              <span className="font-bold">Pin videos</span>
+          <div className="flex flex-wrap justify-center gap-4 mt-4 text-sm text-gray-400 max-w-2xl mx-auto">
+            <div className="flex items-center gap-2">
+              <span className="text-purple-500">📌</span> Pin videos
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-purple-500 text-2xl">📝</span>
-              <span className="font-bold">Add notes</span>
+            <div className="flex items-center gap-2">
+              <span className="text-purple-500">📝</span> Add notes
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-purple-500 text-2xl">🎯</span>
-              <span className="font-bold">Organize</span>
+            <div className="flex items-center gap-2">
+              <span className="text-purple-500">🎯</span> Organize
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-purple-500 text-2xl">⚡</span>
-              <span className="font-bold">Quick access</span>
+            <div className="flex items-center gap-2">
+              <span className="text-purple-500">⚡</span> Quick access
             </div>
           </div>
         </div>
