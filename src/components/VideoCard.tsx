@@ -125,7 +125,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     }
   };
 
-  // Get all unique tags from all videos
   const allTags = Array.from(
     new Set(
       useVideos
@@ -288,6 +287,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             note={note}
             onNoteChange={setNote}
             onAddNote={handleAddNote}
+            videoId={video.id}
           />
         </div>
       </Card>
