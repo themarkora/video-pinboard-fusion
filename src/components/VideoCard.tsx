@@ -27,6 +27,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   const [newBoardName, setNewBoardName] = useState('');
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
   const [newTag, setNewTag] = useState('');
+  const [isBoardDialogOpen, setIsBoardDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const showSuccessToast = (title: string, description: string) => {
@@ -73,6 +74,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
       const boardId = useVideos.getState().addBoard(newBoardName);
       addToBoard(video.id, boardId);
       setNewBoardName('');
+      setIsBoardDialogOpen(false);
       showSuccessToast(
         "Board created",
         `Video added to new board "${newBoardName}"`
@@ -81,8 +83,19 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   };
 
   const handleAddToBoard = () => {
-    // This function will be passed to VideoActions
-    // The dialog will be opened by the button in VideoActions
+    setIsBoardDialogOpen(true);
+  };
+
+  const handleSelectBoard = (boardId: string) => {
+    addToBoard(video.id, boardId);
+    setIsBoardDialogOpen(false);
+    const selectedBoard = boards.find(b => b.id === boardId);
+    if (selectedBoard) {
+      showSuccessToast(
+        "Video added",
+        `Video added to board "${selectedBoard.name}"`
+      );
+    }
   };
 
   const handleAddTag = () => {
@@ -215,6 +228,54 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
                     onClick={handleTagSubmit}
                   >
                     Add
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={isBoardDialogOpen} onOpenChange={setIsBoardDialogOpen}>
+            <DialogContent className="bg-[#2A2F3C] text-white border-none max-w-md mx-auto">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold">Add to Board</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                {boards.length > 0 && (
+                  <Select onValueChange={handleSelectBoard}>
+                    <SelectTrigger className="w-full bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl">
+                      <SelectValue placeholder="Select a board" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#1A1F2E] border-none text-gray-200">
+                      {boards.map((board) => (
+                        <SelectItem 
+                          key={board.id} 
+                          value={board.id}
+                          className="hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer"
+                        >
+                          {board.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Create new board..."
+                    className="flex-1 bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl placeholder:text-gray-400"
+                    value={newBoardName}
+                    onChange={(e) => setNewBoardName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleCreateBoard();
+                      }
+                    }}
+                  />
+                  <Button
+                    variant="secondary"
+                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
+                    onClick={handleCreateBoard}
+                  >
+                    Create
                   </Button>
                 </div>
               </div>
