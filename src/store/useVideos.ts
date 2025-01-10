@@ -55,7 +55,7 @@ const fetchVideoDetails = async (videoId: string) => {
 
 export const useVideos = create<VideosState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       videos: [],
       boards: [],
       activeTab: 'recent',
@@ -84,11 +84,21 @@ export const useVideos = create<VideosState>()(
         }));
       },
       togglePin: (id: string) =>
-        set((state) => ({
-          videos: state.videos.map((video) =>
+        set((state) => {
+          const updatedVideos = state.videos.map((video) =>
             video.id === id ? { ...video, isPinned: !video.isPinned } : video
-          ),
-        })),
+          );
+          
+          // If we're in the pinned tab and unpinning a video, switch to recent tab
+          if (state.activeTab === 'pinned' && !updatedVideos.find(v => v.id === id)?.isPinned) {
+            return {
+              videos: updatedVideos,
+              activeTab: 'recent'
+            };
+          }
+          
+          return { videos: updatedVideos };
+        }),
       setActiveTab: (tab) => set({ activeTab: tab }),
       addNote: (videoId: string, note: string) =>
         set((state) => ({
