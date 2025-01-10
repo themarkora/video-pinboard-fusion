@@ -12,7 +12,7 @@ interface BoardCardProps {
 
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { videos, reorderVideosInBoard } = useVideos();
+  const { videos, reorderVideosInBoard, moveVideoToBoard } = useVideos();
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
@@ -21,10 +21,16 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
 
     const sourceIndex = result.source.index;
     const destinationIndex = result.destination.index;
+    const sourceBoardId = result.source.droppableId;
+    const destinationBoardId = result.destination.droppableId;
 
-    if (sourceIndex === destinationIndex) return;
-
-    reorderVideosInBoard(id, sourceIndex, destinationIndex);
+    if (sourceBoardId === destinationBoardId) {
+      if (sourceIndex === destinationIndex) return;
+      reorderVideosInBoard(id, sourceIndex, destinationIndex);
+    } else {
+      const videoId = result.draggableId;
+      moveVideoToBoard(videoId, sourceBoardId, destinationBoardId);
+    }
   };
 
   return (

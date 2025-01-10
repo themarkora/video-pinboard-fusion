@@ -37,6 +37,7 @@ interface VideosState {
   addVote: (videoId: string) => void;
   addView: (videoId: string) => void;
   reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => void;
+  moveVideoToBoard: (videoId: string, sourceBoardId: string, destinationBoardId: string) => void;
 }
 
 const getYouTubeVideoId = (url: string) => {
@@ -162,6 +163,28 @@ export const useVideos = create<VideosState>()(
             if (video.boardIds?.includes(boardId)) {
               const boardVideo = boardVideos.find(bv => bv.id === video.id);
               return { ...video, order: boardVideo?.order };
+            }
+            return video;
+          });
+
+          return { videos: updatedVideos };
+        });
+      },
+      moveVideoToBoard: (videoId: string, sourceBoardId: string, destinationBoardId: string) => {
+        set((state) => {
+          const updatedVideos = state.videos.map(video => {
+            if (video.id === videoId) {
+              const newBoardIds = [...(video.boardIds || [])];
+              // Remove from source board
+              const sourceIndex = newBoardIds.indexOf(sourceBoardId);
+              if (sourceIndex !== -1) {
+                newBoardIds.splice(sourceIndex, 1);
+              }
+              // Add to destination board
+              if (!newBoardIds.includes(destinationBoardId)) {
+                newBoardIds.push(destinationBoardId);
+              }
+              return { ...video, boardIds: newBoardIds };
             }
             return video;
           });
