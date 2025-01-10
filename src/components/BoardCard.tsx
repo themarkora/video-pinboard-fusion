@@ -3,7 +3,6 @@ import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
 import { useVideos } from '@/store/useVideos';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface BoardCardProps {
   id: string;
@@ -12,7 +11,7 @@ interface BoardCardProps {
 
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { videos, reorderVideosInBoard } = useVideos();
+  const { videos } = useVideos();
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
@@ -37,35 +36,11 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
       </div>
       {isExpanded && (
         <div className="p-4 bg-background border-t border-[#2A2F3C]">
-          <Droppable droppableId={id} type="VIDEO">
-            {(provided, snapshot) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className={`grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${
-                  snapshot.isDraggingOver ? 'bg-purple-500/10 rounded-xl p-4' : ''
-                }`}
-              >
-                {boardVideos.map((video, index) => (
-                  <Draggable key={video.id} draggableId={video.id} index={index}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`transition-transform duration-200 ${
-                          snapshot.isDragging ? 'scale-105 rotate-2' : ''
-                        }`}
-                      >
-                        <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {boardVideos.map((video) => (
+              <VideoCard key={video.id} video={video} onTogglePin={() => {}} boardId={id} />
+            ))}
+          </div>
           {boardVideos.length === 0 && (
             <p className="text-gray-400 text-center py-4">No videos in this board yet.</p>
           )}
