@@ -64,6 +64,32 @@ export const useVideos = create<VideosState>()(
           ),
         })),
 
+      updateNote: (videoId: string, noteIndex: number, updatedNote: string) =>
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === videoId
+              ? {
+                  ...video,
+                  notes: video.notes?.map((note, index) =>
+                    index === noteIndex ? updatedNote : note
+                  ) || [],
+                }
+              : video
+          ),
+        })),
+
+      deleteNote: (videoId: string, noteIndex: number) =>
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === videoId
+              ? {
+                  ...video,
+                  notes: video.notes?.filter((_, index) => index !== noteIndex) || [],
+                }
+              : video
+          ),
+        })),
+
       addVote: (videoId: string) =>
         set((state) => ({
           videos: state.videos.map((video) =>
@@ -183,6 +209,7 @@ export const useVideos = create<VideosState>()(
           return { videos: updatedVideos };
         });
       },
+
     }),
     {
       name: 'videos-storage',
