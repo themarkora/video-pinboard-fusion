@@ -11,6 +11,15 @@ export const boardActions = (set: any) => ({
     return boardId;
   },
   
+  deleteBoard: (id: string) =>
+    set((state: any) => ({
+      boards: state.boards.filter((board: any) => board.id !== id),
+      videos: state.videos.map((video: any) => ({
+        ...video,
+        boardIds: video.boardIds?.filter((boardId: string) => boardId !== id) || []
+      }))
+    })),
+
   addToBoard: (videoId: string, boardId: string) =>
     set((state: any) => ({
       videos: state.videos.map((video: any) =>
@@ -31,27 +40,4 @@ export const boardActions = (set: any) => ({
           : video
       ),
     })),
-
-  moveVideoToBoard: (videoId: string, sourceBoardId: string, destinationBoardId: string) => {
-    set((state: any) => {
-      const updatedVideos = state.videos.map((video: any) => {
-        if (video.id === videoId) {
-          let newBoardIds = [...(video.boardIds || [])];
-          
-          if (sourceBoardId !== 'recent' && sourceBoardId !== 'pinned' && sourceBoardId !== 'notes') {
-            newBoardIds = newBoardIds.filter(id => id !== sourceBoardId);
-          }
-          
-          if (!newBoardIds.includes(destinationBoardId)) {
-            newBoardIds.push(destinationBoardId);
-          }
-          
-          return { ...video, boardIds: newBoardIds };
-        }
-        return video;
-      });
-
-      return { videos: updatedVideos };
-    });
-  },
 });
