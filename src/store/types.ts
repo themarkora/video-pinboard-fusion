@@ -33,6 +33,7 @@ export interface VideosState {
   addVote: (videoId: string) => void;
   addView: (videoId: string) => void;
   addTag: (videoId: string, tag: string) => void;
+  removeTag: (videoId: string, tag: string) => void;
   addBoard: (name: string) => string;
   deleteBoard: (id: string) => void;
   addToBoard: (videoId: string, boardId: string) => void;
