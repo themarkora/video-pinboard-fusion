@@ -17,16 +17,21 @@ const Index = () => {
 
     const sourceIndex = result.source.index;
     const destinationIndex = result.destination.index;
+    const sourceDroppableId = result.source.droppableId;
+    const destinationDroppableId = result.destination.droppableId;
 
-    if (result.type === "VIDEO") {
-      if (result.source.droppableId === result.destination.droppableId) {
+    // If dragging within the same board or list
+    if (sourceDroppableId === destinationDroppableId) {
+      if (activeTab === 'boards') {
+        reorderVideos(sourceDroppableId, sourceIndex, destinationIndex);
+      } else {
         reorderVideos(activeTab, sourceIndex, destinationIndex);
       }
-    } else if (result.type === "BOARD") {
+    } 
+    // If dragging between different boards
+    else if (result.type === "VIDEO") {
       const videoId = result.draggableId;
-      const sourceBoardId = result.source.droppableId;
-      const destinationBoardId = result.destination.droppableId;
-      moveVideoToBoard(videoId, sourceBoardId, destinationBoardId);
+      moveVideoToBoard(videoId, sourceDroppableId, destinationDroppableId);
     }
   };
 
@@ -134,13 +139,6 @@ const Index = () => {
                   className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 p-4 rounded-xl transition-colors duration-200 ${
                     snapshot.isDraggingOver ? 'bg-purple-500/10' : ''
                   }`}
-                  style={{
-                    display: 'grid',
-                    gridAutoFlow: 'dense',
-                    minHeight: '200px',
-                    position: 'relative',
-                    willChange: 'transform'
-                  }}
                 >
                   {filteredVideos.map((video, index) => (
                     <Draggable 
@@ -154,16 +152,8 @@ const Index = () => {
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                           className={`transition-transform duration-200 ${
-                            snapshot.isDragging 
-                              ? 'scale-[1.02] z-50 shadow-2xl' 
-                              : ''
+                            snapshot.isDragging ? 'scale-105 z-50' : ''
                           }`}
-                          style={{
-                            ...provided.draggableProps.style,
-                            transformOrigin: 'center',
-                            position: snapshot.isDragging ? 'relative' : 'relative',
-                            gridRow: 'auto',
-                          }}
                         >
                           <VideoCard
                             video={video}

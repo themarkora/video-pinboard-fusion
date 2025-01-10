@@ -176,13 +176,20 @@ export const useVideos = create<VideosState>()(
           const updatedVideos = state.videos.map(video => {
             if (video.id === videoId) {
               const newBoardIds = [...(video.boardIds || [])];
-              const sourceIndex = newBoardIds.indexOf(sourceBoardId);
-              if (sourceIndex !== -1) {
-                newBoardIds.splice(sourceIndex, 1);
+              
+              // Remove from source board if it's not a tab
+              if (sourceBoardId !== 'recent' && sourceBoardId !== 'pinned' && sourceBoardId !== 'notes') {
+                const sourceIndex = newBoardIds.indexOf(sourceBoardId);
+                if (sourceIndex !== -1) {
+                  newBoardIds.splice(sourceIndex, 1);
+                }
               }
+              
+              // Add to destination board if it's not already there
               if (!newBoardIds.includes(destinationBoardId)) {
                 newBoardIds.push(destinationBoardId);
               }
+              
               return { ...video, boardIds: newBoardIds };
             }
             return video;
@@ -202,7 +209,7 @@ export const useVideos = create<VideosState>()(
               : video
           ),
         })),
-      reorderVideos: (listType, sourceIndex, destinationIndex) => {
+      reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => {
         set((state) => {
           let filteredVideos = state.videos;
           
