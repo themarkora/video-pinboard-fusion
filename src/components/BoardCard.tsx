@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
@@ -24,8 +24,15 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
           } overflow-hidden transition-colors duration-200`}
           ref={provided.innerRef}
           {...provided.droppableProps}
-          onDragEnter={() => {
+          onDragOver={(e) => {
+            // Prevent default to allow drop
+            e.preventDefault();
             if (!isExpanded) {
+              setIsExpanded(true);
+            }
+          }}
+          onMouseEnter={() => {
+            if (snapshot.isDraggingOver && !isExpanded) {
               setIsExpanded(true);
             }
           }}
