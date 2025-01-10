@@ -76,19 +76,19 @@ export const VideoActions: React.FC<VideoActionsProps> = ({
 
       <Button 
         variant="secondary"
+        className="w-full col-span-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
+        onClick={onAddToBoard}
+      >
+        <span>Add to Board</span>
+      </Button>
+
+      <Button 
+        variant="secondary"
         className="w-full col-span-3 bg-[#2A2F3C] hover:bg-[#353B4A] text-gray-300 rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
         onClick={onAddNote}
       >
         <MessageSquare className="h-5 w-5" />
         <span>Add Note</span>
-      </Button>
-
-      <Button 
-        variant="secondary"
-        className="w-full col-span-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
-        onClick={onAddToBoard}
-      >
-        <span>Add to Board</span>
       </Button>
     </div>
   );
