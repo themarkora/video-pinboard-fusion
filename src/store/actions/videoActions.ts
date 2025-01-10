@@ -25,13 +25,6 @@ export const addVideoActions = (set: any) => ({
       ],
     }));
   },
-  togglePin: (id: string) =>
-    set((state: any) => {
-      const updatedVideos = state.videos.map((video: Video) =>
-        video.id === id ? { ...video, isPinned: !video.isPinned } : video
-      );
-      return { videos: updatedVideos };
-    }),
 });
 
 const getYouTubeVideoId = (url: string) => {

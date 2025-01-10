@@ -105,6 +105,7 @@ export const useVideos = create<VideosState>()(
           return { videos: finalVideos };
         });
       },
+
       reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => {
         set((state) => {
           const boardVideos = state.videos.filter(video => video.boardIds?.includes(boardId));
@@ -125,6 +126,27 @@ export const useVideos = create<VideosState>()(
           return { videos: finalVideos };
         });
       },
+
+      togglePin: (id: string) =>
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === id ? { ...video, isPinned: !video.isPinned } : video
+          ),
+        })),
+
+      moveVideoToBoard: (videoId: string, sourceBoardId: string, destinationBoardId: string) =>
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === videoId
+              ? {
+                  ...video,
+                  boardIds: video.boardIds
+                    ? [...video.boardIds.filter(id => id !== sourceBoardId), destinationBoardId]
+                    : [destinationBoardId],
+                }
+              : video
+          ),
+        })),
     }),
     {
       name: 'videos-storage',

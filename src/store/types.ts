@@ -25,7 +25,7 @@ export interface VideosState {
   videos: Video[];
   boards: Board[];
   activeTab: 'recent' | 'pinned' | 'notes' | 'boards';
-  addVideo: (video: Video) => void;
+  addVideo: (url: string, isPinned?: boolean) => Promise<void>;
   deleteVideo: (id: string) => void;
   addNote: (videoId: string, note: string) => void;
   updateNote: (videoId: string, noteIndex: number, updatedNote: string) => void;
@@ -40,4 +40,6 @@ export interface VideosState {
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
   reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => void;
   reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => void;
+  togglePin: (id: string) => void;
+  moveVideoToBoard: (videoId: string, sourceBoardId: string, destinationBoardId: string) => void;
 }
