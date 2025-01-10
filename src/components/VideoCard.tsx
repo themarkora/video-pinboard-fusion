@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Trash2, Plus, MessageSquare } from "lucide-react";
+import { Trash2, Plus, MessageSquare, X } from "lucide-react";
 import { VideoPlayer } from './VideoPlayer';
 import { Video } from '@/store/useVideos';
 import { Pin } from './icons/Pin';
@@ -14,12 +14,13 @@ import { useToast } from './ui/use-toast';
 interface VideoCardProps {
   video: Video;
   onTogglePin: (id: string) => void;
+  boardId?: string;
 }
 
-export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
+export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [note, setNote] = useState('');
-  const { addNote, addToBoard, deleteVideo, boards } = useVideos();
+  const { addNote, addToBoard, deleteVideo, boards, removeFromBoard } = useVideos();
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
   const { toast } = useToast();
@@ -44,6 +45,16 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
       toast({
         title: "Board created",
         description: `Video added to new board "${newBoardName}"`,
+      });
+    }
+  };
+
+  const handleRemoveFromBoard = () => {
+    if (boardId) {
+      removeFromBoard(video.id, boardId);
+      toast({
+        title: "Video removed",
+        description: "Video has been removed from the board",
       });
     }
   };
@@ -82,23 +93,34 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
           )}
           
           <div className="grid grid-cols-3 gap-3">
-            <Button 
-              variant="secondary"
-              className={`w-full ${video.isPinned ? 'bg-purple-600 hover:bg-purple-700' : 'bg-[#2A2F3C] hover:bg-[#353B4A]'} text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2`}
-              onClick={() => onTogglePin(video.id)}
-            >
-              {video.isPinned ? (
-                <>
-                  <PinOff className="h-5 w-5" />
-                  <span className="hidden sm:inline">Unpin</span>
-                </>
-              ) : (
-                <>
-                  <Pin className="h-5 w-5" />
-                  <span className="hidden sm:inline">Pin</span>
-                </>
-              )}
-            </Button>
+            {boardId ? (
+              <Button 
+                variant="destructive"
+                className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
+                onClick={handleRemoveFromBoard}
+              >
+                <X className="h-5 w-5" />
+                <span className="hidden sm:inline">Remove</span>
+              </Button>
+            ) : (
+              <Button 
+                variant="secondary"
+                className={`w-full ${video.isPinned ? 'bg-purple-600 hover:bg-purple-700' : 'bg-[#2A2F3C] hover:bg-[#353B4A]'} text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2`}
+                onClick={() => onTogglePin(video.id)}
+              >
+                {video.isPinned ? (
+                  <>
+                    <PinOff className="h-5 w-5" />
+                    <span className="hidden sm:inline">Unpin</span>
+                  </>
+                ) : (
+                  <>
+                    <Pin className="h-5 w-5" />
+                    <span className="hidden sm:inline">Pin</span>
+                  </>
+                )}
+              </Button>
+            )}
 
             <Dialog>
               <DialogTrigger asChild>

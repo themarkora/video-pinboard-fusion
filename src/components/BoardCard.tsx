@@ -57,7 +57,7 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
                           snapshot.isDragging ? 'scale-105 rotate-2' : ''
                         }`}
                       >
-                        <VideoCard video={video} onTogglePin={() => {}} />
+                        <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
                       </div>
                     )}
                   </Draggable>

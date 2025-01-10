@@ -38,6 +38,7 @@ interface VideosState {
   addView: (videoId: string) => void;
   reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => void;
   moveVideoToBoard: (videoId: string, sourceBoardId: string, destinationBoardId: string) => void;
+  removeFromBoard: (videoId: string, boardId: string) => void;
 }
 
 const getYouTubeVideoId = (url: string) => {
@@ -192,6 +193,17 @@ export const useVideos = create<VideosState>()(
           return { videos: updatedVideos };
         });
       },
+      removeFromBoard: (videoId: string, boardId: string) =>
+        set((state) => ({
+          videos: state.videos.map((video) =>
+            video.id === videoId
+              ? {
+                  ...video,
+                  boardIds: (video.boardIds || []).filter((id) => id !== boardId),
+                }
+              : video
+          ),
+        })),
     }),
     {
       name: 'videos-storage',
