@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
 import { useVideos } from '@/store/useVideos';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface BoardCardProps {
   id: string;
@@ -11,9 +12,20 @@ interface BoardCardProps {
 
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { videos } = useVideos();
+  const { videos, reorderVideosInBoard } = useVideos();
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
+
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
+
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+
+    if (sourceIndex === destinationIndex) return;
+
+    reorderVideosInBoard(id, sourceIndex, destinationIndex);
+  };
 
   return (
     <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">
@@ -36,11 +48,35 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
       </div>
       {isExpanded && (
         <div className="p-4 bg-background border-t border-[#2A2F3C]">
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {boardVideos.map(video => (
-              <VideoCard key={video.id} video={video} onTogglePin={() => {}} />
-            ))}
-          </div>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId={id}>
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                >
+                  {boardVideos.map((video, index) => (
+                    <Draggable key={video.id} draggableId={video.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`transition-transform duration-200 ${
+                            snapshot.isDragging ? 'scale-105 rotate-2' : ''
+                          }`}
+                        >
+                          <VideoCard video={video} onTogglePin={() => {}} />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
           {boardVideos.length === 0 && (
             <p className="text-gray-400 text-center py-4">No videos in this board yet.</p>
           )}

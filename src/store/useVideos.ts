@@ -14,6 +14,7 @@ export interface Video {
   votes?: number;
   channel?: string;
   publishedAt?: string;
+  order?: number;
 }
 
 interface Board {
@@ -35,6 +36,7 @@ interface VideosState {
   deleteVideo: (id: string) => void;
   addVote: (videoId: string) => void;
   addView: (videoId: string) => void;
+  reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => void;
 }
 
 const getYouTubeVideoId = (url: string) => {
@@ -147,6 +149,26 @@ export const useVideos = create<VideosState>()(
               : video
           ),
         })),
+      reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => {
+        set((state) => {
+          const boardVideos = state.videos
+            .filter(video => video.boardIds?.includes(boardId))
+            .map((video, index) => ({ ...video, order: index }));
+
+          const [reorderedVideo] = boardVideos.splice(sourceIndex, 1);
+          boardVideos.splice(destinationIndex, 0, reorderedVideo);
+
+          const updatedVideos = state.videos.map(video => {
+            if (video.boardIds?.includes(boardId)) {
+              const boardVideo = boardVideos.find(bv => bv.id === video.id);
+              return { ...video, order: boardVideo?.order };
+            }
+            return video;
+          });
+
+          return { videos: updatedVideos };
+        });
+      },
     }),
     {
       name: 'videos-storage',
