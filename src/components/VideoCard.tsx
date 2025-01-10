@@ -300,15 +300,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
               </div>
             </DialogContent>
           </Dialog>
-
-          <VideoNotes
-            notes={video.notes || []}
-            isAddingNote={isAddingNote}
-            note={note}
-            onNoteChange={setNote}
-            onAddNote={handleAddNote}
-            videoId={video.id}
-          />
         </div>
       </Card>
       <VideoPlayer
