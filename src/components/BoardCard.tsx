@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
@@ -7,34 +7,19 @@ import { useVideos } from '@/store/useVideos';
 interface BoardCardProps {
   id: string;
   name: string;
-  activeBoard: string | null;
-  onBoardClick: (id: string) => void;
 }
 
-export const BoardCard = ({ id, name, activeBoard, onBoardClick }: BoardCardProps) => {
-  const boardRef = useRef<HTMLDivElement>(null);
+export const BoardCard = ({ id, name }: BoardCardProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const { videos } = useVideos();
-  const isExpanded = activeBoard === id;
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
-  useEffect(() => {
-    if (isExpanded && boardRef.current) {
-      boardRef.current.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  }, [isExpanded]);
-
   return (
-    <Card 
-      ref={boardRef}
-      className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden"
-    >
+    <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">
       <div 
         className="p-4 flex items-center justify-between cursor-pointer hover:bg-secondary/50"
-        onClick={() => onBoardClick(id)}
+        onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center space-x-3">
           <Folder className="w-6 h-6 text-purple-500" />
