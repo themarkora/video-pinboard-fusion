@@ -136,6 +136,7 @@ const Index = () => {
                   }`}
                   style={{
                     display: 'grid',
+                    gridAutoFlow: 'dense',
                     minHeight: '200px'
                   }}
                 >
@@ -152,12 +153,13 @@ const Index = () => {
                           {...provided.dragHandleProps}
                           className={`transition-all duration-200 ${
                             snapshot.isDragging 
-                              ? 'scale-105 rotate-2 shadow-2xl' 
+                              ? 'scale-105 z-50 shadow-2xl' 
                               : 'hover:scale-[1.02]'
                           }`}
                           style={{
                             ...provided.draggableProps.style,
-                            transformOrigin: 'center'
+                            transformOrigin: 'center',
+                            gridRow: 'auto',
                           }}
                         >
                           <VideoCard
