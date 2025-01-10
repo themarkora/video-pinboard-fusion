@@ -71,7 +71,7 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
             </div>
           )}
           
-          <div className="grid grid-cols-2 gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-2 mb-2">
             <Button 
               variant="secondary"
               className="w-full bg-[#9334E9] hover:bg-[#9334E9]/90 text-white"
@@ -85,7 +85,7 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
               ) : (
                 <>
                   <Pin className="mr-2" size={18} />
-                  Pin Video
+                  Pin
                 </>
               )}
             </Button>
@@ -143,22 +143,22 @@ export const VideoCard = ({ video, onTogglePin }: VideoCardProps) => {
                 </div>
               </DialogContent>
             </Dialog>
-          </div>
 
-          <Button 
-            variant="destructive"
-            className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90 mb-2"
-            onClick={() => {
-              deleteVideo(video.id);
-              toast({
-                title: "Video deleted",
-                description: "The video has been removed from your collection.",
-              });
-            }}
-          >
-            <Trash2 className="mr-2" size={18} />
-            Delete
-          </Button>
+            <Button 
+              variant="destructive"
+              className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90"
+              onClick={() => {
+                deleteVideo(video.id);
+                toast({
+                  title: "Video deleted",
+                  description: "The video has been removed from your collection.",
+                });
+              }}
+            >
+              <Trash2 className="mr-2" size={18} />
+              Delete
+            </Button>
+          </div>
 
           <Button 
             variant="secondary"
