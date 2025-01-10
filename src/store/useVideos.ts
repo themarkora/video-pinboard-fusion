@@ -43,7 +43,7 @@ interface VideosState {
 }
 
 const getYouTubeVideoId = (url: string) => {
-  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
   return match ? match[1] : null;
 };
@@ -175,17 +175,14 @@ export const useVideos = create<VideosState>()(
         set((state) => {
           const updatedVideos = state.videos.map(video => {
             if (video.id === videoId) {
-              const newBoardIds = [...(video.boardIds || [])];
+              let newBoardIds = [...(video.boardIds || [])];
               
               // Remove from source board if it's not a tab
               if (sourceBoardId !== 'recent' && sourceBoardId !== 'pinned' && sourceBoardId !== 'notes') {
-                const sourceIndex = newBoardIds.indexOf(sourceBoardId);
-                if (sourceIndex !== -1) {
-                  newBoardIds.splice(sourceIndex, 1);
-                }
+                newBoardIds = newBoardIds.filter(id => id !== sourceBoardId);
               }
               
-              // Add to destination board if it's not already there
+              // Add to destination board
               if (!newBoardIds.includes(destinationBoardId)) {
                 newBoardIds.push(destinationBoardId);
               }
