@@ -7,9 +7,10 @@ import { useToast } from './ui/use-toast';
 import { VideoThumbnail } from './VideoCard/VideoThumbnail';
 import { VideoNotes } from './VideoCard/VideoNotes';
 import { VideoActions } from './VideoCard/VideoActions';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface VideoCardProps {
   video: Video;
@@ -20,9 +21,11 @@ interface VideoCardProps {
 export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [note, setNote] = useState('');
-  const { addNote, addToBoard, deleteVideo, boards, removeFromBoard } = useVideos();
+  const { addNote, addToBoard, deleteVideo, boards, removeFromBoard, addTag } = useVideos();
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
+  const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
+  const [newTag, setNewTag] = useState('');
   const { toast } = useToast();
 
   const handleAddNote = () => {
@@ -54,6 +57,40 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     // The dialog will be opened by the button in VideoActions
   };
 
+  const handleAddTag = () => {
+    setIsTagDialogOpen(true);
+  };
+
+  const handleTagSubmit = () => {
+    if (newTag.trim()) {
+      addTag(video.id, newTag.trim());
+      setNewTag('');
+      setIsTagDialogOpen(false);
+      toast({
+        title: "Tag added",
+        description: "Your tag has been added successfully.",
+      });
+    }
+  };
+
+  const handleSelectTag = (tag: string) => {
+    addTag(video.id, tag);
+    setIsTagDialogOpen(false);
+    toast({
+      title: "Tag added",
+      description: "Selected tag has been added to the video.",
+    });
+  };
+
+  // Get all unique tags from all videos
+  const allTags = Array.from(
+    new Set(
+      useVideos
+        .getState()
+        .videos.flatMap((v) => v.tags || [])
+    )
+  );
+
   return (
     <>
       <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
@@ -68,6 +105,19 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             {video.title}
           </h3>
 
+          {video.tags && video.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {video.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="bg-purple-600/20 text-purple-300 px-2 py-1 rounded-full text-sm"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
           <VideoActions
             isPinned={video.isPinned}
             onTogglePin={() => onTogglePin(video.id)}
@@ -80,6 +130,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
               });
             }}
             onAddNote={() => setIsAddingNote(true)}
+            onAddTag={handleAddTag}
             boardId={boardId}
             onRemoveFromBoard={() => {
               if (boardId) {
@@ -132,6 +183,50 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
                     onClick={handleCreateBoard}
                   >
                     Create
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
+            <DialogContent className="bg-[#2A2F3C] text-white border-none">
+              <DialogHeader>
+                <DialogTitle>Add Tag</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                {allTags.length > 0 && (
+                  <Select onValueChange={handleSelectTag}>
+                    <SelectTrigger className="bg-secondary/50 border-none">
+                      <SelectValue placeholder="Select existing tag" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allTags.map((tag) => (
+                        <SelectItem key={tag} value={tag}>
+                          {tag}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Create new tag..."
+                    className="bg-secondary/50 border-none rounded-xl"
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleTagSubmit();
+                      }
+                    }}
+                  />
+                  <Button
+                    variant="secondary"
+                    className="rounded-xl"
+                    onClick={handleTagSubmit}
+                  >
+                    Add
                   </Button>
                 </div>
               </div>
