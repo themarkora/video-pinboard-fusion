@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, Edit2, X } from 'lucide-react';
+import { MessageSquare, Pencil, X } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useVideos } from '@/store/useVideos';
@@ -24,6 +24,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   const [editedNote, setEditedNote] = useState("");
   const { updateNote, deleteNote } = useVideos();
   const { toast } = useToast();
+  const [showInput, setShowInput] = useState(false);
 
   const handleEditClick = (index: number, currentNote: string) => {
     setEditingIndex(index);
@@ -53,22 +54,52 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        <Input
-          value={note}
-          onChange={(e) => onNoteChange(e.target.value)}
-          placeholder="Add a note..."
-          className="bg-[#1A1F2E] border-none rounded-xl flex-1 text-gray-200 placeholder:text-gray-400"
-          onKeyDown={(e) => e.key === 'Enter' && onAddNote()}
-        />
+      {!showInput ? (
         <Button
-          variant="secondary"
-          className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl whitespace-nowrap"
-          onClick={onAddNote}
+          variant="ghost"
+          className="flex items-center gap-2 text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 px-0"
+          onClick={() => setShowInput(true)}
         >
-          Add
+          <Pencil className="w-4 h-4" />
+          Add Note
         </Button>
-      </div>
+      ) : (
+        <div className="space-y-2">
+          <div className="relative">
+            <textarea
+              value={note}
+              onChange={(e) => onNoteChange(e.target.value)}
+              placeholder="Add a note... (Press Enter to save)"
+              className="w-full min-h-[100px] bg-[#1A1F2E] border border-purple-500/30 rounded-xl p-4 text-gray-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  onAddNote();
+                  setShowInput(false);
+                }
+              }}
+            />
+            <div className="absolute bottom-4 right-4 flex gap-2">
+              <Button
+                variant="ghost"
+                className="text-gray-400 hover:text-gray-300"
+                onClick={() => setShowInput(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+                onClick={() => {
+                  onAddNote();
+                  setShowInput(false);
+                }}
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {notes && notes.length > 0 && (
         <div className="p-3 bg-[#2A2F3C] rounded-xl space-y-2">
@@ -111,7 +142,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
                       className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6"
                       onClick={() => handleEditClick(index, noteText)}
                     >
-                      <Edit2 className="h-3 w-3 text-gray-400 hover:text-white transition-colors" />
+                      <Pencil className="h-3 w-3 text-gray-400 hover:text-white transition-colors" />
                     </Button>
                     <Button
                       variant="ghost"
