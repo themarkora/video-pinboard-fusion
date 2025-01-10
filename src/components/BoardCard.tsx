@@ -77,10 +77,16 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
                         style={{
                           ...provided.draggableProps.style,
                           transform: snapshot.isDragging ? provided.draggableProps.style?.transform : 'none',
-                          opacity: snapshot.isDragging ? 0 : 1,
                         }}
                       >
-                        <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
+                        <VideoCard 
+                          video={video} 
+                          onTogglePin={() => {}} 
+                          boardId={id} 
+                          style={{
+                            opacity: snapshot.isDragging ? 0 : 1,
+                          }}
+                        />
                         {snapshot.isDragging && (
                           <div
                             style={{
