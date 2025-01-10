@@ -13,30 +13,7 @@ interface BoardCardProps {
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { videos } = useVideos();
-  const expandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
-
-  const handleDragOver = (isDraggingOver: boolean) => {
-    // Clear any existing timeout
-    if (expandTimeoutRef.current) {
-      clearTimeout(expandTimeoutRef.current);
-    }
-
-    if (isDraggingOver && !isExpanded) {
-      // Expand immediately when dragging over
-      setIsExpanded(true);
-    }
-  };
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (expandTimeoutRef.current) {
-        clearTimeout(expandTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <Droppable droppableId={id} type="VIDEO">
@@ -47,7 +24,11 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
           } overflow-hidden transition-colors duration-200`}
           ref={provided.innerRef}
           {...provided.droppableProps}
-          onMouseEnter={() => handleDragOver(snapshot.isDraggingOver)}
+          onDragEnter={() => {
+            if (!isExpanded) {
+              setIsExpanded(true);
+            }
+          }}
         >
           <div 
             className="p-4 flex items-center justify-between cursor-pointer hover:bg-secondary/50"
