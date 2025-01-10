@@ -8,9 +8,43 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { useState, useMemo } from "react";
 
 const Index = () => {
   const { videos, togglePin, activeTab, setActiveTab, boards, moveVideoToBoard, reorderVideos } = useVideos();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter videos based on search query and active tab
+  const filteredVideos = useMemo(() => {
+    let filtered = videos;
+
+    // First apply search filter if there's a query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(video => {
+        const titleMatch = video.title.toLowerCase().includes(query);
+        const tagsMatch = video.tags?.some(tag => tag.toLowerCase().includes(query)) || false;
+        const notesMatch = video.notes?.some(note => note.toLowerCase().includes(query)) || false;
+        
+        return titleMatch || tagsMatch || notesMatch;
+      });
+    }
+
+    // Then apply tab filter
+    return filtered.filter((video) => {
+      switch (activeTab) {
+        case 'pinned':
+          return video.isPinned === true;
+        case 'notes':
+          return Array.isArray(video.notes) && video.notes.length > 0;
+        case 'boards':
+          return Array.isArray(video.boardIds) && video.boardIds.length > 0;
+        case 'recent':
+        default:
+          return true;
+      }
+    });
+  }, [videos, searchQuery, activeTab]);
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -34,20 +68,6 @@ const Index = () => {
       moveVideoToBoard(videoId, sourceDroppableId, destinationDroppableId);
     }
   };
-
-  const filteredVideos = videos.filter((video) => {
-    switch (activeTab) {
-      case 'pinned':
-        return video.isPinned === true;
-      case 'notes':
-        return Array.isArray(video.notes) && video.notes.length > 0;
-      case 'boards':
-        return Array.isArray(video.boardIds) && video.boardIds.length > 0;
-      case 'recent':
-      default:
-        return true;
-    }
-  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
@@ -84,6 +104,8 @@ const Index = () => {
           <Input 
             placeholder="Search videos by title, channel, or notes..." 
             className="w-full bg-[#1A1F2E] border-none pl-10 h-12 text-gray-300 rounded-xl"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
@@ -164,6 +186,11 @@ const Index = () => {
                     </Draggable>
                   ))}
                   {provided.placeholder}
+                  {filteredVideos.length === 0 && (
+                    <div className="col-span-full text-center text-gray-400 py-8">
+                      No videos found matching your search criteria.
+                    </div>
+                  )}
                 </div>
               )}
             </Droppable>
