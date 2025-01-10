@@ -9,13 +9,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useState, useMemo } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { Check } from "lucide-react";
 
 const Index = () => {
   const { videos, togglePin, activeTab, setActiveTab, boards, moveVideoToBoard, reorderVideos } = useVideos();
   const [searchQuery, setSearchQuery] = useState("");
-  const { toast } = useToast();
 
   // Filter videos based on search query and active tab
   const filteredVideos = useMemo(() => {
@@ -65,25 +62,10 @@ const Index = () => {
         reorderVideos(activeTab, sourceIndex, destinationIndex);
       }
     } 
-    // If dragging between different boards or from list to board
+    // If dragging between different boards
     else if (result.type === "VIDEO") {
       const videoId = result.draggableId;
       moveVideoToBoard(videoId, sourceDroppableId, destinationDroppableId);
-      
-      // Show success toast
-      const destinationBoard = boards.find(b => b.id === destinationDroppableId);
-      if (destinationBoard) {
-        toast({
-          title: "Video moved",
-          description: `Video added to board "${destinationBoard.name}"`,
-          className: "bg-purple-600/90 text-white border-none",
-          action: (
-            <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
-              <Check className="h-4 w-4 text-white" />
-            </div>
-          ),
-        });
-      }
     }
   };
 
