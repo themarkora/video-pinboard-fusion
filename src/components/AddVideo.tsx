@@ -16,11 +16,11 @@ export function AddVideo() {
     if (videoUrl.trim() && !isLoading) {
       setIsLoading(true);
       try {
-        await addVideo(videoUrl.trim());
+        await addVideo(videoUrl.trim(), true); // Pass true to set isPinned
         setVideoUrl('');
         toast({
-          title: "Video added successfully",
-          description: "Your video has been pinned to your collection.",
+          title: "Video pinned successfully",
+          description: "Your video has been added to your collection.",
         });
       } catch (error) {
         toast({

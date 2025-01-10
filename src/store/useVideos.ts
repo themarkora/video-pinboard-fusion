@@ -26,7 +26,7 @@ interface VideosState {
   videos: Video[];
   boards: Board[];
   activeTab: 'recent' | 'pinned' | 'notes' | 'boards';
-  addVideo: (url: string) => Promise<void>;
+  addVideo: (url: string, isPinned?: boolean) => Promise<void>;
   togglePin: (id: string) => void;
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
   addNote: (videoId: string, note: string) => void;
@@ -59,7 +59,7 @@ export const useVideos = create<VideosState>()(
       videos: [],
       boards: [],
       activeTab: 'recent',
-      addVideo: async (url: string) => {
+      addVideo: async (url: string, isPinned: boolean = true) => {
         const videoId = getYouTubeVideoId(url);
         if (!videoId) throw new Error('Invalid YouTube URL');
 
@@ -72,7 +72,7 @@ export const useVideos = create<VideosState>()(
               url,
               title: details.title,
               thumbnail: details.thumbnail,
-              isPinned: false,
+              isPinned,
               addedAt: new Date(),
               notes: [],
               boardIds: [],
