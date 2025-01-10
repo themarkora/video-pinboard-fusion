@@ -67,6 +67,26 @@ export const useVideos = create<VideosState>()(
           return { videos: finalVideos };
         });
       },
+      reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => {
+        set((state) => {
+          const boardVideos = state.videos.filter(video => video.boardIds?.includes(boardId));
+          
+          const [movedVideo] = boardVideos.splice(sourceIndex, 1);
+          boardVideos.splice(destinationIndex, 0, movedVideo);
+          
+          const updatedVideos = boardVideos.map((video, index) => ({
+            ...video,
+            order: index,
+          }));
+          
+          const finalVideos = state.videos.map(video => {
+            const updatedVideo = updatedVideos.find(v => v.id === video.id);
+            return updatedVideo || video;
+          });
+          
+          return { videos: finalVideos };
+        });
+      },
     }),
     {
       name: 'videos-storage',
