@@ -135,19 +135,24 @@ export const useVideos = create<VideosState>()(
               .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
           }
 
+          // Remove the dragged item
           const [movedVideo] = relevantVideos.splice(sourceIndex, 1);
+          // Insert it at the new position
           relevantVideos.splice(destinationIndex, 0, movedVideo);
 
+          // Update orders for all affected videos
           const updatedVideos = relevantVideos.map((video, index) => ({
             ...video,
-            order: index
+            order: index * 2 // Use multiplier to leave space for future insertions
           }));
 
+          // Create a map for efficient lookup
           const updatedVideoMap = new Map(updatedVideos.map(video => [video.id, video]));
 
+          // Update the main videos array
           const finalVideos = state.videos.map(video => {
             const updatedVideo = updatedVideoMap.get(video.id);
-            return updatedVideo || { ...video, order: video.order ?? 999999 };
+            return updatedVideo || video;
           });
 
           return { videos: finalVideos };

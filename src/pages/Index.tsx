@@ -116,72 +116,80 @@ const Index = () => {
               Boards ({boards.length})
             </TabsTrigger>
           </TabsList>
-        </Tabs>
 
-        <DragDropContext onDragEnd={handleDragEnd}>
-          {activeTab === 'boards' ? (
-            <div className="grid gap-6 mt-8">
-              {boards.map((board) => (
-                <BoardCard key={board.id} id={board.id} name={board.name} />
-              ))}
-              {boards.length === 0 && (
-                <p className="text-center text-gray-400 py-8">No boards created yet.</p>
-              )}
-            </div>
-          ) : (
-            <Droppable 
-              droppableId={activeTab} 
-              type="VIDEO"
-              direction="horizontal"
-            >
-              {(provided, snapshot) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 p-4 rounded-xl transition-colors duration-200 ${
-                    snapshot.isDraggingOver ? 'bg-purple-500/10' : ''
-                  }`}
-                >
-                  {filteredVideos.map((video, index) => (
-                    <Draggable 
-                      key={video.id} 
-                      draggableId={video.id} 
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={{
-                            ...provided.draggableProps.style,
-                            transform: snapshot.isDragging
-                              ? provided.draggableProps.style?.transform
-                              : 'none',
-                          }}
-                          className={`transition-transform duration-200 ${
-                            snapshot.isDragging ? 'scale-105 z-50' : ''
-                          }`}
-                        >
-                          <VideoCard
-                            video={video}
-                            onTogglePin={togglePin}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                  {filteredVideos.length === 0 && (
-                    <div className="col-span-full text-center text-gray-400 py-8">
-                      No videos found matching your search criteria.
-                    </div>
-                  )}
-                </div>
-              )}
-            </Droppable>
-          )}
-        </DragDropContext>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            {activeTab === 'boards' ? (
+              <div className="grid gap-6 mt-8">
+                {boards.map((board) => (
+                  <BoardCard key={board.id} id={board.id} name={board.name} />
+                ))}
+                {boards.length === 0 && (
+                  <p className="text-center text-gray-400 py-8">No boards created yet.</p>
+                )}
+              </div>
+            ) : (
+              <Droppable 
+                droppableId={activeTab} 
+                type="VIDEO"
+                direction="horizontal"
+              >
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 p-4 rounded-xl transition-colors duration-200 ${
+                      snapshot.isDraggingOver ? 'bg-purple-500/10' : ''
+                    }`}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                      gap: '1.5rem',
+                    }}
+                  >
+                    {filteredVideos.map((video, index) => (
+                      <Draggable 
+                        key={video.id} 
+                        draggableId={video.id} 
+                        index={index}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={{
+                              ...provided.draggableProps.style,
+                              transform: snapshot.isDragging
+                                ? provided.draggableProps.style?.transform
+                                : 'none',
+                              zIndex: snapshot.isDragging ? 999 : 'auto',
+                            }}
+                            className={`transition-all duration-200 ${
+                              snapshot.isDragging 
+                                ? 'scale-105 rotate-2 shadow-2xl' 
+                                : ''
+                            }`}
+                          >
+                            <VideoCard
+                              video={video}
+                              onTogglePin={togglePin}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                    {filteredVideos.length === 0 && (
+                      <div className="col-span-full text-center text-gray-400 py-8">
+                        No videos found matching your search criteria.
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Droppable>
+            )}
+          </DragDropContext>
+        </Tabs>
       </main>
     </div>
   );
