@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Check, AlertCircle, X } from "lucide-react";
+import { Check, AlertCircle } from "lucide-react";
 
 interface VideoCardProps {
   video: Video;
@@ -22,7 +22,7 @@ interface VideoCardProps {
 export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [note, setNote] = useState('');
-  const { addNote, addToBoard, deleteVideo, boards, removeFromBoard, addTag, removeTag } = useVideos();
+  const { addNote, addToBoard, deleteVideo, boards, removeFromBoard, addTag } = useVideos();
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
@@ -80,14 +80,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
         `Video added to new board "${newBoardName}"`
       );
     }
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    removeTag(video.id, tag);
-    showSuccessToast(
-      "Tag removed",
-      "The tag has been removed successfully."
-    );
   };
 
   const handleAddToBoard = () => {
@@ -160,16 +152,9 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
               {video.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="bg-purple-600/20 text-purple-300 px-2 py-1 rounded-full text-sm flex items-center gap-1 group"
+                  className="bg-purple-600/20 text-purple-300 px-2 py-1 rounded-full text-sm"
                 >
                   {tag}
-                  <button
-                    onClick={() => handleRemoveTag(tag)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    aria-label="Remove tag"
-                  >
-                    <X className="h-3 w-3 hover:text-purple-100" />
-                  </button>
                 </span>
               ))}
             </div>
