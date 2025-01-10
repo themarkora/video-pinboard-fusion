@@ -147,6 +147,15 @@ export const useVideos = create<VideosState>()(
               : video
           ),
         })),
+
+      deleteBoard: (id: string) =>
+        set((state) => ({
+          boards: state.boards.filter((board) => board.id !== id),
+          videos: state.videos.map((video) => ({
+            ...video,
+            boardIds: video.boardIds?.filter((boardId) => boardId !== id) || [],
+          })),
+        })),
     }),
     {
       name: 'videos-storage',
