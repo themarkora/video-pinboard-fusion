@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { addVideoActions } from './actions/videoActions';
 import { boardActions } from './actions/boardActions';
-import { VideosState } from './types';
+import { Video, Board } from './types';
 
 export interface VideosState {
   videos: Video[];
@@ -200,4 +200,4 @@ export const useVideos = create<VideosState>()(
   )
 );
 
-export type { Video, Board } from './types';
+export type { Video, Board };
