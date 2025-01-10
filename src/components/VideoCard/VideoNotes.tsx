@@ -7,7 +7,6 @@ import { useToast } from '@/hooks/use-toast';
 
 interface VideoNotesProps {
   notes: string[];
-  isAddingNote: boolean;
   note: string;
   onNoteChange: (note: string) => void;
   onAddNote: () => void;
@@ -16,7 +15,6 @@ interface VideoNotesProps {
 
 export const VideoNotes: React.FC<VideoNotesProps> = ({
   notes,
-  isAddingNote,
   note,
   onNoteChange,
   onAddNote,
@@ -54,25 +52,23 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   };
 
   return (
-    <>
-      {isAddingNote && (
-        <div className="flex gap-2">
-          <Input
-            value={note}
-            onChange={(e) => onNoteChange(e.target.value)}
-            placeholder="Add a note..."
-            className="bg-secondary/50 border-none rounded-xl flex-1"
-            onKeyDown={(e) => e.key === 'Enter' && onAddNote()}
-          />
-          <Button
-            variant="secondary"
-            className="rounded-xl whitespace-nowrap"
-            onClick={onAddNote}
-          >
-            Add
-          </Button>
-        </div>
-      )}
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <Input
+          value={note}
+          onChange={(e) => onNoteChange(e.target.value)}
+          placeholder="Add a note..."
+          className="bg-[#1A1F2E] border-none rounded-xl flex-1 text-gray-200 placeholder:text-gray-400"
+          onKeyDown={(e) => e.key === 'Enter' && onAddNote()}
+        />
+        <Button
+          variant="secondary"
+          className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl whitespace-nowrap"
+          onClick={onAddNote}
+        >
+          Add
+        </Button>
+      </div>
       
       {notes && notes.length > 0 && (
         <div className="p-3 bg-[#2A2F3C] rounded-xl space-y-2">
@@ -84,7 +80,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
                   <Input
                     value={editedNote}
                     onChange={(e) => setEditedNote(e.target.value)}
-                    className="flex-1 bg-secondary/50 border-none rounded-xl h-8 text-sm"
+                    className="flex-1 bg-[#1A1F2E] border-none rounded-xl h-8 text-sm text-gray-200"
                     onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(index)}
                     autoFocus
                   />
@@ -132,6 +128,6 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 };

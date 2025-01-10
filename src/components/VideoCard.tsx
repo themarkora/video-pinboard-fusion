@@ -23,7 +23,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [note, setNote] = useState('');
   const { addNote, addToBoard, deleteVideo, boards, removeFromBoard, addTag, removeTag } = useVideos();
-  const [isAddingNote, setIsAddingNote] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
   const [newTag, setNewTag] = useState('');
@@ -61,7 +60,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     if (note.trim()) {
       addNote(video.id, note);
       setNote('');
-      setIsAddingNote(false);
       showSuccessToast(
         "Note added",
         "Your note has been saved successfully."
@@ -186,7 +184,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
                 "The video has been removed from your collection."
               );
             }}
-            onAddNote={() => setIsAddingNote(true)}
             onAddTag={handleAddTag}
             boardId={boardId}
             onRemoveFromBoard={() => {
@@ -198,6 +195,14 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
                 );
               }
             }}
+          />
+
+          <VideoNotes
+            notes={video.notes || []}
+            note={note}
+            onNoteChange={setNote}
+            onAddNote={handleAddNote}
+            videoId={video.id}
           />
 
           <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
