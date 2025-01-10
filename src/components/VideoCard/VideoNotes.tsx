@@ -81,8 +81,10 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  onAddNote();
-                  setShowInput(false);
+                  if (note.trim()) {
+                    onAddNote();
+                    setShowInput(false);
+                  }
                 }
               }}
               maxLength={MAX_CHARS}
@@ -102,8 +104,10 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
                 <Button
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                   onClick={() => {
-                    onAddNote();
-                    setShowInput(false);
+                    if (note.trim()) {
+                      onAddNote();
+                      setShowInput(false);
+                    }
                   }}
                 >
                   Save

@@ -59,10 +59,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     if (note.trim()) {
       addNote(video.id, note);
       setNote('');
-      showSuccessToast(
-        "Note added",
-        "Your note has been saved successfully."
-      );
     }
   };
 
