@@ -9,16 +9,16 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 
 const Index = () => {
-  const { videos, togglePin, activeTab, boards } = useVideos();
+  const { videos, togglePin, activeTab, setActiveTab, boards } = useVideos();
 
   const filteredVideos = videos.filter((video) => {
     switch (activeTab) {
       case 'pinned':
-        return video.isPinned === true; // Strict comparison to ensure only pinned videos are shown
+        return video.isPinned === true;
       case 'notes':
-        return video.notes && video.notes.length > 0;
+        return Array.isArray(video.notes) && video.notes.length > 0;
       case 'boards':
-        return false;
+        return Array.isArray(video.boardIds) && video.boardIds.length > 0;
       case 'recent':
       default:
         return true;
@@ -63,7 +63,7 @@ const Index = () => {
           />
         </div>
 
-        <Tabs defaultValue="recent" className="w-full">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
           <TabsList className="bg-transparent border-b border-gray-800 w-full justify-start gap-2 h-auto pb-4 overflow-x-auto">
             <TabsTrigger 
               value="recent"
@@ -111,7 +111,7 @@ const Index = () => {
               />
             ))}
             {filteredVideos.length === 0 && (
-              <p className="text-center text-gray-400 py-8 col-span-full">No videos available.</p>
+              <p className="text-center text-gray-400 py-8 col-span-full">No videos available in this tab.</p>
             )}
           </div>
         )}
