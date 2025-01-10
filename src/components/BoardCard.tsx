@@ -12,12 +12,25 @@ interface BoardCardProps {
 
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { videos, reorderVideosInBoard } = useVideos();
+  const { videos } = useVideos();
 
-  const boardVideos = videos.filter(video => video.boardIds?.includes(id));
+  const boardVideos = videos
+    .filter(video => video.boardIds?.includes(id))
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!isExpanded) {
+      setIsExpanded(true);
+    }
+  };
 
   return (
-    <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">
+    <Card 
+      className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden"
+      onDragEnter={handleDragEnter}
+      onDragOver={(e) => e.preventDefault()}
+    >
       <div 
         className="p-4 flex items-center justify-between cursor-pointer hover:bg-secondary/50"
         onClick={() => setIsExpanded(!isExpanded)}
