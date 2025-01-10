@@ -26,7 +26,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   const { toast } = useToast();
   const [showInput, setShowInput] = useState(false);
   
-  const MAX_CHARS = 280;
+  const MAX_CHARS = 25;
 
   const handleEditClick = (index: number, currentNote: string) => {
     setEditingIndex(index);
