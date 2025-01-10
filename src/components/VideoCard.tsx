@@ -141,6 +141,8 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     )
   );
 
+  const shouldShowNotes = (video.notes && video.notes.length > 0) || isAddingNote;
+
   return (
     <>
       <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
@@ -200,8 +202,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             }}
           />
 
-          {/* Only render VideoNotes if there are notes or if we're adding a note */}
-          {((video.notes && video.notes.length > 0) || isAddingNote) && (
+          {shouldShowNotes && (
             <VideoNotes
               notes={video.notes || []}
               isAddingNote={isAddingNote}
