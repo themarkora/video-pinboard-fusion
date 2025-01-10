@@ -34,7 +34,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     toast({
       title,
       description,
-      className: "bg-purple-600/90 text-white border-none",
+      className: "bg-[#492A81] text-white border-none",
       action: (
         <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
           <Check className="h-4 w-4 text-white" />
@@ -48,7 +48,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
       title,
       description,
       variant: "destructive",
-      className: "bg-red-600/90 text-white border-none",
+      className: "bg-red-600 text-white border-none",
       action: (
         <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
           <AlertCircle className="h-4 w-4 text-white" />
