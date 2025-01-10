@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { addVideoActions } from './actions/videoActions';
 import { boardActions } from './actions/boardActions';
-import { Video, Board } from './types';
+import { VideosState } from './types';
 
 export interface VideosState {
   videos: Video[];
@@ -36,36 +36,7 @@ export const useVideos = create<VideosState>()(
       activeTab: 'recent',
       ...addVideoActions(set),
       ...boardActions(set),
-
-      reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => {
-        set((state) => {
-          // Get the filtered list based on the active tab
-          let filteredVideos = [...state.videos];
-          if (listType === 'pinned') {
-            filteredVideos = state.videos.filter(v => v.isPinned);
-          } else if (listType === 'notes') {
-            filteredVideos = state.videos.filter(v => Array.isArray(v.notes) && v.notes.length > 0);
-          }
-
-          // Get the video being moved
-          const [movedVideo] = filteredVideos.splice(sourceIndex, 1);
-          filteredVideos.splice(destinationIndex, 0, movedVideo);
-
-          // Update order for all videos in the filtered list
-          const updatedFilteredVideos = filteredVideos.map((video, index) => ({
-            ...video,
-            order: index * 1000 // Use multiplier to prevent order conflicts
-          }));
-
-          // Merge the updated orders back into the full video list
-          const finalVideos = state.videos.map(video => {
-            const updatedVideo = updatedFilteredVideos.find(v => v.id === video.id);
-            return updatedVideo || video;
-          });
-
-          return { videos: finalVideos };
-        });
-      },
+      setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
 
       removeTag: (videoId: string, tag: string) =>
         set((state) => ({
@@ -145,6 +116,33 @@ export const useVideos = create<VideosState>()(
           ),
         })),
 
+      reorderVideos: (listType: string, sourceIndex: number, destinationIndex: number) => {
+        set((state) => {
+          let filteredVideos = state.videos;
+          
+          if (listType === 'pinned') {
+            filteredVideos = state.videos.filter(v => v.isPinned);
+          } else if (listType === 'notes') {
+            filteredVideos = state.videos.filter(v => Array.isArray(v.notes) && v.notes.length > 0);
+          }
+          
+          const [movedVideo] = filteredVideos.splice(sourceIndex, 1);
+          filteredVideos.splice(destinationIndex, 0, movedVideo);
+          
+          const updatedVideos = filteredVideos.map((video, index) => ({
+            ...video,
+            order: index,
+          }));
+          
+          const finalVideos = state.videos.map(video => {
+            const updatedVideo = updatedVideos.find(v => v.id === video.id);
+            return updatedVideo || video;
+          });
+          
+          return { videos: finalVideos };
+        });
+      },
+
       reorderVideosInBoard: (boardId: string, sourceIndex: number, destinationIndex: number) => {
         set((state) => {
           const boardVideos = state.videos.filter(video => video.boardIds?.includes(boardId));
@@ -202,4 +200,4 @@ export const useVideos = create<VideosState>()(
   )
 );
 
-export type { Video, Board };
+export type { Video, Board } from './types';
