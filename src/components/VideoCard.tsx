@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { VideoPlayer } from './VideoPlayer';
 import { Video } from '@/store/useVideos';
 import { useVideos } from '@/store/useVideos';
-import { useToast } from './ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { VideoThumbnail } from './VideoCard/VideoThumbnail';
 import { VideoNotes } from './VideoCard/VideoNotes';
 import { VideoActions } from './VideoCard/VideoActions';
@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Check, AlertCircle } from "lucide-react";
 
 interface VideoCardProps {
   video: Video;
@@ -28,15 +29,42 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   const [newTag, setNewTag] = useState('');
   const { toast } = useToast();
 
+  const showSuccessToast = (title: string, description: string) => {
+    toast({
+      title,
+      description,
+      className: "bg-purple-600/90 text-white border-none",
+      action: (
+        <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
+          <Check className="h-4 w-4 text-white" />
+        </div>
+      ),
+    });
+  };
+
+  const showErrorToast = (title: string, description: string) => {
+    toast({
+      title,
+      description,
+      variant: "destructive",
+      className: "bg-red-600/90 text-white border-none",
+      action: (
+        <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
+          <AlertCircle className="h-4 w-4 text-white" />
+        </div>
+      ),
+    });
+  };
+
   const handleAddNote = () => {
     if (note.trim()) {
       addNote(video.id, note);
       setNote('');
       setIsAddingNote(false);
-      toast({
-        title: "Note added",
-        description: "Your note has been saved successfully.",
-      });
+      showSuccessToast(
+        "Note added",
+        "Your note has been saved successfully."
+      );
     }
   };
 
@@ -45,10 +73,10 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
       const boardId = useVideos.getState().addBoard(newBoardName);
       addToBoard(video.id, boardId);
       setNewBoardName('');
-      toast({
-        title: "Board created",
-        description: `Video added to new board "${newBoardName}"`,
-      });
+      showSuccessToast(
+        "Board created",
+        `Video added to new board "${newBoardName}"`
+      );
     }
   };
 
@@ -66,10 +94,10 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
       addTag(video.id, newTag.trim());
       setNewTag('');
       setIsTagDialogOpen(false);
-      toast({
-        title: "Tag added",
-        description: "Your tag has been added successfully.",
-      });
+      showSuccessToast(
+        "Tag added",
+        "Your tag has been added successfully."
+      );
     }
   };
 
@@ -77,10 +105,10 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     if (tag) {
       addTag(video.id, tag);
       setIsTagDialogOpen(false);
-      toast({
-        title: "Tag added",
-        description: "Selected tag has been added to the video.",
-      });
+      showSuccessToast(
+        "Tag added",
+        "Selected tag has been added to the video."
+      );
     }
   };
 
@@ -126,7 +154,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             onAddToBoard={handleAddToBoard}
             onDelete={() => {
               deleteVideo(video.id);
-              toast({
+              showSuccessToast({
                 title: "Video deleted",
                 description: "The video has been removed from your collection.",
               });
@@ -137,7 +165,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             onRemoveFromBoard={() => {
               if (boardId) {
                 removeFromBoard(video.id, boardId);
-                toast({
+                showSuccessToast({
                   title: "Video removed",
                   description: "Video has been removed from the board",
                 });
