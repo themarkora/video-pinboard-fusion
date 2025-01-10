@@ -78,13 +78,32 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
                           ...provided.draggableProps.style,
                           transform: snapshot.isDragging 
                             ? provided.draggableProps.style?.transform 
-                            : 'none'
+                            : 'none',
+                          height: snapshot.isDragging ? '0' : 'auto',
+                          position: snapshot.isDragging ? 'relative' : 'static',
+                          gridRow: snapshot.isDragging ? '1' : 'auto',
+                          gridColumn: snapshot.isDragging ? '1' : 'auto',
+                          zIndex: snapshot.isDragging ? 999 : 'auto'
                         }}
-                        className={`transition-transform duration-200 ${
-                          snapshot.isDragging ? 'scale-105 rotate-2 z-50' : ''
-                        }`}
                       >
-                        <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
+                        <div style={{
+                          visibility: snapshot.isDragging ? 'hidden' : 'visible',
+                          height: '100%'
+                        }}>
+                          <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
+                        </div>
+                        {snapshot.isDragging && (
+                          <div style={{
+                            position: 'fixed',
+                            pointerEvents: 'none',
+                            left: 0,
+                            top: 0,
+                            transform: provided.draggableProps.style?.transform,
+                            width: '100%'
+                          }}>
+                            <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
+                          </div>
+                        )}
                       </div>
                     )}
                   </Draggable>
