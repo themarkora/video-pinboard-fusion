@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
@@ -13,8 +13,32 @@ interface BoardCardProps {
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { videos, reorderVideosInBoard } = useVideos();
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
+
+  const handleMouseEnter = (isDraggingOver: boolean) => {
+    if (isDraggingOver && !isExpanded) {
+      hoverTimerRef.current = setTimeout(() => {
+        setIsExpanded(true);
+      }, 1000); // 1 second delay
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <Droppable droppableId={id} type="VIDEO">
@@ -25,6 +49,8 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
           } overflow-hidden transition-all duration-200`}
           ref={provided.innerRef}
           {...provided.droppableProps}
+          onMouseEnter={() => handleMouseEnter(snapshot.isDraggingOver)}
+          onMouseLeave={handleMouseLeave}
         >
           <div 
             className={`p-4 flex items-center justify-between ${
