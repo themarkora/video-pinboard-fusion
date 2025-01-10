@@ -12,16 +12,14 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Check, AlertCircle, X } from "lucide-react";
-import { CSSProperties } from 'react';
 
 interface VideoCardProps {
   video: Video;
   onTogglePin: (id: string) => void;
   boardId?: string;
-  style?: CSSProperties;
 }
 
-export const VideoCard = ({ video, onTogglePin, boardId, style }: VideoCardProps) => {
+export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [note, setNote] = useState('');
   const { addNote, addToBoard, deleteVideo, boards, removeFromBoard, addTag, removeTag } = useVideos();
@@ -145,10 +143,7 @@ export const VideoCard = ({ video, onTogglePin, boardId, style }: VideoCardProps
 
   return (
     <>
-      <Card 
-        className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02]"
-        style={style}
-      >
+      <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
         <VideoThumbnail
           thumbnail={video.thumbnail}
           title={video.title}
