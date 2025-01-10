@@ -76,31 +76,24 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
                         {...provided.dragHandleProps}
                         style={{
                           ...provided.draggableProps.style,
-                          transform: snapshot.isDragging 
-                            ? provided.draggableProps.style?.transform 
-                            : 'none',
-                          height: snapshot.isDragging ? '0' : 'auto',
-                          position: snapshot.isDragging ? 'relative' : 'static',
-                          gridRow: snapshot.isDragging ? '1' : 'auto',
-                          gridColumn: snapshot.isDragging ? '1' : 'auto',
-                          zIndex: snapshot.isDragging ? 999 : 'auto'
+                          transform: snapshot.isDragging ? provided.draggableProps.style?.transform : 'none',
                         }}
                       >
-                        <div style={{
-                          visibility: snapshot.isDragging ? 'hidden' : 'visible',
-                          height: '100%'
-                        }}>
+                        <div style={{ opacity: snapshot.isDragging ? 0.5 : 1 }}>
                           <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
                         </div>
                         {snapshot.isDragging && (
-                          <div style={{
-                            position: 'fixed',
-                            pointerEvents: 'none',
-                            left: 0,
-                            top: 0,
-                            transform: provided.draggableProps.style?.transform,
-                            width: '100%'
-                          }}>
+                          <div
+                            style={{
+                              position: 'fixed',
+                              pointerEvents: 'none',
+                              width: 'auto',
+                              height: 'auto',
+                              top: 0,
+                              left: 0,
+                              transform: provided.draggableProps.style?.transform,
+                            }}
+                          >
                             <VideoCard video={video} onTogglePin={() => {}} boardId={id} />
                           </div>
                         )}
