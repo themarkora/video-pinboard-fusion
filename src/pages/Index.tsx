@@ -73,7 +73,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
       <AnimatedBackground />
       <Header />
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-32"> {/* Added pb-32 here */}
         <div className="text-center pt-12 sm:pt-16 mb-8 sm:mb-12">
           <div className="flex items-center justify-center mb-4">
             <img src="/lovable-uploads/4ec29862-7e48-44ec-8e24-268de758604c.png" alt="VidPin Logo" className="h-8 sm:h-10" />
