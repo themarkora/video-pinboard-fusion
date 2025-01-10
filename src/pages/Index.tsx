@@ -129,14 +129,13 @@ const Index = () => {
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 p-4 rounded-xl transition-colors duration-200 ${
+                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 p-4 rounded-xl ${
                     snapshot.isDraggingOver ? 'bg-purple-500/10' : ''
                   }`}
                   style={{
                     display: 'grid',
                     gridAutoFlow: 'dense',
                     minHeight: '200px',
-                    position: 'relative',
                   }}
                 >
                   {filteredVideos.map((video, index) => (
@@ -150,12 +149,13 @@ const Index = () => {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={snapshot.isDragging ? 'z-50 shadow-2xl scale-[1.02]' : ''}
                           style={{
                             ...provided.draggableProps.style,
-                            transformOrigin: 'center',
-                            position: 'relative',
-                            gridRow: 'auto',
+                            transition: snapshot.isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
+                            transform: snapshot.isDragging 
+                              ? `${provided.draggableProps.style?.transform} scale(1.02)`
+                              : provided.draggableProps.style?.transform,
+                            zIndex: snapshot.isDragging ? 999 : 'auto',
                           }}
                         >
                           <VideoCard
