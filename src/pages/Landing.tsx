@@ -1,7 +1,30 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const Landing = () => {
+  const [featureImages, setFeatureImages] = useState({
+    collections: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+    organization: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+    quickAccess: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
+  });
+
+  const handleImageUpload = (feature: keyof typeof featureImages) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Create a temporary URL for immediate preview
+    const tempUrl = URL.createObjectURL(file);
+    setFeatureImages(prev => ({
+      ...prev,
+      [feature]: tempUrl
+    }));
+
+    // In a real application, you would upload the file to your server here
+    console.log(`Uploading image for ${feature}:`, file);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white">
       {/* Navigation Header */}
@@ -62,34 +85,69 @@ const Landing = () => {
         <h2 className="text-3xl font-bold text-center mb-16">Transform how you organize your research videos</h2>
         <div className="grid md:grid-cols-3 gap-8 mb-20">
           <div className="bg-card p-6 rounded-lg">
-            <div className="mb-4">
+            <div className="mb-4 relative group">
               <img 
-                src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
+                src={featureImages.collections}
                 alt="Personal Collections" 
                 className="w-full h-48 object-cover rounded-lg mb-4"
               />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload('collections')}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                <Button variant="secondary" className="pointer-events-none">
+                  Change Image
+                </Button>
+              </div>
             </div>
             <h3 className="text-xl font-semibold mb-4">Personal Collections</h3>
             <p className="text-gray-300">Create focused boards for different research topics and projects</p>
           </div>
+
           <div className="bg-card p-6 rounded-lg">
-            <div className="mb-4">
+            <div className="mb-4 relative group">
               <img 
-                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085" 
+                src={featureImages.organization}
                 alt="Smart Organization" 
                 className="w-full h-48 object-cover rounded-lg mb-4"
               />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload('organization')}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                <Button variant="secondary" className="pointer-events-none">
+                  Change Image
+                </Button>
+              </div>
             </div>
             <h3 className="text-xl font-semibold mb-4">Smart Organization</h3>
             <p className="text-gray-300">Tag and annotate videos to build your knowledge base</p>
           </div>
+
           <div className="bg-card p-6 rounded-lg">
-            <div className="mb-4">
+            <div className="mb-4 relative group">
               <img 
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" 
+                src={featureImages.quickAccess}
                 alt="Quick Access" 
                 className="w-full h-48 object-cover rounded-lg mb-4"
               />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload('quickAccess')}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                <Button variant="secondary" className="pointer-events-none">
+                  Change Image
+                </Button>
+              </div>
             </div>
             <h3 className="text-xl font-semibold mb-4">Quick Access</h3>
             <p className="text-gray-300">Find the exact video you need when inspiration strikes</p>
