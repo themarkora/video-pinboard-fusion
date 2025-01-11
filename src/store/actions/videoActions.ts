@@ -17,7 +17,7 @@ export const addVideoActions = (set: any) => ({
       url,
       title: details.title,
       thumbnail: details.thumbnail,
-      is_pinned: true, // Always set to true when adding
+      is_pinned: true,
       added_at: new Date().toISOString(),
       notes: [],
       board_ids: [],
@@ -32,18 +32,16 @@ export const addVideoActions = (set: any) => ({
 
     if (error) throw error;
 
-    // Update local state with the new video, maintaining consistency with is_pinned
     set((state: any) => ({
       videos: [{ 
         ...newVideo, 
-        isPinned: newVideo.is_pinned, // Add isPinned for frontend compatibility
+        isPinned: newVideo.is_pinned,
         addedAt: new Date(newVideo.added_at) 
       }, ...state.videos],
     }));
   },
 
   togglePin: async (id: string) => {
-    // First get the current pin state from the database
     const { data: video } = await supabase
       .from('videos')
       .select('is_pinned')
@@ -54,7 +52,6 @@ export const addVideoActions = (set: any) => ({
 
     const updatedIsPinned = !video.is_pinned;
 
-    // Update in database
     const { error } = await supabase
       .from('videos')
       .update({ is_pinned: updatedIsPinned })
@@ -62,11 +59,14 @@ export const addVideoActions = (set: any) => ({
 
     if (error) throw error;
 
-    // Update local state, maintaining both is_pinned and isPinned properties
     set((state: any) => ({
       videos: state.videos.map((v: Video) =>
         v.id === id
-          ? { ...v, is_pinned: updatedIsPinned, isPinned: updatedIsPinned }
+          ? { 
+              ...v, 
+              is_pinned: updatedIsPinned, 
+              isPinned: updatedIsPinned 
+            }
           : v
       ),
     }));
@@ -79,11 +79,11 @@ export const addVideoActions = (set: any) => ({
     const { data: videos, error } = await supabase
       .from('videos')
       .select('*')
+      .eq('user_id', user.id)
       .order('added_at', { ascending: false });
 
     if (error) throw error;
 
-    // Transform the data to include both is_pinned and isPinned for frontend compatibility
     const transformedVideos = (videos || []).map(video => ({
       ...video,
       isPinned: video.is_pinned,
