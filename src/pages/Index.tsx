@@ -8,15 +8,27 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { useState, useMemo, useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const { videos, togglePin, activeTab, setActiveTab, boards, fetchVideos, fetchBoards } = useVideos();
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchVideos();
-    fetchBoards();
-  }, []);
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([fetchVideos(), fetchBoards()]);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [fetchVideos, fetchBoards]);
 
   // Filter videos based on search query and active tab
   const filteredVideos = useMemo(() => {
@@ -49,6 +61,28 @@ const Index = () => {
       }
     });
   }, [videos, searchQuery, activeTab]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
+        <AnimatedBackground />
+        <Header />
+        <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-32">
+          <div className="text-center pt-12 sm:pt-16 mb-8 sm:mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="h-48 w-full bg-[#1A1F2E]/50" />
+                  <Skeleton className="h-4 w-3/4 bg-[#1A1F2E]/50" />
+                  <Skeleton className="h-4 w-1/2 bg-[#1A1F2E]/50" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
