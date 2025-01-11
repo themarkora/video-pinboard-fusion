@@ -94,7 +94,7 @@ const initializeAuth = async () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.email);
       
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+      if (event === 'SIGNED_OUT') {
         // Clear any stored session data
         useAuth.setState({ user: null, loading: false });
       } else if (session) {
