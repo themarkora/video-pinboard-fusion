@@ -36,23 +36,31 @@ export const VideoActions: React.FC<VideoActionsProps> = ({
           <span className="hidden sm:inline">Remove</span>
         </Button>
       ) : (
-        <Button 
-          variant="secondary"
-          className={`w-full ${isPinned ? 'bg-purple-600 hover:bg-purple-700' : 'bg-[#2A2F3C] hover:bg-[#353B4A]'} text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2`}
-          onClick={onTogglePin}
-        >
-          {isPinned ? (
-            <>
-              <PinOff className="h-5 w-5" />
-              <span className="hidden sm:inline">Unpin</span>
-            </>
-          ) : (
-            <>
-              <Pin className="h-5 w-5" />
-              <span className="hidden sm:inline">Pin</span>
-            </>
-          )}
-        </Button>
+        <div className="relative w-full h-11 rounded-xl overflow-hidden">
+          <Button 
+            variant="secondary"
+            className={`w-full h-full flex items-center justify-center gap-2 ${
+              isPinned 
+                ? 'bg-purple-600 hover:bg-purple-700' 
+                : 'bg-gradient-to-r from-[#2A2F3C] via-[#2A2F3C] to-purple-600'
+            } text-white font-medium transition-all duration-200`}
+            onClick={onTogglePin}
+          >
+            <div className="flex items-center gap-2">
+              {isPinned ? (
+                <>
+                  <PinOff className="h-5 w-5" />
+                  <span className="hidden sm:inline">Unpin</span>
+                </>
+              ) : (
+                <>
+                  <Pin className="h-5 w-5" />
+                  <span className="hidden sm:inline">Pin</span>
+                </>
+              )}
+            </div>
+          </Button>
+        </div>
       )}
 
       <Button 
