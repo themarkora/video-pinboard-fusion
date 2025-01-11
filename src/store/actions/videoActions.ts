@@ -50,7 +50,7 @@ export const addVideoActions = (set: any) => ({
 
     if (!video) throw new Error('Video not found');
 
-    const updatedIsPinned = false; // Always unpin when toggle is clicked
+    const updatedIsPinned = !video.is_pinned;
 
     const { error } = await supabase
       .from('videos')
@@ -62,7 +62,7 @@ export const addVideoActions = (set: any) => ({
     set((state: any) => ({
       videos: state.videos.map((v: Video) =>
         v.id === id
-          ? { ...v, is_pinned: updatedIsPinned, isPinned: updatedIsPinned }
+          ? { ...v, isPinned: updatedIsPinned }
           : v
       ),
     }));
