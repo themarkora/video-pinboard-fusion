@@ -4,6 +4,7 @@ import { Pin } from "@/components/icons/Pin";
 import { useState } from "react";
 import { useAuth } from "@/store/useAuth";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 export const AuthForm = () => {
   const [email, setEmail] = useState("");
@@ -16,13 +17,16 @@ export const AuthForm = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
+      console.log(`Attempting to ${mode} with email:`, email);
       if (mode === "signin") {
         await signIn(email, password);
       } else {
         await signUp(email, password);
       }
+      toast.success(`Successfully ${mode === "signin" ? "signed in" : "signed up"}!`);
     } catch (error) {
-      console.error("Authentication error:", error);
+      console.error(`${mode} error:`, error);
+      toast.error(`Failed to ${mode}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +79,7 @@ export const AuthForm = () => {
             className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6"
             disabled={isLoading}
           >
-            {mode === "signin" ? "Sign In" : "Sign Up"}
+            {isLoading ? "Loading..." : mode === "signin" ? "Sign In" : "Sign Up"}
           </Button>
 
           <div className="text-center text-sm">
