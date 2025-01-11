@@ -1,39 +1,44 @@
-import { StateCreator } from 'zustand';
-import { VideosState } from '../useVideos';
-import { extractVideoId, fetchVideoInfo } from '@/lib/youtube';
+import { Video } from '../types';
 
-export const addVideoActions = (
-  set: Parameters<StateCreator<VideosState>>[0],
-  get: Parameters<StateCreator<VideosState>>[1],
-  store: Parameters<StateCreator<VideosState>>[2]
-) => ({
-  addVideo: async (url: string, isPinned: boolean = false) => {
-    try {
-      const videoId = extractVideoId(url);
-      if (!videoId) {
-        throw new Error('Invalid YouTube URL');
-      }
+export const addVideoActions = (set: any) => ({
+  addVideo: async (url: string, isPinned: boolean = true) => {
+    const videoId = getYouTubeVideoId(url);
+    if (!videoId) throw new Error('Invalid YouTube URL');
 
-      const videoInfo = await fetchVideoInfo(videoId);
-      
-      set((state) => ({
-        videos: [
-          {
-            id: videoId,
-            url,
-            title: videoInfo.title || 'Untitled Video',
-            thumbnail: videoInfo.thumbnail,
-            isPinned,
-            addedAt: new Date(),
-            notes: [],
-            boardIds: [],
-            tags: [],
-          },
-          ...state.videos,
-        ],
-      }));
-    } catch (error) {
-      throw error;
-    }
+    const details = await fetchVideoDetails(videoId);
+    
+    set((state: any) => ({
+      videos: [
+        {
+          id: videoId,
+          url,
+          title: details.title,
+          thumbnail: details.thumbnail,
+          isPinned,
+          addedAt: new Date(),
+          notes: [],
+          boardIds: [],
+          views: 0,
+          votes: 0,
+        },
+        ...state.videos,
+      ],
+    }));
   },
 });
+
+const getYouTubeVideoId = (url: string) => {
+  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+};
+
+const fetchVideoDetails = async (videoId: string) => {
+  const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+  const data = await response.json();
+  
+  return {
+    title: data.title || 'Untitled Video',
+    thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+  };
+};

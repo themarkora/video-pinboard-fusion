@@ -27,11 +27,11 @@ export interface VideosState {
 
 export const useVideos = create<VideosState>()(
   persist(
-    (set, get, store) => ({
+    (set) => ({
       videos: [],
       boards: [],
       activeTab: 'recent',
-      ...addVideoActions(set, get, store),
+      ...addVideoActions(set),
       ...boardActions(set),
       setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
 
