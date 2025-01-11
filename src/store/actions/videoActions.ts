@@ -1,10 +1,14 @@
 import { Video } from '../types';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const addVideoActions = (set: any) => ({
   addVideo: async (url: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      toast.error("Please sign in to add videos");
+      throw new Error('User not authenticated');
+    }
 
     const videoId = getYouTubeVideoId(url);
     if (!videoId) throw new Error('Invalid YouTube URL');
@@ -13,7 +17,7 @@ export const addVideoActions = (set: any) => ({
 
     const newVideo = {
       id: videoId,
-      user_id: user.id,
+      user_id: session.user.id,
       url,
       title: details.title,
       thumbnail: details.thumbnail,
@@ -30,7 +34,10 @@ export const addVideoActions = (set: any) => ({
       .from('videos')
       .insert(newVideo);
 
-    if (error) throw error;
+    if (error) {
+      toast.error("Failed to add video");
+      throw error;
+    }
 
     set((state: any) => ({
       videos: [{ 
@@ -42,8 +49,11 @@ export const addVideoActions = (set: any) => ({
   },
 
   togglePin: async (id: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      toast.error("Please sign in to toggle pin status");
+      throw new Error('User not authenticated');
+    }
 
     const { data: video } = await supabase
       .from('videos')
@@ -60,7 +70,10 @@ export const addVideoActions = (set: any) => ({
       .update({ is_pinned: updatedIsPinned })
       .eq('id', id);
 
-    if (error) throw error;
+    if (error) {
+      toast.error("Failed to update pin status");
+      throw error;
+    }
 
     set((state: any) => ({
       videos: state.videos.map((v: Video) =>
@@ -72,16 +85,22 @@ export const addVideoActions = (set: any) => ({
   },
 
   fetchVideos: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      toast.error("Please sign in to view videos");
+      throw new Error('User not authenticated');
+    }
 
     const { data: videos, error } = await supabase
       .from('videos')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', session.user.id)
       .order('added_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      toast.error("Failed to fetch videos");
+      throw error;
+    }
 
     const transformedVideos = videos.map(video => ({
       ...video,
