@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useAuth, refreshSession } from "@/store/useAuth";
+import { useAuth } from "@/store/useAuth";
 import { useVideos } from "@/store/useVideos";
 import { useEffect } from "react";
 import Index from "./pages/Index";
@@ -22,10 +22,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user, clearVideos]);
 
-  useEffect(() => {
-    refreshSession();
-  }, []);
-
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">
       <div className="text-lg">Loading...</div>
@@ -41,10 +37,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   const { user, loading } = useAuth();
-
-  useEffect(() => {
-    refreshSession();
-  }, []);
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">

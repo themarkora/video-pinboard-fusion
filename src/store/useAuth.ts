@@ -9,26 +9,11 @@ interface AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  refreshSession: () => Promise<void>;
 }
 
 export const useAuth = create<AuthState>((set) => ({
   user: null,
   loading: true,
-  refreshSession: async () => {
-    try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('Session refresh error:', error);
-        set({ user: null, loading: false });
-        return;
-      }
-      set({ user: session?.user || null, loading: false });
-    } catch (error) {
-      console.error('Session refresh error:', error);
-      set({ user: null, loading: false });
-    }
-  },
   signIn: async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -69,59 +54,32 @@ export const useAuth = create<AuthState>((set) => ({
       if (error) throw error;
       
       set({ user: null });
-      localStorage.clear();
       toast.success("Successfully signed out");
     } catch (error: any) {
       console.error('Sign out error:', error);
       set({ user: null });
-      localStorage.clear();
-      toast.error("Error during sign out, but you've been logged out locally");
+      toast.error("Error during sign out");
     }
   },
 }));
 
-// Initialize auth state and set up real-time subscription
-const initializeAuth = async () => {
-  try {
-    // Get the initial session
-    const { data: { session }, error } = await supabase.auth.getSession();
-    
-    if (error) {
-      console.error('Error getting initial session:', error);
-      useAuth.setState({ loading: false });
-      return;
-    }
-
-    useAuth.setState({ 
-      user: session?.user ?? null, 
-      loading: false 
-    });
-
-    // Set up real-time subscription to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email);
-      
-      if (event === 'SIGNED_OUT') {
-        useAuth.setState({ user: null, loading: false });
-        localStorage.clear();
-      } else if (session?.user) {
-        useAuth.setState({ user: session.user, loading: false });
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  } catch (error) {
-    console.error('Error initializing auth:', error);
+// Initialize auth state
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event, session?.user?.email);
+  
+  if (event === 'SIGNED_OUT') {
+    useAuth.setState({ user: null, loading: false });
+  } else if (session?.user) {
+    useAuth.setState({ user: session.user, loading: false });
+  } else {
     useAuth.setState({ loading: false });
   }
-};
+});
 
-// Call initialize immediately
-initializeAuth();
-
-export const refreshSession = async () => {
-  const auth = useAuth.getState();
-  await auth.refreshSession();
-};
+// Get initial session
+supabase.auth.getSession().then(({ data: { session } }) => {
+  useAuth.setState({ 
+    user: session?.user ?? null,
+    loading: false
+  });
+});
