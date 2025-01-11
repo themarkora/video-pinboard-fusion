@@ -11,15 +11,20 @@ export const Header = () => {
 
   const handleSignOut = async () => {
     try {
-      // First clear the session from Supabase
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      // First try to get the current session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // If we have a session, try to sign out normally
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+      }
 
-      // Then clear local state
+      // Clear local state regardless of session status
       signOut();
       
       // Clear any remaining auth data from localStorage
-      localStorage.removeItem('sb-' + import.meta.env.VITE_SUPABASE_PROJECT_ID + '-auth-token');
+      localStorage.clear(); // Clear all localStorage to ensure no auth data remains
       
       toast.success("Successfully signed out");
       navigate("/");
@@ -27,8 +32,9 @@ export const Header = () => {
       console.error("Sign out error:", error);
       // Even if there's an error, we should still clear local state and redirect
       signOut();
-      localStorage.removeItem('sb-' + import.meta.env.VITE_SUPABASE_PROJECT_ID + '-auth-token');
+      localStorage.clear();
       navigate("/");
+      toast.error("Error during sign out, but you've been logged out locally");
     }
   };
 

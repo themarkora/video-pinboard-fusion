@@ -40,18 +40,8 @@ export const useAuth = create<AuthState>((set) => ({
     console.log('Sign up successful:', data);
   },
   signOut: async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      // Clear local state
-      set({ user: null });
-      console.log('Sign out successful');
-    } catch (error) {
-      console.error('Sign out error:', error);
-      // Even if there's an error, we should still clear local state
-      set({ user: null });
-    }
+    set({ user: null }); // Immediately clear the user state
+    console.log('Local state cleared');
   },
 }));
 
