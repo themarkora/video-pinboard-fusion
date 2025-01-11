@@ -2,8 +2,6 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Pin } from "lucide-react";
 import { useAuth } from "@/store/useAuth";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
@@ -11,30 +9,11 @@ export const Header = () => {
 
   const handleSignOut = async () => {
     try {
-      // First try to get the current session
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        // If we have a session, try to sign out normally
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
-      }
-
-      // Clear local state regardless of session status
-      signOut();
-      
-      // Clear any remaining auth data from localStorage
-      localStorage.clear(); // Clear all localStorage to ensure no auth data remains
-      
-      toast.success("Successfully signed out");
+      await signOut();
       navigate("/");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Sign out error:", error);
-      // Even if there's an error, we should still clear local state and redirect
-      signOut();
-      localStorage.clear();
-      navigate("/");
-      toast.error("Error during sign out, but you've been logged out locally");
+      // Navigation is handled in the auth store
     }
   };
 
