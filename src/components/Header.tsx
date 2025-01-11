@@ -11,35 +11,21 @@ export const Header = () => {
 
   const handleSignOut = async () => {
     try {
-      // First check if we have a session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        // If no session, just clear the state and redirect
-        signOut();
-        navigate("/");
-        return;
-      }
-
-      if (!session) {
-        // No active session, just clear the state and redirect
-        signOut();
-        navigate("/");
-        return;
-      }
-
-      // We have a valid session, proceed with sign out
+      // First clear local state
+      signOut();
+      
+      // Then attempt to clear the Supabase session
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        console.error("Sign out error:", error);
+        // Don't show error to user since we've already cleared local state
+      }
       
       toast.success("Successfully signed out");
       navigate("/");
     } catch (error: any) {
       console.error("Sign out error:", error);
-      toast.error(error.message || "Failed to sign out");
-      
-      // Even if there's an error, we should clear the local state
-      signOut();
+      // Don't show error to user since we've already cleared local state
       navigate("/");
     }
   };
