@@ -50,7 +50,7 @@ export const addVideoActions = (set: any) => ({
 
     if (!video) throw new Error('Video not found');
 
-    const updatedIsPinned = !video.is_pinned;
+    const updatedIsPinned = false; // Always unpin when toggle is clicked
 
     const { error } = await supabase
       .from('videos')
@@ -70,7 +70,7 @@ export const addVideoActions = (set: any) => ({
 
   fetchVideos: async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) throw new Error('User not authenticated');
 
     const { data: videos, error } = await supabase
       .from('videos')
