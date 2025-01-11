@@ -2,33 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { toast } from "sonner";
 
 const Landing = () => {
-  const [featureImages, setFeatureImages] = useState({
-    collections: "/lovable-uploads/a676edcb-27a4-4e80-86e9-dda53274f5f6.png",
+  const [featureImages] = useState({
+    collections: "/lovable-uploads/96c76c4a-e904-40b4-ab02-190d39d9308f.png",
     organization: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
     quickAccess: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
   });
-
-  const handleImageUpload = (feature: keyof typeof featureImages) => async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      // Create a temporary URL for immediate preview
-      const tempUrl = URL.createObjectURL(file);
-      setFeatureImages(prev => ({
-        ...prev,
-        [feature]: tempUrl
-      }));
-
-      toast.success("Image updated successfully!");
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Failed to upload image. Please try again.");
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white">
@@ -90,69 +70,36 @@ const Landing = () => {
         <h2 className="text-3xl font-bold text-center mb-16">Transform how you organize your research videos</h2>
         <div className="grid md:grid-cols-3 gap-8 mb-20">
           <div className="relative">
-            <div className="mb-4 relative group cursor-pointer">
+            <div className="mb-4">
               <img 
                 src={featureImages.collections}
                 alt="Personal Collections" 
                 className="w-full h-48 object-cover rounded-lg"
               />
-              <label className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload('collections')}
-                  className="hidden"
-                />
-                <Button variant="secondary">
-                  Change Image
-                </Button>
-              </label>
             </div>
             <h3 className="text-xl font-semibold mb-4">Personal Collections</h3>
             <p className="text-gray-300">Create focused boards for different research topics and projects</p>
           </div>
 
           <div className="relative">
-            <div className="mb-4 relative group cursor-pointer">
+            <div className="mb-4">
               <img 
                 src={featureImages.organization}
                 alt="Smart Organization" 
                 className="w-full h-48 object-cover rounded-lg"
               />
-              <label className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload('organization')}
-                  className="hidden"
-                />
-                <Button variant="secondary">
-                  Change Image
-                </Button>
-              </label>
             </div>
             <h3 className="text-xl font-semibold mb-4">Smart Organization</h3>
             <p className="text-gray-300">Tag and annotate videos to build your knowledge base</p>
           </div>
 
           <div className="relative">
-            <div className="mb-4 relative group cursor-pointer">
+            <div className="mb-4">
               <img 
                 src={featureImages.quickAccess}
                 alt="Quick Access" 
                 className="w-full h-48 object-cover rounded-lg"
               />
-              <label className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload('quickAccess')}
-                  className="hidden"
-                />
-                <Button variant="secondary">
-                  Change Image
-                </Button>
-              </label>
             </div>
             <h3 className="text-xl font-semibold mb-4">Quick Access</h3>
             <p className="text-gray-300">Find the exact video you need when inspiration strikes</p>
