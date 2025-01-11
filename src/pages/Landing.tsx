@@ -7,7 +7,7 @@ const Landing = () => {
   const [featureImages] = useState({
     collections: "/lovable-uploads/96c76c4a-e904-40b4-ab02-190d39d9308f.png",
     organization: "/lovable-uploads/dabb0de4-c792-4770-b87e-eea045cac979.png",
-    quickAccess: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
+    quickAccess: "/lovable-uploads/36aab957-2e92-4ad3-b420-6b89383194ce.png"
   });
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
