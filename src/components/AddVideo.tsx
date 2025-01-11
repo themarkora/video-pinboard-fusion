@@ -17,7 +17,7 @@ export function AddVideo() {
     if (videoUrl.trim() && !isLoading) {
       setIsLoading(true);
       try {
-        await addVideo(videoUrl.trim(), true);
+        await addVideo(videoUrl.trim(), true); // Pass true to set isPinned
         setVideoUrl('');
         toast({
           title: "Video pinned successfully",
@@ -36,31 +36,27 @@ export function AddVideo() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-0 max-w-2xl mx-auto">
-      <div className="flex flex-1 relative">
-        <Input
-          type="text"
-          value={videoUrl}
-          onChange={(e) => setVideoUrl(e.target.value)}
-          placeholder="Paste YouTube video URL"
-          className="flex-1 bg-secondary border-none h-12 text-gray-300 rounded-l-2xl rounded-r-none text-base pr-4"
-          disabled={isLoading}
-        />
-        <Button 
-          type="submit"
-          className="h-12 rounded-l-none rounded-r-2xl bg-primary hover:bg-primary/90"
-          disabled={isLoading || !videoUrl.trim()}
-        >
-          <div className="flex items-center gap-2">
-            {isLoading ? (
-              <Loader2 size={18} className="animate-spin" />
-            ) : (
-              <Pin size={18} />
-            )}
-            <span>Pin Video</span>
-          </div>
-        </Button>
-      </div>
+    <form onSubmit={handleSubmit} className="flex gap-2 max-w-2xl mx-auto">
+      <Input
+        type="text"
+        value={videoUrl}
+        onChange={(e) => setVideoUrl(e.target.value)}
+        placeholder="Paste YouTube video URL"
+        className="flex-1 bg-[#2A2F3E] border-none h-12 text-gray-300 rounded-2xl text-base"
+        disabled={isLoading}
+      />
+      <Button 
+        type="submit"
+        className="bg-purple-600 hover:bg-purple-700 h-12 px-4 rounded-2xl min-w-[120px]"
+        disabled={isLoading || !videoUrl.trim()}
+      >
+        {isLoading ? (
+          <Loader2 size={18} className="animate-spin mr-0.5" />
+        ) : (
+          <Pin size={18} className="mr-0.5" />
+        )}
+        Pin Video
+      </Button>
     </form>
   );
 }
