@@ -58,6 +58,7 @@ export const boardActions = (set: any) => ({
   },
 
   addToBoard: async (videoId: string, boardId: string) => {
+    // First, get the current board_ids array
     const { data: video } = await supabase
       .from('videos')
       .select('board_ids')
@@ -66,8 +67,10 @@ export const boardActions = (set: any) => ({
 
     if (!video) throw new Error('Video not found');
 
+    // Create a new array with the new boardId, ensuring no duplicates
     const updatedBoardIds = [...new Set([...(video.board_ids || []), boardId])];
 
+    // Update the video with the new board_ids array
     const { error } = await supabase
       .from('videos')
       .update({ board_ids: updatedBoardIds })
@@ -75,6 +78,7 @@ export const boardActions = (set: any) => ({
 
     if (error) throw error;
 
+    // Update the local state
     set((state: any) => ({
       videos: state.videos.map((v: any) =>
         v.id === videoId

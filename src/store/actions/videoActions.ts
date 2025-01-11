@@ -11,13 +11,14 @@ export const addVideoActions = (set: any) => ({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
+    // Always set is_pinned to true by default
     const newVideo = {
       id: videoId,
       user_id: user.id,
       url,
       title: details.title,
       thumbnail: details.thumbnail,
-      is_pinned: isPinned,
+      is_pinned: true, // Force this to true
       added_at: new Date().toISOString(),
       notes: [],
       board_ids: [],
