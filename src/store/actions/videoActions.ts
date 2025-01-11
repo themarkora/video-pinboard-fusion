@@ -62,7 +62,7 @@ export const addVideoActions = (set: any) => ({
     set((state: any) => ({
       videos: state.videos.map((v: Video) =>
         v.id === id
-          ? { ...v, isPinned: updatedIsPinned, is_pinned: updatedIsPinned }
+          ? { ...v, isPinned: updatedIsPinned }
           : v
       ),
     }));
