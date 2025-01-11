@@ -56,6 +56,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/" element={<Landing />} />
             <Route
               path="/app"
               element={
@@ -63,10 +64,6 @@ const App = () => {
                   <Index />
                 </ProtectedRoute>
               }
-            />
-            <Route
-              path="/"
-              element={user ? <Navigate to="/app" /> : <Landing />}
             />
             <Route
               path="/auth"
