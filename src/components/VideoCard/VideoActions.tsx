@@ -7,12 +7,12 @@ import { PinOff } from '@/components/icons/PinOff';
 interface VideoActionsProps {
   isPinned: boolean;
   onTogglePin: () => void;
-  onAddToBoard: () => void;
-  onDelete: () => void;
+  onAddToBoard?: () => void;
+  onDelete?: () => void;
   onAddTag?: () => void;
+  onAddNote?: () => void;
   boardId?: string;
   onRemoveFromBoard?: () => void;
-  onAddNote?: () => void;
 }
 
 export const VideoActions: React.FC<VideoActionsProps> = ({
@@ -21,6 +21,7 @@ export const VideoActions: React.FC<VideoActionsProps> = ({
   onAddToBoard,
   onDelete,
   onAddTag,
+  onAddNote,
   boardId,
   onRemoveFromBoard,
 }) => {

@@ -3,6 +3,7 @@ import { LogOut, Pin } from "lucide-react";
 import { useAuth } from "@/store/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
@@ -10,12 +11,14 @@ export const Header = () => {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
       toast.success("Successfully signed out");
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Sign out error:", error);
-      toast.error("Failed to sign out");
+      toast.error(error.message || "Failed to sign out");
     }
   };
 
