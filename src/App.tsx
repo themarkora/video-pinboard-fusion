@@ -10,22 +10,35 @@ import { AuthForm } from "./components/Auth/AuthForm";
 
 const queryClient = new QueryClient();
 
+const LoadingScreen = () => (
+  <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom flex items-center justify-center">
+    <div className="text-white text-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+      <p>Loading...</p>
+    </div>
+  </div>
+);
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingScreen />;
   }
 
   if (!user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/auth" />;
   }
 
   return <>{children}</>;
 };
 
 const App = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
