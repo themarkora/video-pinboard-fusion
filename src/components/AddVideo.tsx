@@ -48,7 +48,7 @@ export function AddVideo() {
         />
         <Button 
           type="submit"
-          className="absolute right-0 top-0 bottom-0 bg-purple-600 hover:bg-purple-700 px-6 rounded-r-2xl gap-2 text-gray-200"
+          className="absolute right-0 top-0 h-full bg-purple-600 hover:bg-purple-700 px-6 rounded-r-2xl gap-2 text-gray-200 transition-colors"
           disabled={isLoading || !videoUrl.trim()}
         >
           {isLoading ? (
