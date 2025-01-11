@@ -10,44 +10,22 @@ import { AuthForm } from "./components/Auth/AuthForm";
 
 const queryClient = new QueryClient();
 
-const LoadingScreen = () => (
-  <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom flex items-center justify-center">
-    <div className="text-white text-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
-      <p>Loading...</p>
-    </div>
-  </div>
-);
-
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <LoadingScreen />;
+    return <div>Loading...</div>;
   }
 
   if (!user) {
-    return <Navigate to="/auth" />;
+    return <Navigate to="/" />;
   }
 
   return <>{children}</>;
 };
 
 const App = () => {
-  const { user, loading } = useAuth();
-
-  // Show loading screen while initial auth state is being determined
-  if (loading) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <LoadingScreen />
-        </TooltipProvider>
-      </QueryClientProvider>
-    );
-  }
+  const { user } = useAuth();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -57,10 +35,6 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route
-              path="/"
-              element={user ? <Navigate to="/app" /> : <Landing />}
-            />
-            <Route
               path="/app"
               element={
                 <ProtectedRoute>
@@ -69,11 +43,13 @@ const App = () => {
               }
             />
             <Route
+              path="/"
+              element={user ? <Navigate to="/app" /> : <Landing />}
+            />
+            <Route
               path="/auth"
               element={user ? <Navigate to="/app" /> : <AuthForm />}
             />
-            {/* Catch all route - redirect to home */}
-            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
