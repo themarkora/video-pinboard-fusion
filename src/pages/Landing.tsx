@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { ImageModal } from "@/components/ImageModal";
 
 const Landing = () => {
   const [featureImages] = useState({
@@ -8,6 +9,8 @@ const Landing = () => {
     organization: "/lovable-uploads/dabb0de4-c792-4770-b87e-eea045cac979.png",
     quickAccess: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
   });
+
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white">
@@ -70,7 +73,8 @@ const Landing = () => {
         <div className="grid md:grid-cols-3 gap-12 mb-20">
           <div className="relative group">
             <div className="mb-6 transform transition-all duration-300 hover:scale-105 hover:-translate-y-2">
-              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden">
+              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden cursor-pointer"
+                   onClick={() => setSelectedImage(featureImages.collections)}>
                 <div className="overflow-hidden rounded-lg">
                   <img 
                     src={featureImages.collections}
@@ -86,7 +90,8 @@ const Landing = () => {
 
           <div className="relative group">
             <div className="mb-6 transform transition-all duration-300 hover:scale-105 hover:-translate-y-2">
-              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden">
+              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden cursor-pointer"
+                   onClick={() => setSelectedImage(featureImages.organization)}>
                 <div className="overflow-hidden rounded-lg">
                   <img 
                     src={featureImages.organization}
@@ -102,7 +107,8 @@ const Landing = () => {
 
           <div className="relative group">
             <div className="mb-6 transform transition-all duration-300 hover:scale-105 hover:-translate-y-2">
-              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden">
+              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden cursor-pointer"
+                   onClick={() => setSelectedImage(featureImages.quickAccess)}>
                 <div className="overflow-hidden rounded-lg">
                   <img 
                     src={featureImages.quickAccess}
@@ -147,6 +153,13 @@ const Landing = () => {
           </Link>
         </div>
       </div>
+
+      <ImageModal
+        isOpen={!!selectedImage}
+        onClose={() => setSelectedImage(null)}
+        imageUrl={selectedImage || ''}
+        altText="Feature Preview"
+      />
     </div>
   );
 };
