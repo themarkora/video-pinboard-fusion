@@ -25,6 +25,7 @@ export interface VideosState {
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
   togglePin: (id: string) => void;
   fetchUserVideos: () => Promise<void>;
+  clearVideos: () => void;
 }
 
 export const useVideos = create<VideosState>()(
@@ -36,6 +37,8 @@ export const useVideos = create<VideosState>()(
       ...addVideoActions(set),
       ...boardActions(set),
       setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
+
+      clearVideos: () => set({ videos: [], boards: [] }),
 
       fetchUserVideos: async () => {
         const { data: { user } } = await supabase.auth.getUser();
