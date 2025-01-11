@@ -17,7 +17,7 @@ export function AddVideo() {
     if (videoUrl.trim() && !isLoading) {
       setIsLoading(true);
       try {
-        await addVideo(videoUrl.trim(), true); // Pass true to set isPinned
+        await addVideo(videoUrl.trim(), true);
         setVideoUrl('');
         toast({
           title: "Video pinned successfully",
@@ -37,26 +37,28 @@ export function AddVideo() {
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 max-w-2xl mx-auto">
-      <Input
-        type="text"
-        value={videoUrl}
-        onChange={(e) => setVideoUrl(e.target.value)}
-        placeholder="Paste YouTube video URL"
-        className="flex-1 bg-[#2A2F3E] border-none h-12 text-gray-300 rounded-2xl text-base"
-        disabled={isLoading}
-      />
-      <Button 
-        type="submit"
-        className="bg-purple-600 hover:bg-purple-700 h-12 px-4 rounded-2xl min-w-[120px]"
-        disabled={isLoading || !videoUrl.trim()}
-      >
-        {isLoading ? (
-          <Loader2 size={18} className="animate-spin mr-0.5" />
-        ) : (
-          <Pin size={18} className="mr-0.5" />
-        )}
-        Pin Video
-      </Button>
+      <div className="flex-1 relative">
+        <Input
+          type="text"
+          value={videoUrl}
+          onChange={(e) => setVideoUrl(e.target.value)}
+          placeholder="Paste YouTube video URL"
+          className="w-full bg-[#2A2F3E] border-none h-12 text-gray-300 rounded-2xl text-base pr-[120px]"
+          disabled={isLoading}
+        />
+        <Button 
+          type="submit"
+          className="absolute right-1 top-1 bg-purple-600 hover:bg-purple-700 h-10 px-4 rounded-xl min-w-[110px]"
+          disabled={isLoading || !videoUrl.trim()}
+        >
+          {isLoading ? (
+            <Loader2 size={18} className="animate-spin mr-0.5" />
+          ) : (
+            <Pin size={18} className="mr-0.5" />
+          )}
+          Pin Video
+        </Button>
+      </div>
     </form>
   );
 }
