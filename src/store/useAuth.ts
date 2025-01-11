@@ -51,7 +51,13 @@ export const useAuth = create<AuthState>((set) => ({
 }));
 
 // Initialize auth state
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Auth state changed:', event, session?.user?.email);
+supabase.auth.getSession().then(({ data: { session } }) => {
+  useAuth.setState({ user: session?.user ?? null, loading: false });
+  console.log('Initial session loaded:', session?.user?.email);
+});
+
+// Listen for auth changes
+supabase.auth.onAuthStateChange((_event, session) => {
+  console.log('Auth state changed:', _event, session?.user?.email);
   useAuth.setState({ user: session?.user ?? null, loading: false });
 });
