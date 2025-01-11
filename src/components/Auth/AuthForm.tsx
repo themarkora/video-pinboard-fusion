@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useAuth } from "@/store/useAuth";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { AuthError, AuthApiError } from "@supabase/supabase-js";
 
 export const AuthForm = () => {
   const [email, setEmail] = useState("");
@@ -24,9 +25,23 @@ export const AuthForm = () => {
         await signUp(email, password);
       }
       toast.success(`Successfully ${mode === "signin" ? "signed in" : "signed up"}!`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`${mode} error:`, error);
-      toast.error(`Failed to ${mode}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      // Handle the specific "Email not confirmed" error
+      if (error instanceof AuthApiError && error.message.includes('Email not confirmed')) {
+        // For this specific case, we'll try to sign in anyway since email verification is disabled
+        try {
+          await signIn(email, password);
+          toast.success("Successfully signed in!");
+          return;
+        } catch (retryError) {
+          console.error("Retry error:", retryError);
+          toast.error("Failed to sign in. Please check your credentials and try again.");
+        }
+      } else {
+        toast.error(`Failed to ${mode}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     } finally {
       setIsLoading(false);
     }
