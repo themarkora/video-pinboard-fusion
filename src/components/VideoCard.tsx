@@ -115,14 +115,14 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
 
   return (
     <>
-      <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02] h-fit flex flex-col">
+      <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
         <VideoThumbnail
           thumbnail={video.thumbnail}
           title={video.title}
           onClick={() => setIsPlaying(true)}
         />
         
-        <div className="p-4 space-y-4 flex-1 flex flex-col">
+        <div className="p-4 space-y-4">
           <h3 className="font-semibold text-white text-lg md:text-xl line-clamp-2">
             {video.title}
           </h3>
@@ -153,15 +153,13 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             }}
           />
 
-          <div className="mt-auto">
-            <VideoNotes
-              notes={video.notes || []}
-              note={note}
-              onNoteChange={setNote}
-              onAddNote={handleAddNote}
-              videoId={video.id}
-            />
-          </div>
+          <VideoNotes
+            notes={video.notes || []}
+            note={note}
+            onNoteChange={setNote}
+            onAddNote={handleAddNote}
+            videoId={video.id}
+          />
         </div>
       </Card>
 
