@@ -7,7 +7,7 @@ interface AuthState {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  signOut: () => void;  // Changed to sync function
 }
 
 export const useAuth = create<AuthState>((set) => ({
@@ -19,12 +19,10 @@ export const useAuth = create<AuthState>((set) => ({
       email,
       password,
     });
-    
     if (error) {
       console.error('Sign in error:', error);
       throw error;
     }
-    
     set({ user: data.user });
     console.log('Sign in successful:', data);
   },
@@ -33,34 +31,17 @@ export const useAuth = create<AuthState>((set) => ({
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: window.location.origin,
-      }
     });
-    
     if (error) {
       console.error('Sign up error:', error);
       throw error;
     }
-    
     set({ user: data.user });
     console.log('Sign up successful:', data);
   },
-  signOut: async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Sign out error:', error);
-        throw error;
-      }
-      set({ user: null });
-      console.log('Sign out successful');
-    } catch (error) {
-      console.error('Sign out error:', error);
-      // Even if there's an error, clear the local state
-      set({ user: null });
-      throw error;
-    }
+  signOut: () => {
+    set({ user: null });
+    console.log('Local state cleared');
   },
 }));
 
