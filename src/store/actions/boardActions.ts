@@ -33,6 +33,7 @@ export const boardActions = (set: any) => ({
     const { data: boards, error } = await supabase
       .from('boards')
       .select('*')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -66,7 +67,7 @@ export const boardActions = (set: any) => ({
 
     if (!video) throw new Error('Video not found');
 
-    const updatedBoardIds = [...(video.board_ids || []), boardId];
+    const updatedBoardIds = [...new Set([...(video.board_ids || []), boardId])];
 
     const { error } = await supabase
       .from('videos')

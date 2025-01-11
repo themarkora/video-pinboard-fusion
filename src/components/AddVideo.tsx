@@ -17,7 +17,7 @@ export function AddVideo() {
     if (videoUrl.trim() && !isLoading) {
       setIsLoading(true);
       try {
-        // Explicitly set isPinned to true when adding a new video
+        // Always set isPinned to true when adding a new video
         await addVideo(videoUrl.trim(), true);
         setVideoUrl('');
         toast({
@@ -25,6 +25,7 @@ export function AddVideo() {
           description: "Your video has been added to your collection.",
         });
       } catch (error) {
+        console.error('Error adding video:', error);
         toast({
           title: "Error adding video",
           description: "Please check the URL and try again.",
