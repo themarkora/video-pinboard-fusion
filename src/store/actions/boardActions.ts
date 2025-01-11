@@ -1,117 +1,43 @@
-import { supabase } from '@/integrations/supabase/client';
-
 export const boardActions = (set: any) => ({
-  addBoard: async (name: string): Promise<string> => {
+  addBoard: (name: string) => {
     const boardId = crypto.randomUUID();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const newBoard = {
-      id: boardId,
-      user_id: user.id,
-      name,
-      created_at: new Date().toISOString()
-    };
-
-    const { error } = await supabase
-      .from('boards')
-      .insert(newBoard);
-
-    if (error) throw error;
-
     set((state: any) => ({
-      boards: [...state.boards, { ...newBoard, created_at: new Date(newBoard.created_at) }],
+      boards: [...state.boards, { 
+        id: boardId, 
+        name,
+        createdAt: new Date()
+      }],
     }));
-    
     return boardId;
   },
   
-  fetchBoards: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data: boards, error } = await supabase
-      .from('boards')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    set({ boards: boards || [] });
-  },
-
-  deleteBoard: async (id: string) => {
-    const { error } = await supabase
-      .from('boards')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
-
+  deleteBoard: (id: string) =>
     set((state: any) => ({
       boards: state.boards.filter((board: any) => board.id !== id),
       videos: state.videos.map((video: any) => ({
         ...video,
-        board_ids: video.board_ids?.filter((boardId: string) => boardId !== id) || []
+        boardIds: video.boardIds?.filter((boardId: string) => boardId !== id) || []
       }))
-    }));
-  },
+    })),
 
-  addToBoard: async (videoId: string, boardId: string) => {
-    // First, get the current board_ids array
-    const { data: video } = await supabase
-      .from('videos')
-      .select('board_ids')
-      .eq('id', videoId)
-      .single();
-
-    if (!video) throw new Error('Video not found');
-
-    // Create a new array with the new boardId, ensuring no duplicates
-    const updatedBoardIds = [...new Set([...(video.board_ids || []), boardId])];
-
-    // Update the video with the new board_ids array
-    const { error } = await supabase
-      .from('videos')
-      .update({ board_ids: updatedBoardIds })
-      .eq('id', videoId);
-
-    if (error) throw error;
-
-    // Update the local state
+  addToBoard: (videoId: string, boardId: string) =>
     set((state: any) => ({
-      videos: state.videos.map((v: any) =>
-        v.id === videoId
-          ? { ...v, board_ids: updatedBoardIds }
-          : v
+      videos: state.videos.map((video: any) =>
+        video.id === videoId
+          ? { ...video, boardIds: [...(video.boardIds || []), boardId] }
+          : video
       ),
-    }));
-  },
+    })),
 
-  removeFromBoard: async (videoId: string, boardId: string) => {
-    const { data: video } = await supabase
-      .from('videos')
-      .select('board_ids')
-      .eq('id', videoId)
-      .single();
-
-    if (!video) throw new Error('Video not found');
-
-    const updatedBoardIds = video.board_ids?.filter((id: string) => id !== boardId) || [];
-
-    const { error } = await supabase
-      .from('videos')
-      .update({ board_ids: updatedBoardIds })
-      .eq('id', videoId);
-
-    if (error) throw error;
-
+  removeFromBoard: (videoId: string, boardId: string) =>
     set((state: any) => ({
-      videos: state.videos.map((v: any) =>
-        v.id === videoId
-          ? { ...v, board_ids: updatedBoardIds }
-          : v
+      videos: state.videos.map((video: any) =>
+        video.id === videoId
+          ? {
+              ...video,
+              boardIds: (video.boardIds || []).filter((id: string) => id !== boardId),
+            }
+          : video
       ),
-    }));
-  },
+    })),
 });

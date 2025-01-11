@@ -20,24 +20,16 @@ export const BoardCreationModal: React.FC<BoardCreationModalProps> = ({
   const { addBoard, addToBoard } = useVideos();
   const { toast } = useToast();
 
-  const handleCreateBoard = async () => {
+  const handleCreateBoard = () => {
     if (boardName.trim()) {
-      try {
-        const boardId = await addBoard(boardName.trim());
-        await addToBoard(videoId, boardId);
-        setBoardName('');
-        onClose();
-        toast({
-          title: "Board created",
-          description: `Video added to "${boardName}"`,
-        });
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to create board",
-          variant: "destructive",
-        });
-      }
+      const boardId = addBoard(boardName.trim());
+      addToBoard(videoId, boardId);
+      setBoardName('');
+      onClose();
+      toast({
+        title: "Board created",
+        description: `Video added to "${boardName}"`,
+      });
     }
   };
 
@@ -53,9 +45,9 @@ export const BoardCreationModal: React.FC<BoardCreationModalProps> = ({
           onChange={(e) => setBoardName(e.target.value)}
           placeholder="Enter board name"
           className="bg-secondary/50 border-none"
-          onKeyDown={async (e) => {
+          onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              await handleCreateBoard();
+              handleCreateBoard();
             }
           }}
         />

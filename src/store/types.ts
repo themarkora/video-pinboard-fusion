@@ -18,5 +18,5 @@ export interface Video {
 export interface Board {
   id: string;
   name: string;
-  createdAt: string;
+  createdAt: Date;
 }

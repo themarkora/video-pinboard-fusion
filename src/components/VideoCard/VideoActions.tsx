@@ -1,98 +1,85 @@
+import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Pin, PinOff, Trash2, Plus, Tag } from "lucide-react";
-import { toast } from "sonner";
+import { MessageSquare, Tag, Trash2, X } from "lucide-react";
+import { Pin } from '@/components/icons/Pin';
+import { PinOff } from '@/components/icons/PinOff';
 
-export interface VideoActionsProps {
+interface VideoActionsProps {
   isPinned: boolean;
   onTogglePin: () => void;
-  onDelete?: () => void;
-  onAddToBoard?: () => void;
+  onAddToBoard: () => void;
+  onDelete: () => void;
   onAddTag?: () => void;
   boardId?: string;
   onRemoveFromBoard?: () => void;
+  onAddNote?: () => void;
 }
 
-export const VideoActions = ({ 
-  isPinned, 
+export const VideoActions: React.FC<VideoActionsProps> = ({
+  isPinned,
   onTogglePin,
-  onDelete,
   onAddToBoard,
+  onDelete,
   onAddTag,
   boardId,
-  onRemoveFromBoard 
-}: VideoActionsProps) => {
-  const handleTogglePin = async () => {
-    try {
-      await onTogglePin();
-      toast.success(isPinned ? "Video unpinned" : "Video pinned");
-    } catch (error) {
-      console.error("Error toggling pin:", error);
-      toast.error("Failed to toggle pin status");
-    }
-  };
-
+  onRemoveFromBoard,
+}) => {
   return (
-    <div className="flex flex-col gap-2">
-      <Button 
-        variant="secondary"
-        className={`w-full ${isPinned ? 'bg-purple-600 hover:bg-purple-700' : 'bg-[#2A2F3C] hover:bg-[#353B4A]'} text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2`}
-        onClick={handleTogglePin}
-      >
-        {isPinned ? (
-          <>
-            <PinOff className="w-4 h-4" />
-            Unpin
-          </>
-        ) : (
-          <>
-            <Pin className="w-4 h-4" />
-            Pin
-          </>
-        )}
-      </Button>
-
-      {onAddToBoard && (
-        <Button
-          variant="secondary"
-          className="w-full bg-[#2A2F3C] hover:bg-[#353B4A] text-white rounded-xl h-11 font-medium"
-          onClick={onAddToBoard}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add to Board
-        </Button>
-      )}
-
-      {onAddTag && (
-        <Button
-          variant="secondary"
-          className="w-full bg-[#2A2F3C] hover:bg-[#353B4A] text-white rounded-xl h-11 font-medium"
-          onClick={onAddTag}
-        >
-          <Tag className="w-4 h-4 mr-2" />
-          Add Tag
-        </Button>
-      )}
-
-      {boardId && onRemoveFromBoard && (
-        <Button
+    <div className="grid grid-cols-3 gap-3">
+      {boardId ? (
+        <Button 
           variant="destructive"
-          className="w-full"
+          className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
           onClick={onRemoveFromBoard}
         >
-          Remove from Board
+          <X className="h-5 w-5" />
+          <span className="hidden sm:inline">Remove</span>
+        </Button>
+      ) : (
+        <Button 
+          variant="secondary"
+          className={`w-full ${isPinned ? 'bg-purple-600 hover:bg-purple-700' : 'bg-[#2A2F3C] hover:bg-[#353B4A]'} text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2`}
+          onClick={onTogglePin}
+        >
+          {isPinned ? (
+            <>
+              <PinOff className="h-5 w-5" />
+              <span className="hidden sm:inline">Unpin</span>
+            </>
+          ) : (
+            <>
+              <Pin className="h-5 w-5" />
+              <span className="hidden sm:inline">Pin</span>
+            </>
+          )}
         </Button>
       )}
 
-      {onDelete && (
-        <Button
-          variant="destructive"
-          className="w-full"
-          onClick={onDelete}
-        >
-          <Trash2 className="w-4 h-4 mr-2" />
-          Delete
-        </Button>
-      )}
+      <Button 
+        variant="secondary"
+        className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
+        onClick={onAddTag}
+      >
+        <Tag className="h-5 w-5" />
+        <span className="hidden sm:inline">Tag</span>
+      </Button>
+
+      <Button 
+        variant="destructive"
+        className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
+        onClick={onDelete}
+      >
+        <Trash2 className="h-5 w-5" />
+        <span className="hidden sm:inline">Delete</span>
+      </Button>
+
+      <Button 
+        variant="secondary"
+        className="w-full col-span-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2"
+        onClick={onAddToBoard}
+      >
+        <span>Add to Board</span>
+      </Button>
     </div>
   );
 };
