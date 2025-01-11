@@ -6,7 +6,7 @@ import { BoardCard } from "@/components/BoardCard";
 import { useVideos } from "@/store/useVideos";
 
 const Index = () => {
-  const { videos, activeTab, boards } = useVideos();
+  const { videos, activeTab, boards, togglePin } = useVideos();
 
   const filteredVideos = () => {
     switch (activeTab) {
@@ -30,13 +30,21 @@ const Index = () => {
             {activeTab === "boards" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {boards.map((board) => (
-                  <BoardCard key={board.id} board={board} />
+                  <BoardCard 
+                    key={board.id} 
+                    id={board.id} 
+                    name={board.name} 
+                  />
                 ))}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredVideos().map((video) => (
-                  <VideoCard key={video.id} video={video} />
+                  <VideoCard 
+                    key={video.id} 
+                    video={video} 
+                    onTogglePin={togglePin}
+                  />
                 ))}
               </div>
             )}
