@@ -62,14 +62,35 @@ const Landing = () => {
         <h2 className="text-3xl font-bold text-center mb-16">Transform how you organize your research videos</h2>
         <div className="grid md:grid-cols-3 gap-8 mb-20">
           <div className="bg-card p-6 rounded-lg">
+            <div className="mb-4">
+              <img 
+                src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
+                alt="Personal Collections" 
+                className="w-full h-48 object-cover rounded-lg mb-4"
+              />
+            </div>
             <h3 className="text-xl font-semibold mb-4">Personal Collections</h3>
             <p className="text-gray-300">Create focused boards for different research topics and projects</p>
           </div>
           <div className="bg-card p-6 rounded-lg">
+            <div className="mb-4">
+              <img 
+                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085" 
+                alt="Smart Organization" 
+                className="w-full h-48 object-cover rounded-lg mb-4"
+              />
+            </div>
             <h3 className="text-xl font-semibold mb-4">Smart Organization</h3>
             <p className="text-gray-300">Tag and annotate videos to build your knowledge base</p>
           </div>
           <div className="bg-card p-6 rounded-lg">
+            <div className="mb-4">
+              <img 
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" 
+                alt="Quick Access" 
+                className="w-full h-48 object-cover rounded-lg mb-4"
+              />
+            </div>
             <h3 className="text-xl font-semibold mb-4">Quick Access</h3>
             <p className="text-gray-300">Find the exact video you need when inspiration strikes</p>
           </div>
