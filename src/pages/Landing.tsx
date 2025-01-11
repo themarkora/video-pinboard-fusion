@@ -21,9 +21,13 @@ const Landing = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <Pin size={32} color="#9334E9" className="animate-float-pin" />
-              <span className="text-xl font-bold">VidPin</span>
+            <Link to="/" className="flex items-center gap-2">
+              <Pin 
+                size={32} 
+                className="text-primary"
+                strokeWidth={2.5}
+              />
+              <span className="text-2xl font-bold">VidPin</span>
             </Link>
 
             {/* Navigation Links */}
