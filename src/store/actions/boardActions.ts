@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export const boardActions = (set: any) => ({
-  addBoard: async (name: string) => {
+  addBoard: async (name: string): Promise<string> => {
     const boardId = crypto.randomUUID();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
