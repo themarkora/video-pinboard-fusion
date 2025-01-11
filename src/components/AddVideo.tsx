@@ -17,7 +17,7 @@ export function AddVideo() {
     if (videoUrl.trim() && !isLoading) {
       setIsLoading(true);
       try {
-        await addVideo(videoUrl.trim(), true);
+        await addVideo(videoUrl.trim(), true); // Pass true to set isPinned
         setVideoUrl('');
         toast({
           title: "Video pinned successfully",
@@ -37,28 +37,26 @@ export function AddVideo() {
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 max-w-2xl mx-auto">
-      <div className="flex-1 relative">
-        <Input
-          type="text"
-          value={videoUrl}
-          onChange={(e) => setVideoUrl(e.target.value)}
-          placeholder="Paste YouTube video URL"
-          className="w-full bg-[#2A2F3E] border-none h-12 text-gray-300 rounded-2xl text-base pr-[140px]"
-          disabled={isLoading}
-        />
-        <Button 
-          type="submit"
-          className="absolute right-0 top-0 bg-[#9334E9] hover:bg-[#7928CA] h-12 px-6 rounded-2xl min-w-[140px] transition-colors duration-200"
-          disabled={isLoading || !videoUrl.trim()}
-        >
-          {isLoading ? (
-            <Loader2 size={18} className="animate-spin mr-2 text-gray-200" />
-          ) : (
-            <Pin size={18} className="mr-2 text-gray-200" />
-          )}
-          <span className="text-base font-medium text-gray-200">Pin Video</span>
-        </Button>
-      </div>
+      <Input
+        type="text"
+        value={videoUrl}
+        onChange={(e) => setVideoUrl(e.target.value)}
+        placeholder="Paste YouTube video URL"
+        className="flex-1 bg-[#2A2F3E] border-none h-12 text-gray-300 rounded-2xl text-base"
+        disabled={isLoading}
+      />
+      <Button 
+        type="submit"
+        className="bg-purple-600 hover:bg-purple-700 h-12 px-4 rounded-2xl min-w-[120px]"
+        disabled={isLoading || !videoUrl.trim()}
+      >
+        {isLoading ? (
+          <Loader2 size={18} className="animate-spin mr-0.5" />
+        ) : (
+          <Pin size={18} className="mr-0.5" />
+        )}
+        Pin Video
+      </Button>
     </form>
   );
 }
