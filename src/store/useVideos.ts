@@ -72,22 +72,26 @@ export const useVideos = create<VideosState>()(
         set({ videos: mappedVideos });
       },
 
-      removeTag: (videoId: string, tag: string) =>
-        set((state) => ({
-          videos: state.videos.map((video) =>
-            video.id === videoId
-              ? {
-                  ...video,
-                  tags: video.tags?.filter((t) => t !== tag) || []
-                }
-              : video
-          ),
-        })),
+      deleteVideo: async (id: string) => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-      deleteVideo: (id: string) =>
+        const { error } = await supabase
+          .from('videos')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error deleting video:', error);
+          return;
+        }
+
         set((state) => ({
           videos: state.videos.filter((video) => video.id !== id),
-        })),
+        }));
+      },
+
       addNote: (videoId: string, note: string) =>
         set((state) => ({
           videos: state.videos.map((video) =>

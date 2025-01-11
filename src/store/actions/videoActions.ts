@@ -12,7 +12,7 @@ export const addVideoActions = (set: any) => ({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User must be logged in to add videos');
 
-    // Insert into Supabase first
+    // Insert into Supabase with user_id
     const { error: dbError } = await supabase
       .from('videos')
       .insert({
