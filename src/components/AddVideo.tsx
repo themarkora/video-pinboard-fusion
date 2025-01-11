@@ -4,7 +4,7 @@ import { Pin } from '@/components/icons/Pin';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useVideos } from '@/store/useVideos';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export function AddVideo() {
   const [videoUrl, setVideoUrl] = useState('');
@@ -22,12 +22,14 @@ export function AddVideo() {
         toast({
           title: "Video pinned successfully",
           description: "Your video has been added to your collection.",
+          className: "bg-card border-none text-white",
         });
       } catch (error) {
         toast({
           title: "Error adding video",
           description: "Please check the URL and try again.",
           variant: "destructive",
+          className: "bg-destructive border-none text-white",
         });
       } finally {
         setIsLoading(false);
