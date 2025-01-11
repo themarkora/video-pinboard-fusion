@@ -18,7 +18,7 @@ export const addVideoActions = (set: any) => ({
       title: details.title,
       thumbnail: details.thumbnail,
       is_pinned: isPinned,
-      added_at: new Date(),
+      added_at: new Date().toISOString(),
       notes: [],
       board_ids: [],
       views: 0,
@@ -33,7 +33,7 @@ export const addVideoActions = (set: any) => ({
     if (error) throw error;
 
     set((state: any) => ({
-      videos: [newVideo, ...state.videos],
+      videos: [{ ...newVideo, added_at: new Date(newVideo.added_at) }, ...state.videos],
     }));
   },
 

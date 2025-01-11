@@ -22,7 +22,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [note, setNote] = useState('');
   const [showNoteInput, setShowNoteInput] = useState(false);
-  const { addNote, addToBoard, deleteVideo, boards, removeFromBoard, addTag, removeTag } = useVideos();
+  const { addNote, addToBoard, deleteVideo, boards, removeFromBoard, addTag, removeTag, addBoard } = useVideos();
   const [newBoardName, setNewBoardName] = useState('');
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
   const [newTag, setNewTag] = useState('');
@@ -68,16 +68,23 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     }
   };
 
-  const handleCreateBoard = () => {
+  const handleCreateBoard = async () => {
     if (newBoardName.trim()) {
-      const boardId = useVideos.getState().addBoard(newBoardName);
-      addToBoard(video.id, boardId);
-      setNewBoardName('');
-      setIsBoardDialogOpen(false);
-      showSuccessToast(
-        "Board created",
-        `Video added to new board "${newBoardName}"`
-      );
+      try {
+        const boardId = await addBoard(newBoardName);
+        await addToBoard(video.id, boardId);
+        setNewBoardName('');
+        setIsBoardDialogOpen(false);
+        showSuccessToast(
+          "Board created",
+          `Video added to new board "${newBoardName}"`
+        );
+      } catch (error) {
+        showErrorToast(
+          "Error",
+          "Failed to create board"
+        );
+      }
     }
   };
 

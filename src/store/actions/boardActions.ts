@@ -10,7 +10,7 @@ export const boardActions = (set: any) => ({
       id: boardId,
       user_id: user.id,
       name,
-      created_at: new Date(),
+      created_at: new Date().toISOString()
     };
 
     const { error } = await supabase
@@ -20,8 +20,9 @@ export const boardActions = (set: any) => ({
     if (error) throw error;
 
     set((state: any) => ({
-      boards: [...state.boards, newBoard],
+      boards: [...state.boards, { ...newBoard, created_at: new Date(newBoard.created_at) }],
     }));
+    
     return boardId;
   },
   
