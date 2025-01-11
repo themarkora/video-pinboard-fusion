@@ -127,19 +127,23 @@ const Landing = () => {
 
       {/* FAQ Section */}
       <div id="faq" className="container mx-auto px-4 py-20">
-        <h2 className="text-3xl font-bold text-center mb-16">Frequently Asked Questions</h2>
+        <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          Frequently Asked Questions
+        </h2>
         <div className="max-w-2xl mx-auto">
           <Accordion type="single" collapsible className="space-y-4">
-            <AccordionItem value="what-is-vidpin" className="bg-card p-6 rounded-lg border-none">
-              <AccordionTrigger className="text-xl font-semibold">What is VidPin?</AccordionTrigger>
+            <AccordionItem value="what-is-vidpin" className="bg-secondary/40 backdrop-blur-sm p-6 rounded-2xl border-none shadow-lg transition-all duration-300 hover:bg-secondary/50">
+              <AccordionTrigger className="text-xl font-semibold hover:no-underline">
+                What is VidPin?
+              </AccordionTrigger>
               <AccordionContent className="text-gray-300 pt-4">
                 VidPin is your personal YouTube video organizer designed specifically for research and inspiration. 
                 Save, organize, and annotate videos that matter to your work or studies.
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="how-different" className="bg-card p-6 rounded-lg border-none">
-              <AccordionTrigger className="text-xl font-semibold">
+            <AccordionItem value="how-different" className="bg-secondary/40 backdrop-blur-sm p-6 rounded-2xl border-none shadow-lg transition-all duration-300 hover:bg-secondary/50">
+              <AccordionTrigger className="text-xl font-semibold hover:no-underline">
                 How is VidPin different from YouTube playlists?
               </AccordionTrigger>
               <AccordionContent className="text-gray-300 pt-4">
@@ -150,16 +154,20 @@ const Landing = () => {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="getting-started" className="bg-card p-6 rounded-lg border-none">
-              <AccordionTrigger className="text-xl font-semibold">How do I get started?</AccordionTrigger>
+            <AccordionItem value="getting-started" className="bg-secondary/40 backdrop-blur-sm p-6 rounded-2xl border-none shadow-lg transition-all duration-300 hover:bg-secondary/50">
+              <AccordionTrigger className="text-xl font-semibold hover:no-underline">
+                How do I get started?
+              </AccordionTrigger>
               <AccordionContent className="text-gray-300 pt-4">
                 Simply sign up for a free account, and you can immediately start saving YouTube videos to your 
                 personal boards and organizing them with tags.
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="is-social" className="bg-card p-6 rounded-lg border-none">
-              <AccordionTrigger className="text-xl font-semibold">Is this a social platform?</AccordionTrigger>
+            <AccordionItem value="is-social" className="bg-secondary/40 backdrop-blur-sm p-6 rounded-2xl border-none shadow-lg transition-all duration-300 hover:bg-secondary/50">
+              <AccordionTrigger className="text-xl font-semibold hover:no-underline">
+                Is this a social platform?
+              </AccordionTrigger>
               <AccordionContent className="text-gray-300 pt-4">
                 No, VidPin is designed as a personal tool. Your collections and notes are private and for your 
                 use only.
@@ -171,11 +179,20 @@ const Landing = () => {
 
       {/* CTA Section */}
       <div className="container mx-auto px-4 py-20">
-        <div className="bg-card rounded-lg p-12 text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold mb-6">Ready to streamline your research?</h2>
-          <p className="text-gray-300 mb-8">Start organizing your YouTube research videos with VidPin</p>
+        <div className="bg-secondary/40 backdrop-blur-sm rounded-3xl p-16 text-center max-w-3xl mx-auto shadow-2xl border border-white/10 transform transition-all duration-300 hover:scale-[1.02]">
+          <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Ready to streamline your research?
+          </h2>
+          <p className="text-gray-300 mb-10 text-lg">
+            Start organizing your YouTube research videos with VidPin
+          </p>
           <Link to="/app">
-            <Button size="lg" className="text-lg px-8">Get Started Now</Button>
+            <Button 
+              size="lg" 
+              className="text-lg px-10 py-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transform transition-all duration-300 hover:scale-105 rounded-xl shadow-lg"
+            >
+              Get Started Now
+            </Button>
           </Link>
         </div>
       </div>
