@@ -1,30 +1,27 @@
 import React from 'react';
 
 interface PinProps {
-  className?: string
-  size?: number
-  color?: string
+  className?: string;
+  size?: number;
+  color?: string;
 }
 
 export const Pin: React.FC<PinProps> = ({ 
   className = "", 
-  size = 16, 
+  size = 32, 
   color = "currentColor" 
 }) => {
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
-      viewBox="-0.5 -0.5 16 16" 
       width={size} 
       height={size} 
-      fill="none" 
-      stroke={color} 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
+      viewBox="0 0 24 24" 
+      fill={color}
       className={className}
     >
-      <path d="m7.5 10.625 0 3.125" strokeWidth="1" />
-      <path d="M3.125 10.625h8.75v-1.1a1.25 1.25 0 0 0 -0.6937500000000001 -1.11875l-1.1125 -0.5625A1.25 1.25 0 0 1 9.375 6.725V3.75h0.625a1.25 1.25 0 0 0 0 -2.5H5a1.25 1.25 0 0 0 0 2.5h0.625v2.9749999999999996a1.25 1.25 0 0 1 -0.6937500000000001 1.11875l-1.1125 0.5625A1.25 1.25 0 0 0 3.125 9.525Z" strokeWidth="1" />
+      <path d="M12 2C7.58172 2 4 5.58172 4 10C4 14.4183 7.58172 18 12 18C16.4183 18 20 14.4183 20 10C20 5.58172 16.4183 2 12 2ZM12 15C9.23858 15 7 12.7614 7 10C7 7.23858 9.23858 5 12 5C14.7614 5 17 7.23858 17 10C17 12.7614 14.7614 15 12 15Z"/>
+      <path d="M12 18V22"/>
     </svg>
-  )
-}
+  );
+};
