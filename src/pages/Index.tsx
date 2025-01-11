@@ -3,12 +3,11 @@ import { AddVideo } from "@/components/AddVideo";
 import { VideoCard } from "@/components/VideoCard";
 import { BoardCard } from "@/components/BoardCard";
 import { useVideos } from "@/store/useVideos";
-import { Search, Pin } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { videos, togglePin, activeTab, setActiveTab, boards } = useVideos();
@@ -73,25 +72,13 @@ const Index = () => {
         </div>
 
         <div className="relative max-w-2xl mx-auto mb-8">
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input 
-                placeholder="Search videos by title, tags, or notes..." 
-                className="w-full bg-[#1A1F2E] border-none pl-10 h-12 text-gray-300 rounded-xl"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <Button
-              variant="secondary"
-              size="icon"
-              className="h-12 w-12 bg-[#1A1F2E] hover:bg-[#2A2F3C] rounded-xl"
-              onClick={() => setActiveTab('pinned')}
-            >
-              <Pin className="h-5 w-5" />
-            </Button>
-          </div>
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input 
+            placeholder="Search videos by title, tags, or notes..." 
+            className="w-full bg-[#1A1F2E] border-none pl-10 h-12 text-gray-300 rounded-xl"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full flex flex-col items-center">
