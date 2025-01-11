@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { ImageModal } from "@/components/ImageModal";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const Landing = () => {
   const [featureImages] = useState({
@@ -127,19 +128,44 @@ const Landing = () => {
       {/* FAQ Section */}
       <div id="faq" className="container mx-auto px-4 py-20">
         <h2 className="text-3xl font-bold text-center mb-16">Frequently Asked Questions</h2>
-        <div className="max-w-2xl mx-auto space-y-8">
-          <div className="bg-card p-6 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">What is VidPin?</h3>
-            <p className="text-gray-300">VidPin is your personal YouTube video organizer designed specifically for research and inspiration. Save, organize, and annotate videos that matter to your work or studies.</p>
-          </div>
-          <div className="bg-card p-6 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">How do I get started?</h3>
-            <p className="text-gray-300">Simply sign up for a free account, and you can immediately start saving YouTube videos to your personal boards and organizing them with tags.</p>
-          </div>
-          <div className="bg-card p-6 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">Is this a social platform?</h3>
-            <p className="text-gray-300">No, VidPin is designed as a personal tool. Your collections and notes are private and for your use only.</p>
-          </div>
+        <div className="max-w-2xl mx-auto">
+          <Accordion type="single" collapsible className="space-y-4">
+            <AccordionItem value="what-is-vidpin" className="bg-card p-6 rounded-lg border-none">
+              <AccordionTrigger className="text-xl font-semibold">What is VidPin?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 pt-4">
+                VidPin is your personal YouTube video organizer designed specifically for research and inspiration. 
+                Save, organize, and annotate videos that matter to your work or studies.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="how-different" className="bg-card p-6 rounded-lg border-none">
+              <AccordionTrigger className="text-xl font-semibold">
+                How is VidPin different from YouTube playlists?
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-300 pt-4">
+                VidPin offers a more streamlined and powerful research experience compared to YouTube playlists. 
+                It's visually more appealing, faster to organize content to your preferences, and enables quick 
+                video discovery through tags, notes, and titles. With features like custom collections, tagging, 
+                and note-taking, VidPin makes your research easier and more efficient in every way possible.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="getting-started" className="bg-card p-6 rounded-lg border-none">
+              <AccordionTrigger className="text-xl font-semibold">How do I get started?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 pt-4">
+                Simply sign up for a free account, and you can immediately start saving YouTube videos to your 
+                personal boards and organizing them with tags.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="is-social" className="bg-card p-6 rounded-lg border-none">
+              <AccordionTrigger className="text-xl font-semibold">Is this a social platform?</AccordionTrigger>
+              <AccordionContent className="text-gray-300 pt-4">
+                No, VidPin is designed as a personal tool. Your collections and notes are private and for your 
+                use only.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </div>
 
