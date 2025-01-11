@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { ImageModal } from "@/components/ImageModal";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Pin } from "@/components/icons/Pin";
 
 const Landing = () => {
   const [featureImages] = useState({
@@ -21,13 +20,8 @@ const Landing = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2">
-              <Pin 
-                size={32} 
-                className="text-primary"
-                strokeWidth={2.5}
-              />
-              <span className="text-2xl font-bold">VidPin</span>
+            <Link to="/" className="flex items-center space-x-2">
+              <span className="text-xl font-bold">VidPin</span>
             </Link>
 
             {/* Navigation Links */}
