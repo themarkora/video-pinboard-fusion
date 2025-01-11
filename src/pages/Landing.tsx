@@ -13,6 +13,13 @@ const Landing = () => {
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white">
       {/* Navigation Header */}
@@ -26,12 +33,18 @@ const Landing = () => {
 
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center space-x-8">
-              <Link to="#features" className="text-sm text-gray-300 hover:text-white transition-colors">
+              <button 
+                onClick={() => scrollToSection('features')} 
+                className="text-sm text-gray-300 hover:text-white transition-colors"
+              >
                 Features
-              </Link>
-              <Link to="#faq" className="text-sm text-gray-300 hover:text-white transition-colors">
+              </button>
+              <button 
+                onClick={() => scrollToSection('faq')} 
+                className="text-sm text-gray-300 hover:text-white transition-colors"
+              >
                 FAQ
-              </Link>
+              </button>
             </nav>
 
             {/* Auth Buttons */}
