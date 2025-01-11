@@ -25,6 +25,7 @@ export interface VideosState {
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
   togglePin: (id: string) => void;
   fetchUserVideos: () => Promise<void>;
+  clearVideos: () => void;
 }
 
 export const useVideos = create<VideosState>()(
@@ -36,6 +37,8 @@ export const useVideos = create<VideosState>()(
       ...addVideoActions(set),
       ...boardActions(set),
       setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
+
+      clearVideos: () => set({ videos: [], boards: [] }),
 
       fetchUserVideos: async () => {
         const { data: { user } } = await supabase.auth.getUser();
@@ -51,7 +54,22 @@ export const useVideos = create<VideosState>()(
           return;
         }
 
-        set({ videos: videos || [] });
+        // Map Supabase response to our Video type
+        const mappedVideos: Video[] = (videos || []).map(video => ({
+          id: video.id,
+          url: video.url,
+          title: video.title,
+          thumbnail: video.thumbnail,
+          isPinned: video.is_pinned || false,
+          addedAt: new Date(video.added_at),
+          notes: video.notes || [],
+          boardIds: video.board_ids || [],
+          views: video.views || 0,
+          votes: video.votes || 0,
+          tags: video.tags || []
+        }));
+
+        set({ videos: mappedVideos });
       },
 
       removeTag: (videoId: string, tag: string) =>
