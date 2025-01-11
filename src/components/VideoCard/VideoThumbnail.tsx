@@ -9,7 +9,7 @@ interface VideoThumbnailProps {
 export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({ thumbnail, title, onClick }) => {
   return (
     <div 
-      className="relative aspect-video cursor-pointer group"
+      className="relative aspect-video cursor-pointer group overflow-hidden"
       onClick={onClick}
     >
       <img 
