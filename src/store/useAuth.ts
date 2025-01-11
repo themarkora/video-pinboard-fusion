@@ -7,7 +7,7 @@ interface AuthState {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  signOut: () => void;
 }
 
 export const useAuth = create<AuthState>((set) => ({
@@ -39,19 +39,32 @@ export const useAuth = create<AuthState>((set) => ({
     set({ user: data.user });
     console.log('Sign up successful:', data);
   },
-  signOut: async () => {
-    set({ user: null }); // Immediately clear the user state
-    console.log('Local state cleared');
+  signOut: () => {
+    set({ user: null });
   },
 }));
 
-// Initialize auth state and set up listener for auth changes
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Auth state changed:', event, session?.user?.email);
-  useAuth.setState({ user: session?.user ?? null, loading: false });
-});
+// Initialize auth state
+const initializeAuth = async () => {
+  try {
+    // Get the initial session
+    const { data: { session } } = await supabase.auth.getSession();
+    useAuth.setState({ user: session?.user ?? null, loading: false });
+    
+    // Set up real-time subscription to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
+      useAuth.setState({ user: session?.user ?? null, loading: false });
+    });
 
-// Get initial session
-supabase.auth.getSession().then(({ data: { session } }) => {
-  useAuth.setState({ user: session?.user ?? null, loading: false });
-});
+    return () => {
+      subscription.unsubscribe();
+    };
+  } catch (error) {
+    console.error('Error initializing auth:', error);
+    useAuth.setState({ loading: false });
+  }
+};
+
+// Call initialize immediately
+initializeAuth();

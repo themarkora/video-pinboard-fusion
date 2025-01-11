@@ -23,7 +23,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }, [user, clearVideos]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="text-lg">Loading...</div>
+    </div>;
   }
 
   if (!user) {
@@ -34,7 +36,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="text-lg">Loading...</div>
+    </div>;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
