@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
 interface AuthState {
@@ -23,6 +23,7 @@ export const useAuth = create<AuthState>((set) => ({
       console.error('Sign in error:', error);
       throw error;
     }
+    set({ user: data.user });
     console.log('Sign in successful:', data);
   },
   signUp: async (email: string, password: string) => {
@@ -35,6 +36,7 @@ export const useAuth = create<AuthState>((set) => ({
       console.error('Sign up error:', error);
       throw error;
     }
+    set({ user: data.user });
     console.log('Sign up successful:', data);
   },
   signOut: async () => {
