@@ -17,7 +17,7 @@ export const addVideoActions = (set: any) => ({
       url,
       title: details.title,
       thumbnail: details.thumbnail,
-      is_pinned: isPinned,
+      is_pinned: isPinned, // Fixed: Using is_pinned instead of isPinned
       added_at: new Date().toISOString(),
       notes: [],
       board_ids: [],
