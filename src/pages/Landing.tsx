@@ -49,12 +49,12 @@ const Landing = () => {
 
             {/* Auth Buttons */}
             <div className="flex items-center space-x-4">
-              <Link to="/app">
+              <Link to="/auth">
                 <Button variant="ghost" className="text-sm">
                   Login
                 </Button>
               </Link>
-              <Link to="/app">
+              <Link to="/auth">
                 <Button size="sm" className="text-sm">
                   Sign up
                 </Button>
@@ -75,7 +75,7 @@ const Landing = () => {
           <p className="text-xl text-gray-300 mb-8">
             Organize, tag, and curate your YouTube videos for research and inspiration in one place
           </p>
-          <Link to="/app">
+          <Link to="/auth">
             <Button size="lg" className="text-lg px-8">Start Organizing</Button>
           </Link>
         </div>
@@ -199,7 +199,7 @@ const Landing = () => {
           <p className="text-gray-300 mb-10 text-lg">
             Start organizing your YouTube research videos with VidPin
           </p>
-          <Link to="/app">
+          <Link to="/auth">
             <Button 
               size="lg" 
               className="text-lg px-10 py-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transform transition-all duration-300 hover:scale-105 rounded-xl shadow-lg"
