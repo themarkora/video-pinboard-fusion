@@ -66,7 +66,7 @@ export const boardActions = (set: any) => ({
 
     if (!video) throw new Error('Video not found');
 
-    const updatedBoardIds = [...(video.board_ids || []), boardId];
+    const updatedBoardIds = [...new Set([...(video.board_ids || []), boardId])];
 
     const { error } = await supabase
       .from('videos')
