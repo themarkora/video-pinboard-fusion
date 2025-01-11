@@ -3,9 +3,9 @@ import { VideosState } from '../useVideos';
 import { extractVideoId, fetchVideoInfo } from '@/lib/youtube';
 
 export const addVideoActions = (
-  set: StateCreator<VideosState>['setState'],
-  get: StateCreator<VideosState>['getState'],
-  store: StateCreator<VideosState>['store']
+  set: Parameters<StateCreator<VideosState>>[0],
+  get: Parameters<StateCreator<VideosState>>[1],
+  store: Parameters<StateCreator<VideosState>>[2]
 ) => ({
   addVideo: async (url: string, isPinned: boolean = false) => {
     try {
