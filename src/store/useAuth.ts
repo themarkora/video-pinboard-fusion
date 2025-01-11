@@ -7,7 +7,7 @@ interface AuthState {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => void;  // Changed to sync function
+  signOut: () => Promise<void>;
 }
 
 export const useAuth = create<AuthState>((set) => ({
@@ -39,9 +39,14 @@ export const useAuth = create<AuthState>((set) => ({
     set({ user: data.user });
     console.log('Sign up successful:', data);
   },
-  signOut: () => {
+  signOut: async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Sign out error:', error);
+      throw error;
+    }
     set({ user: null });
-    console.log('Local state cleared');
+    console.log('Sign out successful');
   },
 }));
 
