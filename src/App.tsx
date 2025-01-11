@@ -36,8 +36,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => {
   const { user, loading } = useAuth();
 
+  // Show loading screen while initial auth state is being determined
   if (loading) {
-    return <LoadingScreen />;
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <LoadingScreen />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
   }
 
   return (
@@ -63,6 +72,8 @@ const App = () => {
               path="/auth"
               element={user ? <Navigate to="/app" /> : <AuthForm />}
             />
+            {/* Catch all route - redirect to home */}
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
