@@ -11,14 +11,13 @@ export const addVideoActions = (set: any) => ({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
-    // Create new video with is_pinned always set to true
     const newVideo = {
       id: videoId,
       user_id: user.id,
       url,
       title: details.title,
       thumbnail: details.thumbnail,
-      is_pinned: true, // Always set to true
+      is_pinned: true, // Always set to true when adding
       added_at: new Date().toISOString(),
       notes: [],
       board_ids: [],
@@ -27,20 +26,24 @@ export const addVideoActions = (set: any) => ({
       tags: [],
     };
 
-    // Insert into database
     const { error } = await supabase
       .from('videos')
       .insert(newVideo);
 
     if (error) throw error;
 
-    // Update local state with the new video
+    // Update local state with the new video, maintaining consistency with is_pinned
     set((state: any) => ({
-      videos: [{ ...newVideo, added_at: new Date(newVideo.added_at) }, ...state.videos],
+      videos: [{ 
+        ...newVideo, 
+        isPinned: newVideo.is_pinned, // Add isPinned for frontend compatibility
+        addedAt: new Date(newVideo.added_at) 
+      }, ...state.videos],
     }));
   },
 
   togglePin: async (id: string) => {
+    // First get the current pin state from the database
     const { data: video } = await supabase
       .from('videos')
       .select('is_pinned')
@@ -51,6 +54,7 @@ export const addVideoActions = (set: any) => ({
 
     const updatedIsPinned = !video.is_pinned;
 
+    // Update in database
     const { error } = await supabase
       .from('videos')
       .update({ is_pinned: updatedIsPinned })
@@ -58,10 +62,11 @@ export const addVideoActions = (set: any) => ({
 
     if (error) throw error;
 
+    // Update local state, maintaining both is_pinned and isPinned properties
     set((state: any) => ({
       videos: state.videos.map((v: Video) =>
         v.id === id
-          ? { ...v, is_pinned: updatedIsPinned }
+          ? { ...v, is_pinned: updatedIsPinned, isPinned: updatedIsPinned }
           : v
       ),
     }));
@@ -78,7 +83,14 @@ export const addVideoActions = (set: any) => ({
 
     if (error) throw error;
 
-    set({ videos: videos || [] });
+    // Transform the data to include both is_pinned and isPinned for frontend compatibility
+    const transformedVideos = (videos || []).map(video => ({
+      ...video,
+      isPinned: video.is_pinned,
+      addedAt: new Date(video.added_at)
+    }));
+
+    set({ videos: transformedVideos });
   },
 });
 
