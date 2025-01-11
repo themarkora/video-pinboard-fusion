@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Pin } from "lucide-react";
 import { useAuth } from "@/store/useAuth";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
@@ -11,9 +12,10 @@ export const Header = () => {
     try {
       await signOut();
       navigate("/");
+      toast.success("Successfully signed out");
     } catch (error) {
       console.error("Sign out error:", error);
-      // Navigation is handled in the auth store
+      toast.error("Error signing out");
     }
   };
 
