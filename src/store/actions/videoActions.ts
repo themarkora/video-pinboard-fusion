@@ -2,7 +2,7 @@ import { Video } from '../types';
 import { supabase } from '@/integrations/supabase/client';
 
 export const addVideoActions = (set: any) => ({
-  addVideo: async (url: string, isPinned: boolean = true) => {
+  addVideo: async (url: string) => {
     const videoId = getYouTubeVideoId(url);
     if (!videoId) throw new Error('Invalid YouTube URL');
 
@@ -61,10 +61,24 @@ export const addVideoActions = (set: any) => ({
     set((state: any) => ({
       videos: state.videos.map((v: Video) =>
         v.id === id
-          ? { ...v, isPinned: updatedIsPinned }
+          ? { ...v, is_pinned: updatedIsPinned }
           : v
       ),
     }));
+  },
+
+  fetchVideos: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: videos, error } = await supabase
+      .from('videos')
+      .select('*')
+      .order('added_at', { ascending: false });
+
+    if (error) throw error;
+
+    set({ videos: videos || [] });
   },
 });
 
