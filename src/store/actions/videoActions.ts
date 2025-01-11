@@ -3,13 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const addVideoActions = (set: any) => ({
   addVideo: async (url: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const videoId = getYouTubeVideoId(url);
     if (!videoId) throw new Error('Invalid YouTube URL');
 
     const details = await fetchVideoDetails(videoId);
-    
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
 
     const newVideo = {
       id: videoId,
@@ -42,6 +42,9 @@ export const addVideoActions = (set: any) => ({
   },
 
   togglePin: async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { data: video } = await supabase
       .from('videos')
       .select('is_pinned')
@@ -62,7 +65,7 @@ export const addVideoActions = (set: any) => ({
     set((state: any) => ({
       videos: state.videos.map((v: Video) =>
         v.id === id
-          ? { ...v, isPinned: updatedIsPinned }
+          ? { ...v, isPinned: updatedIsPinned, is_pinned: updatedIsPinned }
           : v
       ),
     }));
