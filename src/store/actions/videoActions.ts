@@ -11,14 +11,14 @@ export const addVideoActions = (set: any) => ({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
-    // Always set is_pinned to true by default
+    // Create new video with is_pinned always set to true
     const newVideo = {
       id: videoId,
       user_id: user.id,
       url,
       title: details.title,
       thumbnail: details.thumbnail,
-      is_pinned: true, // Force this to true
+      is_pinned: true, // Always set to true
       added_at: new Date().toISOString(),
       notes: [],
       board_ids: [],
@@ -27,29 +27,44 @@ export const addVideoActions = (set: any) => ({
       tags: [],
     };
 
+    // Insert into database
     const { error } = await supabase
       .from('videos')
       .insert(newVideo);
 
     if (error) throw error;
 
+    // Update local state with the new video
     set((state: any) => ({
       videos: [{ ...newVideo, added_at: new Date(newVideo.added_at) }, ...state.videos],
     }));
   },
 
-  fetchVideos: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data: videos, error } = await supabase
+  togglePin: async (id: string) => {
+    const { data: video } = await supabase
       .from('videos')
-      .select('*')
-      .order('added_at', { ascending: false });
+      .select('is_pinned')
+      .eq('id', id)
+      .single();
+
+    if (!video) throw new Error('Video not found');
+
+    const updatedIsPinned = !video.is_pinned;
+
+    const { error } = await supabase
+      .from('videos')
+      .update({ is_pinned: updatedIsPinned })
+      .eq('id', id);
 
     if (error) throw error;
 
-    set({ videos: videos || [] });
+    set((state: any) => ({
+      videos: state.videos.map((v: Video) =>
+        v.id === id
+          ? { ...v, isPinned: updatedIsPinned }
+          : v
+      ),
+    }));
   },
 });
 
