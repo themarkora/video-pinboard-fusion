@@ -20,28 +20,27 @@ export const AuthForm = () => {
     try {
       console.log(`Attempting to ${mode} with email:`, email);
       if (mode === "signin") {
-        await signIn(email, password);
-      } else {
-        await signUp(email, password);
-      }
-      toast.success(`Successfully ${mode === "signin" ? "signed in" : "signed up"}!`);
-    } catch (error: any) {
-      console.error(`${mode} error:`, error);
-      
-      // Handle the specific "Email not confirmed" error
-      if (error instanceof AuthApiError && error.message.includes('Email not confirmed')) {
-        // For this specific case, we'll try to sign in anyway since email verification is disabled
         try {
           await signIn(email, password);
           toast.success("Successfully signed in!");
-          return;
-        } catch (retryError) {
-          console.error("Retry error:", retryError);
-          toast.error("Failed to sign in. Please check your credentials and try again.");
+        } catch (error: any) {
+          // If we get "Email not confirmed" error but email verification is disabled,
+          // try signing in again
+          if (error instanceof AuthApiError && 
+              error.message.includes('Email not confirmed')) {
+            await signIn(email, password);
+            toast.success("Successfully signed in!");
+          } else {
+            throw error;
+          }
         }
       } else {
-        toast.error(`Failed to ${mode}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        await signUp(email, password);
+        toast.success("Successfully signed up!");
       }
+    } catch (error: any) {
+      console.error(`${mode} error:`, error);
+      toast.error(`Failed to ${mode}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
