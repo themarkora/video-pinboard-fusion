@@ -52,11 +52,11 @@ export function AddVideo() {
           disabled={isLoading || !videoUrl.trim()}
         >
           {isLoading ? (
-            <Loader2 size={18} className="animate-spin mr-2" />
+            <Loader2 size={18} className="animate-spin mr-2 text-gray-200" />
           ) : (
-            <Pin size={18} className="mr-2" />
+            <Pin size={18} className="mr-2 text-gray-200" />
           )}
-          <span className="text-base font-medium">Pin Video</span>
+          <span className="text-base font-medium text-gray-200">Pin Video</span>
         </Button>
       </div>
     </form>
