@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+import { MessageSquare, Pencil, X } from 'lucide-react';
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Pencil, X } from "lucide-react";
 import { useVideos } from '@/store/useVideos';
 import { useToast } from '@/hooks/use-toast';
 
@@ -11,8 +11,6 @@ interface VideoNotesProps {
   onNoteChange: (note: string) => void;
   onAddNote: () => void;
   videoId: string;
-  showInput: boolean;
-  onShowInputChange: (show: boolean) => void;
 }
 
 export const VideoNotes: React.FC<VideoNotesProps> = ({
@@ -21,24 +19,28 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   onNoteChange,
   onAddNote,
   videoId,
-  showInput,
-  onShowInputChange,
 }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editedNote, setEditedNote] = useState("");
   const { updateNote, deleteNote } = useVideos();
   const { toast } = useToast();
+  const [showInput, setShowInput] = useState(false);
   
   const MAX_CHARS = 25;
 
-  const handleUpdateNote = (index: number) => {
+  const handleEditClick = (index: number, currentNote: string) => {
+    setEditingIndex(index);
+    setEditedNote(currentNote);
+  };
+
+  const handleSaveEdit = (index: number) => {
     if (editedNote.trim()) {
       updateNote(videoId, index, editedNote);
       setEditingIndex(null);
-      setEditedNote("");
       toast({
         title: "Note updated",
         description: "Your note has been updated successfully.",
+        className: "bg-purple-600/90 text-white border-none",
       });
     }
   };
@@ -48,78 +50,22 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
     toast({
       title: "Note deleted",
       description: "Your note has been deleted successfully.",
+      className: "bg-purple-600/90 text-white border-none",
     });
+  };
+
+  const handleNoteChange = (value: string) => {
+    if (value.length <= MAX_CHARS) {
+      onNoteChange(value);
+    }
   };
 
   return (
     <div className="space-y-4">
-      {notes.map((noteText, index) => (
-        <div key={index} className="flex items-center justify-between gap-2 text-sm">
-          {editingIndex === index ? (
-            <input
-              type="text"
-              value={editedNote}
-              onChange={(e) => setEditedNote(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleUpdateNote(index);
-                }
-              }}
-              className="flex-1 bg-transparent border-b border-purple-500 focus:outline-none"
-              autoFocus
-            />
-          ) : (
-            <span className="flex-1 text-gray-300">{noteText}</span>
-          )}
-          <div className="flex items-center gap-2">
-            {editingIndex === index ? (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setEditingIndex(null);
-                    setEditedNote("");
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => handleUpdateNote(index)}
-                >
-                  Save
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setEditingIndex(index);
-                    setEditedNote(noteText);
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteNote(index)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      ))}
-
       {!showInput ? (
         <button
           className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors duration-200 bg-transparent hover:bg-transparent focus:outline-none group"
-          onClick={() => onShowInputChange(true)}
+          onClick={() => setShowInput(true)}
         >
           <Pencil className="w-4 h-4 group-hover:text-purple-300 transition-colors duration-200" />
           <span className="group-hover:text-purple-300 transition-colors duration-200">Add Note</span>
@@ -127,42 +73,108 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
       ) : (
         <div className="space-y-2">
           <div className="relative">
-            <Textarea
+            <textarea
               value={note}
-              onChange={(e) => onNoteChange(e.target.value)}
+              onChange={(e) => handleNoteChange(e.target.value)}
               placeholder="Add a note... (Press Enter to save)"
-              className="min-h-[80px] bg-black/20 border-purple-500/50 focus:border-purple-500 resize-none"
+              className="w-full min-h-[100px] bg-[#1A1F2E] border border-purple-500/30 rounded-xl p-4 text-gray-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   if (note.trim()) {
                     onAddNote();
+                    setShowInput(false);
                   }
                 }
               }}
+              maxLength={MAX_CHARS}
             />
-            <div className="absolute bottom-2 right-2 text-xs text-gray-400">
-              {note.length}/{MAX_CHARS}
+            <div className="absolute bottom-4 right-4 flex items-center gap-4">
+              <span className="text-sm text-gray-400">
+                {note.length}/{MAX_CHARS}
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  className="text-gray-400 hover:text-gray-300"
+                  onClick={() => setShowInput(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                  onClick={() => {
+                    if (note.trim()) {
+                      onAddNote();
+                      setShowInput(false);
+                    }
+                  }}
+                >
+                  Save
+                </Button>
+              </div>
             </div>
           </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="ghost"
-              className="text-gray-400 hover:text-gray-300"
-              onClick={() => onShowInputChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                if (note.trim()) {
-                  onAddNote();
-                }
-              }}
-            >
-              Save
-            </Button>
-          </div>
+        </div>
+      )}
+      
+      {notes && notes.length > 0 && (
+        <div className="p-3 bg-[#2A2F3C] rounded-xl space-y-2">
+          {notes.map((noteText, index) => (
+            <div key={`${videoId}-note-${index}`} className="flex items-start gap-2 text-gray-300 group">
+              <MessageSquare className="w-4 h-4 mt-1 shrink-0" />
+              {editingIndex === index ? (
+                <div className="flex-1 flex gap-2">
+                  <Input
+                    value={editedNote}
+                    onChange={(e) => setEditedNote(e.target.value.slice(0, MAX_CHARS))}
+                    className="flex-1 bg-[#1A1F2E] border-none rounded-xl h-8 text-sm text-gray-200"
+                    onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(index)}
+                    autoFocus
+                    maxLength={MAX_CHARS}
+                  />
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-8 px-3 bg-purple-600 hover:bg-purple-700 text-white"
+                    onClick={() => handleSaveEdit(index)}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => handleDeleteNote(index)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex-1 flex items-start justify-between">
+                  <p className="text-sm break-words">{noteText}</p>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6"
+                      onClick={() => handleEditClick(index, noteText)}
+                    >
+                      <Pencil className="h-3 w-3 text-gray-400 hover:text-white transition-colors" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6"
+                      onClick={() => handleDeleteNote(index)}
+                    >
+                      <X className="h-3 w-3 text-red-500 hover:text-red-400 transition-colors" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>

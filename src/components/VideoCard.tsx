@@ -21,7 +21,6 @@ interface VideoCardProps {
 export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [note, setNote] = useState('');
-  const [showNoteInput, setShowNoteInput] = useState(false);
   const { addNote, addToBoard, deleteVideo, boards, removeFromBoard, addTag, removeTag } = useVideos();
   const [newBoardName, setNewBoardName] = useState('');
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
@@ -60,11 +59,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     if (note.trim()) {
       addNote(video.id, note);
       setNote('');
-      setShowNoteInput(false);
-      showSuccessToast(
-        "Note added",
-        "Your note has been added successfully."
-      );
     }
   };
 
@@ -121,14 +115,14 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
 
   return (
     <>
-      <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
+      <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02] h-fit flex flex-col">
         <VideoThumbnail
           thumbnail={video.thumbnail}
           title={video.title}
           onClick={() => setIsPlaying(true)}
         />
         
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 flex-1 flex flex-col">
           <h3 className="font-semibold text-white text-lg md:text-xl line-clamp-2">
             {video.title}
           </h3>
@@ -159,15 +153,15 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             }}
           />
 
-          <VideoNotes
-            notes={video.notes || []}
-            note={note}
-            onNoteChange={setNote}
-            onAddNote={handleAddNote}
-            videoId={video.id}
-            showInput={showNoteInput}
-            onShowInputChange={setShowNoteInput}
-          />
+          <div className="mt-auto">
+            <VideoNotes
+              notes={video.notes || []}
+              note={note}
+              onNoteChange={setNote}
+              onAddNote={handleAddNote}
+              videoId={video.id}
+            />
+          </div>
         </div>
       </Card>
 
