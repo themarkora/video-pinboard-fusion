@@ -26,7 +26,6 @@ export interface VideosState {
   togglePin: (id: string) => Promise<void>;
   fetchVideos: () => Promise<void>;
   fetchBoards: () => Promise<void>;
-  clearAllData: () => void;
 }
 
 export const useVideos = create<VideosState>()(
@@ -35,7 +34,6 @@ export const useVideos = create<VideosState>()(
       videos: [],
       boards: [],
       activeTab: 'recent',
-      clearAllData: () => set({ videos: [], boards: [], activeTab: 'recent' }),
       ...addVideoActions(set),
       ...boardActions(set),
       setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
@@ -265,7 +263,7 @@ export const useVideos = create<VideosState>()(
         set((state) => ({
           videos: state.videos.map((v) =>
             v.id === id
-              ? { ...v, isPinned: updatedIsPinned }
+              ? { ...v, is_pinned: updatedIsPinned }
               : v
           ),
         }));
