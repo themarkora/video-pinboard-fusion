@@ -56,7 +56,10 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Landing />} />
+            <Route
+              path="/"
+              element={user ? <Navigate to="/app" /> : <Landing />}
+            />
             <Route
               path="/app"
               element={
