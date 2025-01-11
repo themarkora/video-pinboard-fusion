@@ -2,10 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const Landing = () => {
   const [featureImages, setFeatureImages] = useState({
-    collections: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+    collections: "/lovable-uploads/a676edcb-27a4-4e80-86e9-dda53274f5f6.png",
     organization: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
     quickAccess: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
   });
@@ -14,15 +15,19 @@ const Landing = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Create a temporary URL for immediate preview
-    const tempUrl = URL.createObjectURL(file);
-    setFeatureImages(prev => ({
-      ...prev,
-      [feature]: tempUrl
-    }));
+    try {
+      // Create a temporary URL for immediate preview
+      const tempUrl = URL.createObjectURL(file);
+      setFeatureImages(prev => ({
+        ...prev,
+        [feature]: tempUrl
+      }));
 
-    // In a real application, you would upload the file to your server here
-    console.log(`Uploading image for ${feature}:`, file);
+      toast.success("Image updated successfully!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image. Please try again.");
+    }
   };
 
   return (
