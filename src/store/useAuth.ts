@@ -7,7 +7,7 @@ interface AuthState {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => void;  // Changed to sync function
+  signOut: () => void;
 }
 
 export const useAuth = create<AuthState>((set) => ({
@@ -45,8 +45,13 @@ export const useAuth = create<AuthState>((set) => ({
   },
 }));
 
-// Initialize auth state
+// Initialize auth state and set up listener for auth changes
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session?.user?.email);
-  useAuth.setState({ user: session?.user ?? null, loading: false });
+  if (event === 'SIGNED_OUT') {
+    // Ensure we clear the state when signed out
+    useAuth.setState({ user: null, loading: false });
+  } else {
+    useAuth.setState({ user: session?.user ?? null, loading: false });
+  }
 });
