@@ -115,7 +115,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
 
   return (
     <>
-      <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
+      <Card className="bg-[#1A1F2E] border-none overflow-hidden transition-transform duration-200 hover:scale-[1.02] h-fit">
         <VideoThumbnail
           thumbnail={video.thumbnail}
           title={video.title}
