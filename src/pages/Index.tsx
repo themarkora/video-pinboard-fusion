@@ -1,143 +1,149 @@
-import { Header } from "@/components/Header";
-import { AddVideo } from "@/components/AddVideo";
-import { VideoCard } from "@/components/VideoCard";
-import { BoardCard } from "@/components/BoardCard";
-import { useVideos } from "@/store/useVideos";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AnimatedBackground } from "@/components/AnimatedBackground";
-import { useState, useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import { Pin, Video, ListChecks, Share2, TrendingUp, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const { videos, togglePin, activeTab, setActiveTab, boards } = useVideos();
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Filter videos based on search query and active tab
-  const filteredVideos = useMemo(() => {
-    let filtered = videos;
-
-    // First apply search filter if there's a query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(video => {
-        const titleMatch = video.title.toLowerCase().includes(query);
-        const tagsMatch = video.tags?.some(tag => tag.toLowerCase().includes(query)) || false;
-        const notesMatch = video.notes?.some(note => note.toLowerCase().includes(query)) || false;
-        
-        return titleMatch || tagsMatch || notesMatch;
-      });
-    }
-
-    // Then apply tab filter
-    return filtered.filter((video) => {
-      switch (activeTab) {
-        case 'pinned':
-          return video.isPinned === true;
-        case 'notes':
-          return Array.isArray(video.notes) && video.notes.length > 0;
-        case 'boards':
-          return Array.isArray(video.boardIds) && video.boardIds.length > 0;
-        case 'recent':
-        default:
-          return true;
-      }
-    });
-  }, [videos, searchQuery, activeTab]);
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white relative overflow-hidden">
-      <AnimatedBackground />
-      <Header />
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-32">
-        <div className="text-center pt-12 sm:pt-16 mb-8 sm:mb-12">
-          <AddVideo />
-          <p className="text-gray-400 mt-4 text-sm">
-            Your personal YouTube video organizer for research and inspiration
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 mt-4 text-sm text-gray-400 max-w-2xl mx-auto">
-            <div className="flex items-center gap-2">
-              <span className="text-purple-500">📌</span> Pin videos
+    <div className="min-h-screen bg-gradient-to-b from-background-top to-background-bottom text-white">
+      {/* Hero Section */}
+      <section className="relative pt-20 pb-32 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <div className="flex-1 text-left">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                Your YouTube videos,{" "}
+                <span className="text-primary">organized</span> and{" "}
+                <span className="text-primary">shareable</span>
+              </h1>
+              <p className="text-xl text-gray-300 mb-8">
+                Save, organize, and share your favorite YouTube videos. Create curated lists for research, learning, or entertainment.
+              </p>
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-6"
+                onClick={() => navigate("/signup")}
+              >
+                Get Started Free
+              </Button>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-purple-500">📝</span> Add notes
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-purple-500">🎯</span> Organize
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-purple-500">⚡</span> Quick access
-            </div>
-          </div>
-        </div>
-
-        <div className="relative max-w-2xl mx-auto mb-8">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input 
-            placeholder="Search videos by title, tags, or notes..." 
-            className="w-full bg-[#1A1F2E] border-none pl-10 h-12 text-gray-300 rounded-xl"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full flex flex-col items-center">
-          <TabsList className="bg-transparent justify-center gap-2 h-auto pb-4 overflow-x-auto">
-            <TabsTrigger 
-              value="recent"
-              className="data-[state=active]:bg-purple-600 data-[state=active]:text-white px-4 py-2 rounded-xl whitespace-nowrap"
-            >
-              Recent Videos
-            </TabsTrigger>
-            <TabsTrigger 
-              value="pinned"
-              className="data-[state=active]:bg-purple-600 data-[state=active]:text-white px-4 py-2 rounded-xl whitespace-nowrap"
-            >
-              Pinned Videos
-            </TabsTrigger>
-            <TabsTrigger 
-              value="notes"
-              className="data-[state=active]:bg-purple-600 data-[state=active]:text-white px-4 py-2 rounded-xl whitespace-nowrap"
-            >
-              Videos with Notes
-            </TabsTrigger>
-            <TabsTrigger 
-              value="boards"
-              className="data-[state=active]:bg-purple-600 data-[state=active]:text-white px-4 py-2 rounded-xl whitespace-nowrap"
-            >
-              Boards ({boards.length})
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        {activeTab === 'boards' ? (
-          <div className="grid gap-6 mt-8">
-            {boards.map((board) => (
-              <BoardCard key={board.id} id={board.id} name={board.name} />
-            ))}
-            {boards.length === 0 && (
-              <p className="text-center text-gray-400 py-8">No boards created yet.</p>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
-            {filteredVideos.map((video) => (
-              <VideoCard
-                key={video.id}
-                video={video}
-                onTogglePin={togglePin}
+            <div className="flex-1">
+              <img 
+                src="/lovable-uploads/48211fb6-d34c-4eef-8591-52aa48514ef7.png" 
+                alt="VidPin Interface Preview" 
+                className="rounded-lg shadow-2xl"
               />
-            ))}
-            {filteredVideos.length === 0 && (
-              <div className="col-span-full text-center text-gray-400 py-8">
-                No videos found matching your search criteria.
-              </div>
-            )}
+            </div>
           </div>
-        )}
-      </main>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-4 bg-secondary/20">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+            Everything you need to manage your video collection
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <FeatureCard
+              icon={<Pin className="w-8 h-8 text-primary" />}
+              title="Pin Important Videos"
+              description="Keep your most important videos easily accessible by pinning them to the top."
+            />
+            <FeatureCard
+              icon={<ListChecks className="w-8 h-8 text-primary" />}
+              title="Organize with Boards"
+              description="Create themed boards to group related videos and keep everything organized."
+            />
+            <FeatureCard
+              icon={<Share2 className="w-8 h-8 text-primary" />}
+              title="Share Collections"
+              description="Share your curated video collections with friends, colleagues, or the world."
+            />
+            <FeatureCard
+              icon={<Video className="w-8 h-8 text-primary" />}
+              title="Watch Inline"
+              description="Watch videos directly within VidPin without leaving your collection."
+            />
+            <FeatureCard
+              icon={<TrendingUp className="w-8 h-8 text-primary" />}
+              title="Track Progress"
+              description="Keep track of watched videos and maintain your learning progress."
+            />
+            <FeatureCard
+              icon={<Users className="w-8 h-8 text-primary" />}
+              title="Collaborate"
+              description="Work together with others on shared video collections."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+            How VidPin Works
+          </h2>
+          <div className="grid md:grid-cols-3 gap-12">
+            <StepCard
+              number="1"
+              title="Add Videos"
+              description="Simply paste YouTube URLs to add videos to your collection."
+            />
+            <StepCard
+              number="2"
+              title="Organize"
+              description="Create boards, add tags, and pin important videos for easy access."
+            />
+            <StepCard
+              number="3"
+              title="Share & Collaborate"
+              description="Share your collections or collaborate with others on shared boards."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 bg-secondary/20">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Ready to organize your video collection?
+          </h2>
+          <p className="text-xl text-gray-300 mb-8">
+            Join thousands of users who use VidPin to manage their YouTube videos.
+          </p>
+          <Button 
+            size="lg" 
+            className="text-lg px-8 py-6"
+            onClick={() => navigate("/signup")}
+          >
+            Get Started Now
+          </Button>
+        </div>
+      </section>
     </div>
   );
 };
+
+const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) => (
+  <div className="p-6 rounded-xl bg-secondary/30 backdrop-blur-sm">
+    <div className="mb-4">{icon}</div>
+    <h3 className="text-xl font-semibold mb-2">{title}</h3>
+    <p className="text-gray-300">{description}</p>
+  </div>
+);
+
+const StepCard = ({ number, title, description }: { number: string; title: string; description: string }) => (
+  <div className="text-center">
+    <div className="w-12 h-12 rounded-full bg-primary text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">
+      {number}
+    </div>
+    <h3 className="text-xl font-semibold mb-2">{title}</h3>
+    <p className="text-gray-300">{description}</p>
+  </div>
+);
 
 export default Index;
