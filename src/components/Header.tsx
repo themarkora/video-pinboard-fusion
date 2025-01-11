@@ -11,35 +11,27 @@ export const Header = () => {
 
   const handleSignOut = async () => {
     try {
-      // First check if we have a session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        // If no session, just clear the state and redirect
-        signOut();
-        navigate("/");
-        return;
+      // First clear local state
+      signOut();
+      
+      // Attempt to sign out from Supabase in both iframe and main window contexts
+      const { error } = await supabase.auth.signOut({
+        scope: 'local'  // Changed to local to avoid cross-origin issues in iframe
+      });
+      
+      if (error) {
+        console.error("Sign out error:", error);
+        // Don't show error to user since we've already cleared local state
       }
-
-      if (!session) {
-        // No active session, just clear the state and redirect
-        signOut();
-        navigate("/");
-        return;
-      }
-
-      // We have a valid session, proceed with sign out
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      
+      // Clear any remaining auth data from localStorage
+      window.localStorage.removeItem('sb-' + import.meta.env.VITE_SUPABASE_PROJECT_ID + '-auth-token');
       
       toast.success("Successfully signed out");
       navigate("/");
     } catch (error: any) {
       console.error("Sign out error:", error);
-      toast.error(error.message || "Failed to sign out");
-      
-      // Even if there's an error, we should clear the local state
-      signOut();
+      // Don't show error to user since we've already cleared local state
       navigate("/");
     }
   };

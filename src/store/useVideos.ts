@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { addVideoActions } from './actions/videoActions';
 import { boardActions } from './actions/boardActions';
 import { Video, Board } from './types';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface VideosState {
   videos: Video[];
@@ -23,17 +24,35 @@ export interface VideosState {
   removeFromBoard: (videoId: string, boardId: string) => void;
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
   togglePin: (id: string) => void;
+  fetchUserVideos: () => Promise<void>;
 }
 
 export const useVideos = create<VideosState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       videos: [],
       boards: [],
       activeTab: 'recent',
       ...addVideoActions(set),
       ...boardActions(set),
       setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
+
+      fetchUserVideos: async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: videos, error } = await supabase
+          .from('videos')
+          .select('*')
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error fetching videos:', error);
+          return;
+        }
+
+        set({ videos: videos || [] });
+      },
 
       removeTag: (videoId: string, tag: string) =>
         set((state) => ({
@@ -119,6 +138,7 @@ export const useVideos = create<VideosState>()(
             video.id === id ? { ...video, isPinned: !video.isPinned } : video
           ),
         })),
+
     }),
     {
       name: 'videos-storage',
