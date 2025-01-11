@@ -3,6 +3,7 @@ import { LogOut, Pin } from "lucide-react";
 import { useAuth } from "@/store/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
@@ -10,12 +11,28 @@ export const Header = () => {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
-      navigate("/");
+      // First clear local state
+      signOut();
+      
+      // Attempt to sign out from Supabase in both iframe and main window contexts
+      const { error } = await supabase.auth.signOut({
+        scope: 'local'  // Changed to local to avoid cross-origin issues in iframe
+      });
+      
+      if (error) {
+        console.error("Sign out error:", error);
+        // Don't show error to user since we've already cleared local state
+      }
+      
+      // Clear any remaining auth data from localStorage
+      window.localStorage.removeItem('sb-' + import.meta.env.VITE_SUPABASE_PROJECT_ID + '-auth-token');
+      
       toast.success("Successfully signed out");
-    } catch (error) {
+      navigate("/");
+    } catch (error: any) {
       console.error("Sign out error:", error);
-      toast.error("Error signing out");
+      // Don't show error to user since we've already cleared local state
+      navigate("/");
     }
   };
 

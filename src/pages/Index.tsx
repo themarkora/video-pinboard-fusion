@@ -7,15 +7,11 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 
 const Index = () => {
-  const { videos, togglePin, activeTab, setActiveTab, boards, fetchUserVideos } = useVideos();
+  const { videos, togglePin, activeTab, setActiveTab, boards } = useVideos();
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    fetchUserVideos();
-  }, [fetchUserVideos]);
 
   // Filter videos based on search query and active tab
   const filteredVideos = useMemo(() => {

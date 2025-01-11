@@ -1,82 +1,52 @@
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
-import { toast } from "sonner";
 
 interface AuthState {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  signOut: () => void;  // Changed to sync function
 }
 
 export const useAuth = create<AuthState>((set) => ({
   user: null,
   loading: true,
   signIn: async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      
-      set({ user: data.user });
-      toast.success("Successfully signed in");
-    } catch (error: any) {
+    console.log('Attempting to sign in with email:', email);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
       console.error('Sign in error:', error);
-      toast.error(error.message || "Failed to sign in");
       throw error;
     }
+    set({ user: data.user });
+    console.log('Sign in successful:', data);
   },
   signUp: async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      
-      set({ user: data.user });
-      toast.success("Successfully signed up");
-    } catch (error: any) {
+    console.log('Attempting to sign up with email:', email);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    if (error) {
       console.error('Sign up error:', error);
-      toast.error(error.message || "Failed to sign up");
       throw error;
     }
+    set({ user: data.user });
+    console.log('Sign up successful:', data);
   },
-  signOut: async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      set({ user: null });
-    } catch (error: any) {
-      console.error('Sign out error:', error);
-      toast.error("Error signing out");
-      throw error;
-    }
+  signOut: () => {
+    set({ user: null });
+    console.log('Local state cleared');
   },
 }));
 
 // Initialize auth state
 supabase.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_OUT') {
-    useAuth.setState({ user: null, loading: false });
-  } else if (session?.user) {
-    useAuth.setState({ user: session.user, loading: false });
-  } else {
-    useAuth.setState({ loading: false });
-  }
-});
-
-// Get initial session
-supabase.auth.getSession().then(({ data: { session } }) => {
-  useAuth.setState({ 
-    user: session?.user ?? null,
-    loading: false
-  });
+  console.log('Auth state changed:', event, session?.user?.email);
+  useAuth.setState({ user: session?.user ?? null, loading: false });
 });
