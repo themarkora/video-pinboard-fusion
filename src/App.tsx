@@ -4,8 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/store/useAuth";
-import { useVideos } from "@/store/useVideos";
-import { useEffect } from "react";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import { AuthForm } from "./components/Auth/AuthForm";
@@ -14,13 +12,6 @@ const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
-  const { clearVideos } = useVideos();
-
-  useEffect(() => {
-    if (!user) {
-      clearVideos();
-    }
-  }, [user, clearVideos]);
 
   if (loading) {
     return <div>Loading...</div>;
