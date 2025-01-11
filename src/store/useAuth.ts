@@ -20,6 +20,11 @@ export const useAuth = create<AuthState>((set) => ({
         password,
       });
       if (error) throw error;
+      
+      // Verify session after sign in
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session after sign in');
+      
       set({ user: data.user });
     } catch (error) {
       console.error('Sign in error:', error);
@@ -55,15 +60,33 @@ export const useAuth = create<AuthState>((set) => ({
 const initializeAuth = async () => {
   try {
     // Get the initial session
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    
     useAuth.setState({ user: session?.user ?? null, loading: false });
     console.log('Initial session loaded:', session?.user?.email);
 
     // Set up auth state change listener
-    supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       console.log('Auth state changed:', _event, session?.user?.email);
-      useAuth.setState({ user: session?.user ?? null, loading: false });
+      
+      if (_event === 'SIGNED_OUT') {
+        // Clear any stored session data
+        useAuth.setState({ user: null, loading: false });
+      } else if (session) {
+        // Verify session is valid
+        const { data } = await supabase.auth.getSession();
+        useAuth.setState({ 
+          user: data.session?.user ?? null,
+          loading: false 
+        });
+      }
     });
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
   } catch (error) {
     console.error('Error initializing auth:', error);
     useAuth.setState({ loading: false });
