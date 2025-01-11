@@ -11,6 +11,8 @@ interface VideoNotesProps {
   onNoteChange: (note: string) => void;
   onAddNote: () => void;
   videoId: string;
+  showInput: boolean;
+  onShowInputChange: (show: boolean) => void;
 }
 
 export const VideoNotes: React.FC<VideoNotesProps> = ({
@@ -19,12 +21,13 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   onNoteChange,
   onAddNote,
   videoId,
+  showInput,
+  onShowInputChange,
 }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editedNote, setEditedNote] = useState("");
   const { updateNote, deleteNote } = useVideos();
   const { toast } = useToast();
-  const [showInput, setShowInput] = useState(false);
   
   const MAX_CHARS = 25;
 
@@ -65,7 +68,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
       {!showInput ? (
         <button
           className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors duration-200 bg-transparent hover:bg-transparent focus:outline-none group"
-          onClick={() => setShowInput(true)}
+          onClick={() => onShowInputChange(true)}
         >
           <Pencil className="w-4 h-4 group-hover:text-purple-300 transition-colors duration-200" />
           <span className="group-hover:text-purple-300 transition-colors duration-200">Add Note</span>
@@ -83,7 +86,6 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
                   e.preventDefault();
                   if (note.trim()) {
                     onAddNote();
-                    setShowInput(false);
                   }
                 }
               }}
@@ -97,7 +99,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
                 <Button
                   variant="ghost"
                   className="text-gray-400 hover:text-gray-300"
-                  onClick={() => setShowInput(false)}
+                  onClick={() => onShowInputChange(false)}
                 >
                   Cancel
                 </Button>
@@ -106,7 +108,6 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
                   onClick={() => {
                     if (note.trim()) {
                       onAddNote();
-                      setShowInput(false);
                     }
                   }}
                 >

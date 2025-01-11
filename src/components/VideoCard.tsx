@@ -21,6 +21,7 @@ interface VideoCardProps {
 export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [note, setNote] = useState('');
+  const [showNoteInput, setShowNoteInput] = useState(false);
   const { addNote, addToBoard, deleteVideo, boards, removeFromBoard, addTag, removeTag } = useVideos();
   const [newBoardName, setNewBoardName] = useState('');
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
@@ -59,6 +60,11 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     if (note.trim()) {
       addNote(video.id, note);
       setNote('');
+      setShowNoteInput(false);
+      showSuccessToast(
+        "Note added",
+        "Your note has been added successfully."
+      );
     }
   };
 
@@ -159,6 +165,8 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
             onNoteChange={setNote}
             onAddNote={handleAddNote}
             videoId={video.id}
+            showInput={showNoteInput}
+            onShowInputChange={setShowNoteInput}
           />
         </div>
       </Card>
