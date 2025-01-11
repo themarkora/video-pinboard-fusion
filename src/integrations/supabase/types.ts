@@ -9,7 +9,72 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      boards: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      videos: {
+        Row: {
+          added_at: string | null
+          board_ids: string[] | null
+          id: string
+          is_pinned: boolean | null
+          notes: string[] | null
+          tags: string[] | null
+          thumbnail: string
+          title: string
+          url: string
+          user_id: string
+          views: number | null
+          votes: number | null
+        }
+        Insert: {
+          added_at?: string | null
+          board_ids?: string[] | null
+          id: string
+          is_pinned?: boolean | null
+          notes?: string[] | null
+          tags?: string[] | null
+          thumbnail: string
+          title: string
+          url: string
+          user_id: string
+          views?: number | null
+          votes?: number | null
+        }
+        Update: {
+          added_at?: string | null
+          board_ids?: string[] | null
+          id?: string
+          is_pinned?: boolean | null
+          notes?: string[] | null
+          tags?: string[] | null
+          thumbnail?: string
+          title?: string
+          url?: string
+          user_id?: string
+          views?: number | null
+          votes?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

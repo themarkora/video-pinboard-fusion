@@ -1,4 +1,5 @@
 import { Video } from '../types';
+import { supabase } from '@/integrations/supabase/client';
 
 export const addVideoActions = (set: any) => ({
   addVideo: async (url: string, isPinned: boolean = true) => {
@@ -7,23 +8,47 @@ export const addVideoActions = (set: any) => ({
 
     const details = await fetchVideoDetails(videoId);
     
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const newVideo = {
+      id: videoId,
+      user_id: user.id,
+      url,
+      title: details.title,
+      thumbnail: details.thumbnail,
+      is_pinned: isPinned,
+      added_at: new Date(),
+      notes: [],
+      board_ids: [],
+      views: 0,
+      votes: 0,
+      tags: [],
+    };
+
+    const { error } = await supabase
+      .from('videos')
+      .insert(newVideo);
+
+    if (error) throw error;
+
     set((state: any) => ({
-      videos: [
-        {
-          id: videoId,
-          url,
-          title: details.title,
-          thumbnail: details.thumbnail,
-          isPinned,
-          addedAt: new Date(),
-          notes: [],
-          boardIds: [],
-          views: 0,
-          votes: 0,
-        },
-        ...state.videos,
-      ],
+      videos: [newVideo, ...state.videos],
     }));
+  },
+
+  fetchVideos: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: videos, error } = await supabase
+      .from('videos')
+      .select('*')
+      .order('added_at', { ascending: false });
+
+    if (error) throw error;
+
+    set({ videos: videos || [] });
   },
 });
 
