@@ -1,79 +1,109 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Pin } from "@/components/icons/Pin";
+import { useState } from "react";
 import { useAuth } from "@/store/useAuth";
-import { useToast } from "@/components/ui/use-toast";
+import { Link } from "react-router-dom";
 
 export const AuthForm = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { signIn, signUp } = useAuth();
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
-      if (isSignUp) {
-        await signUp(email, password);
-        toast({
-          title: "Account created",
-          description: "You can now sign in with your credentials",
-        });
-      } else {
+      if (mode === "signin") {
         await signIn(email, password);
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully signed in",
-        });
+      } else {
+        await signUp(email, password);
       }
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error instanceof Error ? error.message : "An error occurred",
-      });
+      console.error("Authentication error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6 p-6 bg-card rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-center">
-        {isSignUp ? "Create Account" : "Sign In"}
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-background-top to-background-bottom px-4">
+      <div className="w-full max-w-md">
+        <div className="flex flex-col items-center mb-8">
+          <div className="flex items-center gap-2 text-2xl font-bold text-white mb-2">
+            <Pin className="w-6 h-6" />
+            <span>VidPin</span>
+          </div>
+          <p className="text-gray-400">Your personal YouTube video organizer</p>
         </div>
-        <div className="space-y-2">
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <Button type="submit" className="w-full">
-          {isSignUp ? "Sign Up" : "Sign In"}
-        </Button>
-      </form>
-      <div className="text-center">
-        <Button
-          variant="link"
-          onClick={() => setIsSignUp(!isSignUp)}
-          className="text-sm"
-        >
-          {isSignUp
-            ? "Already have an account? Sign In"
-            : "Don't have an account? Sign Up"}
-        </Button>
+
+        <form onSubmit={handleSubmit} className="bg-card/10 backdrop-blur-sm rounded-lg p-6 space-y-6 w-full">
+          <div className="space-y-2">
+            <label htmlFor="email" className="block text-sm text-gray-400">
+              Email
+            </label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-black/20 border-gray-700 text-white placeholder:text-gray-500"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-sm text-gray-400">
+              Password
+            </label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-black/20 border-gray-700 text-white placeholder:text-gray-500"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6"
+            disabled={isLoading}
+          >
+            {mode === "signin" ? "Sign In" : "Sign Up"}
+          </Button>
+
+          <div className="text-center text-sm">
+            {mode === "signin" ? (
+              <p className="text-gray-400">
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => setMode("signup")}
+                  className="text-purple-400 hover:text-purple-300"
+                >
+                  Sign up
+                </button>
+              </p>
+            ) : (
+              <p className="text-gray-400">
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => setMode("signin")}
+                  className="text-purple-400 hover:text-purple-300"
+                >
+                  Sign in
+                </button>
+              </p>
+            )}
+          </div>
+        </form>
       </div>
     </div>
   );
