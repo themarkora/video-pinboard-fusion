@@ -39,7 +39,7 @@ export const VideoActions: React.FC<VideoActionsProps> = ({
         <Button 
           variant="secondary"
           className={`w-full ${isPinned ? 'bg-purple-600 hover:bg-purple-700' : 'bg-[#2A2F3C] hover:bg-[#353B4A]'} text-white rounded-xl h-11 font-medium transition-all duration-200 flex items-center justify-center gap-2`}
-          onClick={onTogglePin}
+          onClick={() => onTogglePin()}
         >
           {isPinned ? (
             <>
