@@ -70,12 +70,14 @@ const Landing = () => {
         <div className="grid md:grid-cols-3 gap-12 mb-20">
           <div className="relative group">
             <div className="mb-6 transform transition-all duration-300 hover:scale-105 hover:-translate-y-2">
-              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300">
-                <img 
-                  src={featureImages.collections}
-                  alt="Personal Collections" 
-                  className="w-full h-auto rounded-lg object-contain animate-fade-in"
-                />
+              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden">
+                <div className="overflow-hidden rounded-lg">
+                  <img 
+                    src={featureImages.collections}
+                    alt="Personal Collections" 
+                    className="w-full h-auto rounded-lg object-contain animate-fade-in transform transition-transform duration-500 group-hover:scale-110"
+                  />
+                </div>
               </div>
             </div>
             <h3 className="text-xl font-semibold mb-4">Personal Collections</h3>
@@ -84,12 +86,14 @@ const Landing = () => {
 
           <div className="relative group">
             <div className="mb-6 transform transition-all duration-300 hover:scale-105 hover:-translate-y-2">
-              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300">
-                <img 
-                  src={featureImages.organization}
-                  alt="Smart Organization" 
-                  className="w-full h-auto rounded-lg object-contain animate-fade-in"
-                />
+              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden">
+                <div className="overflow-hidden rounded-lg">
+                  <img 
+                    src={featureImages.organization}
+                    alt="Smart Organization" 
+                    className="w-full h-auto rounded-lg object-contain animate-fade-in transform transition-transform duration-500 group-hover:scale-110"
+                  />
+                </div>
               </div>
             </div>
             <h3 className="text-xl font-semibold mb-4">Smart Organization</h3>
@@ -98,12 +102,14 @@ const Landing = () => {
 
           <div className="relative group">
             <div className="mb-6 transform transition-all duration-300 hover:scale-105 hover:-translate-y-2">
-              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300">
-                <img 
-                  src={featureImages.quickAccess}
-                  alt="Quick Access" 
-                  className="w-full h-auto rounded-lg object-contain animate-fade-in"
-                />
+              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden">
+                <div className="overflow-hidden rounded-lg">
+                  <img 
+                    src={featureImages.quickAccess}
+                    alt="Quick Access" 
+                    className="w-full h-auto rounded-lg object-contain animate-fade-in transform transition-transform duration-500 group-hover:scale-110"
+                  />
+                </div>
               </div>
             </div>
             <h3 className="text-xl font-semibold mb-4">Quick Access</h3>
