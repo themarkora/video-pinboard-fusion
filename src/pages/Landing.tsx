@@ -67,38 +67,44 @@ const Landing = () => {
       {/* Features Section */}
       <div id="features" className="container mx-auto px-4 py-20">
         <h2 className="text-3xl font-bold text-center mb-16">Transform how you organize your research videos</h2>
-        <div className="grid md:grid-cols-3 gap-8 mb-20">
-          <div className="relative">
-            <div className="mb-4">
-              <img 
-                src={featureImages.collections}
-                alt="Personal Collections" 
-                className="w-full h-48 object-cover rounded-lg"
-              />
+        <div className="grid md:grid-cols-3 gap-12 mb-20">
+          <div className="relative group">
+            <div className="mb-6 transform transition-all duration-300 hover:scale-105 hover:-translate-y-2">
+              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300">
+                <img 
+                  src={featureImages.collections}
+                  alt="Personal Collections" 
+                  className="w-full h-auto rounded-lg object-contain animate-fade-in"
+                />
+              </div>
             </div>
             <h3 className="text-xl font-semibold mb-4">Personal Collections</h3>
             <p className="text-gray-300">Create focused boards for different research topics and projects</p>
           </div>
 
-          <div className="relative">
-            <div className="mb-4">
-              <img 
-                src={featureImages.organization}
-                alt="Smart Organization" 
-                className="w-full h-48 object-cover rounded-lg"
-              />
+          <div className="relative group">
+            <div className="mb-6 transform transition-all duration-300 hover:scale-105 hover:-translate-y-2">
+              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300">
+                <img 
+                  src={featureImages.organization}
+                  alt="Smart Organization" 
+                  className="w-full h-auto rounded-lg object-contain animate-fade-in"
+                />
+              </div>
             </div>
             <h3 className="text-xl font-semibold mb-4">Smart Organization</h3>
             <p className="text-gray-300">Tag and annotate videos to build your knowledge base</p>
           </div>
 
-          <div className="relative">
-            <div className="mb-4">
-              <img 
-                src={featureImages.quickAccess}
-                alt="Quick Access" 
-                className="w-full h-48 object-cover rounded-lg"
-              />
+          <div className="relative group">
+            <div className="mb-6 transform transition-all duration-300 hover:scale-105 hover:-translate-y-2">
+              <div className="bg-card rounded-xl p-4 shadow-lg hover:shadow-purple-500/20 transition-all duration-300">
+                <img 
+                  src={featureImages.quickAccess}
+                  alt="Quick Access" 
+                  className="w-full h-auto rounded-lg object-contain animate-fade-in"
+                />
+              </div>
             </div>
             <h3 className="text-xl font-semibold mb-4">Quick Access</h3>
             <p className="text-gray-300">Find the exact video you need when inspiration strikes</p>
