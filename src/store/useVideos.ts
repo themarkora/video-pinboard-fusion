@@ -51,7 +51,22 @@ export const useVideos = create<VideosState>()(
           return;
         }
 
-        set({ videos: videos || [] });
+        // Map Supabase response to our Video type
+        const mappedVideos: Video[] = (videos || []).map(video => ({
+          id: video.id,
+          url: video.url,
+          title: video.title,
+          thumbnail: video.thumbnail,
+          isPinned: video.is_pinned || false,
+          addedAt: new Date(video.added_at),
+          notes: video.notes || [],
+          boardIds: video.board_ids || [],
+          views: video.views || 0,
+          votes: video.votes || 0,
+          tags: video.tags || []
+        }));
+
+        set({ videos: mappedVideos });
       },
 
       removeTag: (videoId: string, tag: string) =>
