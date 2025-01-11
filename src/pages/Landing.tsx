@@ -85,69 +85,69 @@ const Landing = () => {
         <h2 className="text-3xl font-bold text-center mb-16">Transform how you organize your research videos</h2>
         <div className="grid md:grid-cols-3 gap-8 mb-20">
           <div className="relative">
-            <div className="mb-4 relative group">
+            <div className="mb-4 relative group cursor-pointer">
               <img 
                 src={featureImages.collections}
                 alt="Personal Collections" 
                 className="w-full h-48 object-cover rounded-lg"
               />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg">
-                <Input
+              <label className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg cursor-pointer">
+                <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload('collections')}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  className="hidden"
                 />
-                <Button variant="secondary" className="pointer-events-none">
+                <Button variant="secondary">
                   Change Image
                 </Button>
-              </div>
+              </label>
             </div>
             <h3 className="text-xl font-semibold mb-4">Personal Collections</h3>
             <p className="text-gray-300">Create focused boards for different research topics and projects</p>
           </div>
 
           <div className="relative">
-            <div className="mb-4 relative group">
+            <div className="mb-4 relative group cursor-pointer">
               <img 
                 src={featureImages.organization}
                 alt="Smart Organization" 
                 className="w-full h-48 object-cover rounded-lg"
               />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg">
-                <Input
+              <label className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg cursor-pointer">
+                <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload('organization')}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  className="hidden"
                 />
-                <Button variant="secondary" className="pointer-events-none">
+                <Button variant="secondary">
                   Change Image
                 </Button>
-              </div>
+              </label>
             </div>
             <h3 className="text-xl font-semibold mb-4">Smart Organization</h3>
             <p className="text-gray-300">Tag and annotate videos to build your knowledge base</p>
           </div>
 
           <div className="relative">
-            <div className="mb-4 relative group">
+            <div className="mb-4 relative group cursor-pointer">
               <img 
                 src={featureImages.quickAccess}
                 alt="Quick Access" 
                 className="w-full h-48 object-cover rounded-lg"
               />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg">
-                <Input
+              <label className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 rounded-lg cursor-pointer">
+                <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload('quickAccess')}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  className="hidden"
                 />
-                <Button variant="secondary" className="pointer-events-none">
+                <Button variant="secondary">
                   Change Image
                 </Button>
-              </div>
+              </label>
             </div>
             <h3 className="text-xl font-semibold mb-4">Quick Access</h3>
             <p className="text-gray-300">Find the exact video you need when inspiration strikes</p>
