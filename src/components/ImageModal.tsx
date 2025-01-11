@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogClose,
 } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 
 interface ImageModalProps {
   isOpen: boolean;
@@ -51,6 +53,9 @@ export const ImageModal = ({ isOpen, onClose, imageUrl, altText }: ImageModalPro
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[90vw] p-0 bg-transparent border-none">
+        <DialogClose className="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors">
+          <X className="h-4 w-4" />
+        </DialogClose>
         <div 
           className="relative w-full overflow-hidden rounded-lg cursor-move"
           onWheel={handleWheel}
