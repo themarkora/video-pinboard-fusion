@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
 const Landing = () => {
   const [featureImages] = useState({
     collections: "/lovable-uploads/96c76c4a-e904-40b4-ab02-190d39d9308f.png",
-    organization: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+    organization: "/lovable-uploads/dabb0de4-c792-4770-b87e-eea045cac979.png",
     quickAccess: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
   });
 
