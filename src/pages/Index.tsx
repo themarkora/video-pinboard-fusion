@@ -3,8 +3,9 @@ import { AddVideo } from "@/components/AddVideo";
 import { VideoCard } from "@/components/VideoCard";
 import { BoardCard } from "@/components/BoardCard";
 import { useVideos } from "@/store/useVideos";
-import { Search } from "lucide-react";
+import { Search, Pin } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { useState, useMemo } from "react";
@@ -17,7 +18,6 @@ const Index = () => {
   const filteredVideos = useMemo(() => {
     let filtered = videos;
 
-    // First apply search filter if there's a query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(video => {
@@ -29,7 +29,6 @@ const Index = () => {
       });
     }
 
-    // Then apply tab filter
     return filtered.filter((video) => {
       switch (activeTab) {
         case 'pinned':
@@ -71,14 +70,29 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="relative max-w-2xl mx-auto mb-8">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input 
-            placeholder="Search videos by title, tags, or notes..." 
-            className="w-full bg-[#1A1F2E] border-none pl-10 h-12 text-gray-300 rounded-xl"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className="relative max-w-2xl mx-auto mb-8 flex gap-2">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input 
+              placeholder="Search videos by title, tags, or notes..." 
+              className="w-full bg-[#1A1F2E] border-none pl-10 h-12 text-gray-300 rounded-xl"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Button 
+            variant="secondary"
+            className="h-12 rounded-xl flex items-center justify-center gap-2 text-white font-medium transition-all duration-200 p-0 overflow-hidden"
+          >
+            <div className="flex h-full items-center">
+              <div className="flex items-center justify-center h-full px-4 bg-[#1A1F2E]">
+                <Pin className="h-4 w-4" />
+              </div>
+              <div className="flex items-center h-full px-4 bg-purple-600">
+                <span>Pin Video</span>
+              </div>
+            </div>
+          </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full flex flex-col items-center">
