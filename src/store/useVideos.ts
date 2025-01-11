@@ -10,14 +10,14 @@ export interface VideosState {
   boards: Board[];
   activeTab: 'recent' | 'pinned' | 'notes' | 'boards';
   addVideo: (url: string, isPinned?: boolean) => Promise<void>;
-  deleteVideo: (id: string) => void;
+  deleteVideo: (id: string) => Promise<void>;
   addNote: (videoId: string, note: string) => void;
   updateNote: (videoId: string, noteIndex: number, updatedNote: string) => void;
   deleteNote: (videoId: string, noteIndex: number) => void;
   addVote: (videoId: string) => void;
   addView: (videoId: string) => void;
   addTag: (videoId: string, tag: string) => void;
-  removeTag: (videoId: string, tag: string) => void;
+  removeTag: (videoId: string, tag: string) => Promise<void>;
   addBoard: (name: string) => string;
   deleteBoard: (id: string) => void;
   addToBoard: (videoId: string, boardId: string) => void;
@@ -41,55 +41,103 @@ export const useVideos = create<VideosState>()(
       clearVideos: () => set({ videos: [], boards: [] }),
 
       fetchUserVideos: async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session?.user) {
+            console.log('No active session found');
+            set({ videos: [] });
+            return;
+          }
 
-        const { data: videos, error } = await supabase
-          .from('videos')
-          .select('*')
-          .eq('user_id', user.id);
+          const { data: videos, error } = await supabase
+            .from('videos')
+            .select('*')
+            .eq('user_id', session.user.id);
 
-        if (error) {
-          console.error('Error fetching videos:', error);
-          return;
+          if (error) {
+            console.error('Error fetching videos:', error);
+            return;
+          }
+
+          const mappedVideos: Video[] = (videos || []).map(video => ({
+            id: video.id,
+            url: video.url,
+            title: video.title,
+            thumbnail: video.thumbnail,
+            isPinned: video.is_pinned || false,
+            addedAt: new Date(video.added_at),
+            notes: video.notes || [],
+            boardIds: video.board_ids || [],
+            views: video.views || 0,
+            votes: video.votes || 0,
+            tags: video.tags || []
+          }));
+
+          set({ videos: mappedVideos });
+        } catch (error) {
+          console.error('Error in fetchUserVideos:', error);
+          set({ videos: [] });
         }
-
-        // Map Supabase response to our Video type
-        const mappedVideos: Video[] = (videos || []).map(video => ({
-          id: video.id,
-          url: video.url,
-          title: video.title,
-          thumbnail: video.thumbnail,
-          isPinned: video.is_pinned || false,
-          addedAt: new Date(video.added_at),
-          notes: video.notes || [],
-          boardIds: video.board_ids || [],
-          views: video.views || 0,
-          votes: video.votes || 0,
-          tags: video.tags || []
-        }));
-
-        set({ videos: mappedVideos });
       },
 
       deleteVideo: async (id: string) => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session?.user) return;
 
-        const { error } = await supabase
-          .from('videos')
-          .delete()
-          .eq('id', id)
-          .eq('user_id', user.id);
+          const { error } = await supabase
+            .from('videos')
+            .delete()
+            .eq('id', id)
+            .eq('user_id', session.user.id);
 
-        if (error) {
-          console.error('Error deleting video:', error);
-          return;
+          if (error) {
+            console.error('Error deleting video:', error);
+            return;
+          }
+
+          set((state) => ({
+            videos: state.videos.filter((video) => video.id !== id),
+          }));
+        } catch (error) {
+          console.error('Error in deleteVideo:', error);
         }
+      },
 
-        set((state) => ({
-          videos: state.videos.filter((video) => video.id !== id),
-        }));
+      removeTag: async (videoId: string, tag: string) => {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session?.user) return;
+
+          const video = get().videos.find(v => v.id === videoId);
+          if (!video) return;
+
+          const updatedTags = video.tags?.filter(t => t !== tag) || [];
+
+          const { error } = await supabase
+            .from('videos')
+            .update({ tags: updatedTags })
+            .eq('id', videoId)
+            .eq('user_id', session.user.id);
+
+          if (error) {
+            console.error('Error removing tag:', error);
+            return;
+          }
+
+          set((state) => ({
+            videos: state.videos.map((video) =>
+              video.id === videoId
+                ? {
+                    ...video,
+                    tags: updatedTags
+                  }
+                : video
+            ),
+          }));
+        } catch (error) {
+          console.error('Error in removeTag:', error);
+        }
       },
 
       addNote: (videoId: string, note: string) =>
@@ -100,6 +148,7 @@ export const useVideos = create<VideosState>()(
               : video
           ),
         })),
+
       addVote: (videoId: string) =>
         set((state) => ({
           videos: state.videos.map((video) =>
@@ -160,7 +209,6 @@ export const useVideos = create<VideosState>()(
             video.id === id ? { ...video, isPinned: !video.isPinned } : video
           ),
         })),
-
     }),
     {
       name: 'videos-storage',

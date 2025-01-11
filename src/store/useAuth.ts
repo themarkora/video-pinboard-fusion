@@ -7,7 +7,7 @@ interface AuthState {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
 }
 
 export const useAuth = create<AuthState>((set) => ({
@@ -39,19 +39,29 @@ export const useAuth = create<AuthState>((set) => ({
     set({ user: data.user });
     console.log('Sign up successful:', data);
   },
-  signOut: () => {
-    set({ user: null });
-    console.log('Local state cleared');
+  signOut: async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      // Clear local state
+      set({ user: null });
+      console.log('Sign out successful');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      // Even if there's an error, we should still clear local state
+      set({ user: null });
+    }
   },
 }));
 
 // Initialize auth state and set up listener for auth changes
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session?.user?.email);
-  if (event === 'SIGNED_OUT') {
-    // Ensure we clear the state when signed out
-    useAuth.setState({ user: null, loading: false });
-  } else {
-    useAuth.setState({ user: session?.user ?? null, loading: false });
-  }
+  useAuth.setState({ user: session?.user ?? null, loading: false });
+});
+
+// Get initial session
+supabase.auth.getSession().then(({ data: { session } }) => {
+  useAuth.setState({ user: session?.user ?? null, loading: false });
 });
