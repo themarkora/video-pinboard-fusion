@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
-import { User } from '@supabase/supabase-js';
+import { User, AuthError, AuthApiError } from '@supabase/supabase-js';
 
 interface AuthState {
   user: User | null;
@@ -21,11 +21,12 @@ export const useAuth = create<AuthState>((set) => ({
       });
       if (error) throw error;
       
-      // Verify session after sign in
-      const { data: { session } } = await supabase.auth.getSession();
+      // Verify session immediately after sign in
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
       if (!session) throw new Error('No session after sign in');
       
-      set({ user: data.user });
+      set({ user: session.user });
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -38,7 +39,10 @@ export const useAuth = create<AuthState>((set) => ({
         password,
       });
       if (error) throw error;
-      set({ user: data.user });
+      
+      // Check if session exists after signup
+      const { data: { session } } = await supabase.auth.getSession();
+      set({ user: session?.user ?? null });
     } catch (error) {
       console.error('Sign up error:', error);
       throw error;
@@ -46,11 +50,24 @@ export const useAuth = create<AuthState>((set) => ({
   },
   signOut: async () => {
     try {
+      // First check if we have a valid session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // If no session, just clear the local state
+      if (!session) {
+        set({ user: null });
+        return;
+      }
+      
+      // If we have a session, attempt to sign out
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
       set({ user: null });
     } catch (error) {
       console.error('Sign out error:', error);
+      // Even if sign out fails, clear the local state
+      set({ user: null });
       throw error;
     }
   },
@@ -60,17 +77,24 @@ export const useAuth = create<AuthState>((set) => ({
 const initializeAuth = async () => {
   try {
     // Get the initial session
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (error) throw error;
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      console.error('Session initialization error:', sessionError);
+      useAuth.setState({ loading: false });
+      return;
+    }
     
-    useAuth.setState({ user: session?.user ?? null, loading: false });
+    useAuth.setState({ 
+      user: session?.user ?? null, 
+      loading: false 
+    });
     console.log('Initial session loaded:', session?.user?.email);
 
     // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log('Auth state changed:', _event, session?.user?.email);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
       
-      if (_event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
         // Clear any stored session data
         useAuth.setState({ user: null, loading: false });
       } else if (session) {
