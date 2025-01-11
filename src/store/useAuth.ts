@@ -54,19 +54,16 @@ export const useAuth = create<AuthState>((set) => ({
       if (error) throw error;
       
       set({ user: null });
-      toast.success("Successfully signed out");
     } catch (error: any) {
       console.error('Sign out error:', error);
-      set({ user: null });
-      toast.error("Error during sign out");
+      toast.error("Error signing out");
+      throw error;
     }
   },
 }));
 
 // Initialize auth state
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Auth state changed:', event, session?.user?.email);
-  
   if (event === 'SIGNED_OUT') {
     useAuth.setState({ user: null, loading: false });
   } else if (session?.user) {
