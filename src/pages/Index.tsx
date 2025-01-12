@@ -1,4 +1,3 @@
-import { useEffect, useState, useMemo } from "react";
 import { Header } from "@/components/Header";
 import { AddVideo } from "@/components/AddVideo";
 import { VideoCard } from "@/components/VideoCard";
@@ -8,18 +7,21 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { useState, useMemo, useEffect } from "react";
 
 const Index = () => {
-  const { videos, togglePin, activeTab, setActiveTab, boards, fetchUserData } = useVideos();
+  const { videos, togglePin, activeTab, setActiveTab, boards, fetchUserVideos, fetchUserBoards } = useVideos();
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
+    // Fetch user's videos and boards when component mounts
+    fetchUserVideos();
+    fetchUserBoards();
+  }, [fetchUserVideos, fetchUserBoards]);
 
-  // Filter and sort videos based on search query and active tab
+  // Filter videos based on search query and active tab
   const filteredVideos = useMemo(() => {
-    let filtered = [...videos]; // Create a copy to avoid mutating the original array
+    let filtered = videos;
 
     // First apply search filter if there's a query
     if (searchQuery.trim()) {
@@ -32,13 +34,6 @@ const Index = () => {
         return titleMatch || tagsMatch || notesMatch;
       });
     }
-
-    // Sort videos by added_at date (newest first)
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.addedAt).getTime();
-      const dateB = new Date(b.addedAt).getTime();
-      return dateB - dateA;
-    });
 
     // Then apply tab filter
     return filtered.filter((video) => {
