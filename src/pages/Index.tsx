@@ -17,9 +17,9 @@ const Index = () => {
     fetchUserData();
   }, [fetchUserData]);
 
-  // Filter videos based on search query and active tab
+  // Filter and sort videos based on search query and active tab
   const filteredVideos = useMemo(() => {
-    let filtered = videos;
+    let filtered = [...videos]; // Create a copy to avoid mutating the original array
 
     // First apply search filter if there's a query
     if (searchQuery.trim()) {
@@ -32,6 +32,13 @@ const Index = () => {
         return titleMatch || tagsMatch || notesMatch;
       });
     }
+
+    // Sort videos by added_at date (newest first)
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.addedAt).getTime();
+      const dateB = new Date(b.addedAt).getTime();
+      return dateB - dateA;
+    });
 
     // Then apply tab filter
     return filtered.filter((video) => {
