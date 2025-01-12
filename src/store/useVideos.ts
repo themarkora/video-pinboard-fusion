@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { addVideoActions } from './actions/videoActions';
-import { boardActions } from './actions/boardActions';
 import { Video, Board } from './types';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -18,7 +17,7 @@ export interface VideosState {
   addTag: (videoId: string, tag: string) => void;
   removeTag: (videoId: string, tag: string) => void;
   addBoard: (name: string) => string;
-  deleteBoard: (id: string) => void;
+  deleteBoard: (boardId: string) => Promise<void>;
   addToBoard: (videoId: string, boardId: string) => void;
   removeFromBoard: (videoId: string, boardId: string) => void;
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
@@ -26,7 +25,6 @@ export interface VideosState {
   clearState: () => void;
   fetchUserData: () => Promise<void>;
   renameBoard: (boardId: string, newName: string) => Promise<void>;
-  deleteBoard: (boardId: string) => Promise<void>;
 }
 
 export const useVideos = create<VideosState>((set, get) => ({
@@ -34,7 +32,6 @@ export const useVideos = create<VideosState>((set, get) => ({
   boards: [],
   activeTab: 'recent',
   ...addVideoActions(set),
-  ...boardActions(set),
 
   fetchUserData: async () => {
     try {
