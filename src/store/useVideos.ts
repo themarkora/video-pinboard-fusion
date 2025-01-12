@@ -61,6 +61,8 @@ export const useVideos = create<VideosState>((set, get) => ({
       views: video.views || 0,
       votes: video.votes || 0,
       tags: video.tags || [],
+      channel: video.channel,
+      publishedAt: video.published_at,
     })) || [];
 
     const boards = boardsData?.map(board => ({
@@ -98,7 +100,6 @@ export const useVideos = create<VideosState>((set, get) => ({
       .eq('id', id)
       .eq('user_id', user.id);
 
-    // Revert on error
     if (error) {
       console.error('Error updating pin status:', error);
       set({
@@ -107,6 +108,59 @@ export const useVideos = create<VideosState>((set, get) => ({
         ),
       });
     }
+  },
+
+  addVideo: async (url: string, isPinned: boolean = false) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const videoId = getYouTubeVideoId(url);
+    if (!videoId) throw new Error('Invalid YouTube URL');
+
+    const details = await fetchVideoDetails(videoId);
+    
+    const newVideo = {
+      id: videoId,
+      url,
+      title: details.title,
+      thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+      is_pinned: isPinned,
+      user_id: user.id,
+      notes: [],
+      board_ids: [],
+      views: 0,
+      votes: 0,
+      tags: [],
+    };
+
+    // Insert into Supabase
+    const { error } = await supabase
+      .from('videos')
+      .insert(newVideo);
+
+    if (error) {
+      console.error('Error adding video:', error);
+      throw error;
+    }
+
+    // Map to frontend type and update local state
+    const frontendVideo: Video = {
+      id: videoId,
+      url,
+      title: details.title,
+      thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+      isPinned,
+      addedAt: new Date(),
+      notes: [],
+      boardIds: [],
+      views: 0,
+      votes: 0,
+      tags: [],
+    };
+
+    set(state => ({
+      videos: [frontendVideo, ...state.videos],
+    }));
   },
 
   removeTag: (videoId: string, tag: string) =>
@@ -229,5 +283,21 @@ export const useVideos = create<VideosState>((set, get) => ({
 
   clearState: () => set({ videos: [], boards: [], activeTab: 'recent' }),
 }));
+
+const getYouTubeVideoId = (url: string) => {
+  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+};
+
+const fetchVideoDetails = async (videoId: string) => {
+  const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+  const data = await response.json();
+  
+  return {
+    title: data.title || 'Untitled Video',
+    thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+  };
+};
 
 export type { Video, Board };
