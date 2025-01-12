@@ -6,6 +6,11 @@ import { Button } from "@/components/ui/button";
 import { useVideos } from '@/store/useVideos';
 import { useToast } from "@/hooks/use-toast";
 
+const isValidYouTubeUrl = (url: string) => {
+  const pattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})$/;
+  return pattern.test(url);
+};
+
 export function AddVideo() {
   const [videoUrl, setVideoUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -14,26 +19,48 @@ export function AddVideo() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (videoUrl.trim() && !isLoading) {
+    const trimmedUrl = videoUrl.trim();
+    
+    if (!trimmedUrl) {
+      toast({
+        title: "URL Required",
+        description: "Please enter a YouTube video URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isValidYouTubeUrl(trimmedUrl)) {
+      toast({
+        title: "Invalid URL",
+        description: "Please enter a valid YouTube video URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isLoading) {
       setIsLoading(true);
       try {
-        await addVideo(videoUrl.trim(), true);
+        await addVideo(trimmedUrl, true);
         setVideoUrl('');
         toast({
           title: "Video pinned successfully",
           description: "Your video has been added to your collection.",
         });
       } catch (error: any) {
+        console.error('Error adding video:', error);
+        
         if (error.message?.includes('already exists')) {
           toast({
             title: "Video already in collection",
             description: "This video is already in your collection. Try adding another one!",
-            variant: "default",
+            variant: "destructive",
           });
         } else {
           toast({
-            title: "Invalid URL",
-            description: "Please make sure you're using a valid YouTube URL.",
+            title: "Error adding video",
+            description: "There was a problem adding your video. Please try again.",
             variant: "destructive",
           });
         }
