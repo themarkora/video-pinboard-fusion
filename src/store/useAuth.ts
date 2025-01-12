@@ -9,11 +9,22 @@ interface AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  initializeAuth: () => Promise<void>;
 }
 
 export const useAuth = create<AuthState>((set) => ({
   user: null,
   loading: true,
+  initializeAuth: async () => {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      set({ user: session?.user ?? null, loading: false });
+    } catch (error) {
+      console.error('Error initializing auth:', error);
+      set({ user: null, loading: false });
+    }
+  },
   signIn: async (email: string, password: string) => {
     console.log('Attempting to sign in with email:', email);
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -54,13 +65,11 @@ export const useAuth = create<AuthState>((set) => ({
         console.error('Sign out error:', error);
         throw error;
       }
-      // Clear videos state when signing out
       useVideos.getState().clearState();
       set({ user: null });
       console.log('Sign out successful');
     } catch (error) {
       console.error('Sign out error:', error);
-      // Even if there's an error, clear the local state
       useVideos.getState().clearState();
       set({ user: null });
       throw error;
@@ -68,8 +77,11 @@ export const useAuth = create<AuthState>((set) => ({
   },
 }));
 
-// Initialize auth state
+// Initialize auth state and set up listener
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session?.user?.email);
   useAuth.setState({ user: session?.user ?? null, loading: false });
 });
+
+// Initialize auth state on app load
+useAuth.getState().initializeAuth();
