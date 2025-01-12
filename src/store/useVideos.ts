@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
-import { Video, Board, VideosState } from './types';
 import { toast } from "sonner";
+import { Video, Board, VideosState } from './types';
 
 export const useVideos = create<VideosState>((set, get) => ({
   videos: [],
@@ -11,16 +11,14 @@ export const useVideos = create<VideosState>((set, get) => ({
   addVideo: async (url: string, isPinned: boolean = false) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('User not authenticated');
-      }
+      if (!user) throw new Error('User not authenticated');
 
       const videoId = crypto.randomUUID();
       const newVideo = {
         id: videoId,
         url,
-        title: '', // Will be updated after fetching from YouTube
-        thumbnail: '', // Will be updated after fetching from YouTube
+        title: '', 
+        thumbnail: '', 
         is_pinned: isPinned,
         user_id: user.id,
       };
@@ -286,7 +284,12 @@ export const useVideos = create<VideosState>((set, get) => ({
   fetchUserData: async () => {
     try {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError) throw authError;
+      if (authError) {
+        console.error('Auth error:', authError);
+        set({ videos: [], boards: [] });
+        return;
+      }
+      
       if (!user) {
         console.error('No authenticated user found');
         set({ videos: [], boards: [] });

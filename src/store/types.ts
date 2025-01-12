@@ -10,6 +10,8 @@ export interface Video {
   views?: number;
   votes?: number;
   tags?: string[];
+  channel?: string;
+  publishedAt?: string;
 }
 
 export interface Board {

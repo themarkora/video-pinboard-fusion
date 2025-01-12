@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { VideoPlayer } from './VideoPlayer';
-import { Video } from '@/store/useVideos';
+import { Video } from '@/store/types';
 import { useVideos } from '@/store/useVideos';
 import { useToast } from '@/hooks/use-toast';
 import { VideoThumbnail } from './VideoCard/VideoThumbnail';
