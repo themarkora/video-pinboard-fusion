@@ -26,8 +26,8 @@ export function AddVideo() {
       } catch (error: any) {
         if (error.message?.includes('already exists')) {
           toast({
-            title: "Video already exists",
-            description: "You've already pinned this video to your collection.",
+            title: "Video already in collection",
+            description: "This video is already in your collection. Try adding another one!",
             variant: "default",
           });
         } else {
