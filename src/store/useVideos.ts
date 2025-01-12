@@ -19,6 +19,7 @@ export interface VideosState {
   removeTag: (videoId: string, tag: string) => void;
   addBoard: (name: string) => string;
   deleteBoard: (id: string) => void;
+  renameBoard: (id: string, newName: string) => void;
   addToBoard: (videoId: string, boardId: string) => void;
   removeFromBoard: (videoId: string, boardId: string) => void;
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
@@ -297,7 +298,57 @@ export const useVideos = create<VideosState>((set, get) => ({
     })),
 
   clearState: () => set({ videos: [], boards: [], activeTab: 'recent' }),
+
+  renameBoard: async (id: string, newName: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('boards')
+        .update({ name: newName })
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (!error) {
+        set((state) => ({
+          boards: state.boards.map((board) =>
+            board.id === id ? { ...board, name: newName } : board
+          ),
+        }));
+      }
+    } catch (error) {
+      console.error('Error renaming board:', error);
+    }
+  },
+
+  deleteBoard: async (id: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('boards')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (!error) {
+        set((state) => ({
+          boards: state.boards.filter((board) => board.id !== id),
+          videos: state.videos.map((video) => ({
+            ...video,
+            boardIds: video.boardIds?.filter((boardId) => boardId !== id) || []
+          }))
+        }));
+      }
+    } catch (error) {
+      console.error('Error deleting board:', error);
+    }
+  },
 }));
+
+export type { Video, Board };
 
 const getYouTubeVideoId = (url: string) => {
   const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -314,5 +365,3 @@ const fetchVideoDetails = async (videoId: string) => {
     thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
   };
 };
-
-export type { Video, Board };
