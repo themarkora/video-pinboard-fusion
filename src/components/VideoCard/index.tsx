@@ -6,7 +6,7 @@ import { VideoInfo } from './VideoInfo';
 import { VideoActions } from './VideoActions';
 import { useVideos } from '@/store/useVideos';
 import { useToast } from "@/components/ui/use-toast";
-import { Video } from '@/store/useVideos';
+import { Video } from '@/store/types';
 
 interface VideoCardProps {
   video: Video;

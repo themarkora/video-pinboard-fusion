@@ -1,8 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Board } from "@/store/useVideos";
+import { Plus } from "lucide-react";
+import { Board } from '@/store/types';
 
 interface BoardDialogProps {
   isOpen: boolean;
@@ -10,7 +10,7 @@ interface BoardDialogProps {
   onCreateBoard: () => void;
   onSelectBoard: (boardId: string) => void;
   newBoardName: string;
-  onNewBoardNameChange: (value: string) => void;
+  onNewBoardNameChange: (name: string) => void;
   boards: Board[];
 }
 
@@ -21,52 +21,41 @@ export const BoardDialog = ({
   onSelectBoard,
   newBoardName,
   onNewBoardNameChange,
-  boards
+  boards,
 }: BoardDialogProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#2A2F3C] text-white border-none max-w-md mx-auto">
+      <DialogContent className="bg-[#1A1F2E] border-none text-white">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Add to Board</DialogTitle>
+          <DialogTitle>Add to Board</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 mt-4">
-          {boards.length > 0 && (
-            <Select onValueChange={onSelectBoard}>
-              <SelectTrigger className="w-full bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl">
-                <SelectValue placeholder="Select a board" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#1A1F2E] border-none text-gray-200">
-                {boards.map((board) => (
-                  <SelectItem 
-                    key={board.id} 
-                    value={board.id}
-                    className="hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer"
-                  >
-                    {board.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+        <div className="space-y-4">
           <div className="flex gap-2">
             <Input
-              placeholder="Create new board..."
-              className="flex-1 bg-[#1A1F2E] border-none text-gray-200 h-12 rounded-xl placeholder:text-gray-400"
+              placeholder="New board name..."
               value={newBoardName}
               onChange={(e) => onNewBoardNameChange(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  onCreateBoard();
-                }
-              }}
+              className="bg-[#2A2F3C] border-none text-white"
             />
             <Button
-              variant="secondary"
-              className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-6 rounded-xl"
               onClick={onCreateBoard}
+              className="bg-purple-600 hover:bg-purple-700"
+              disabled={!newBoardName.trim()}
             >
+              <Plus className="w-4 h-4 mr-2" />
               Create
             </Button>
+          </div>
+          <div className="space-y-2">
+            {boards.map((board) => (
+              <button
+                key={board.id}
+                onClick={() => onSelectBoard(board.id)}
+                className="w-full p-3 text-left rounded-lg bg-[#2A2F3C] hover:bg-[#3A3F4C] transition-colors"
+              >
+                {board.name}
+              </button>
+            ))}
           </div>
         </div>
       </DialogContent>

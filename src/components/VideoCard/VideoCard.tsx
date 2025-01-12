@@ -3,7 +3,7 @@ import { VideoPlayer } from '../VideoPlayer';
 import { VideoControls } from './VideoControls';
 import { Card } from "@/components/ui/card";
 import { useVideos } from '@/store/useVideos';
-import { Video } from '@/store/useVideos';
+import { Video } from '@/store/types';
 
 interface VideoCardProps {
   video: Video;
