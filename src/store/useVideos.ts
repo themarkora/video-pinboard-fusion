@@ -100,33 +100,31 @@ export const useVideos = create<VideosState>((set, get) => ({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // First update local state optimistically
-    set((state) => ({
-      videos: state.videos.map((video) =>
-        video.id === id ? { ...video, isPinned: !video.isPinned } : video
-      ),
-    }));
-
     try {
-      // Then update in Supabase
+      // Get current video state before update
       const video = get().videos.find(v => v.id === id);
       if (!video) return;
 
+      const newPinnedState = !video.isPinned;
+
+      // Update in Supabase first
       const { error } = await supabase
         .from('videos')
-        .update({ is_pinned: !video.isPinned })
+        .update({ is_pinned: newPinnedState })
         .eq('id', id)
         .eq('user_id', user.id);
 
       if (error) {
         console.error('Error updating pin status:', error);
-        // Revert the optimistic update if there was an error
-        set((state) => ({
-          videos: state.videos.map((video) =>
-            video.id === id ? { ...video, isPinned: !video.isPinned } : video
-          ),
-        }));
+        return;
       }
+
+      // If Supabase update successful, update local state
+      set((state) => ({
+        videos: state.videos.map((video) =>
+          video.id === id ? { ...video, isPinned: newPinnedState } : video
+        ),
+      }));
     } catch (error) {
       console.error('Error in togglePin:', error);
     }
