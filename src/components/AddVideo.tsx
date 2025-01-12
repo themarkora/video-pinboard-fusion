@@ -23,12 +23,21 @@ export function AddVideo() {
           title: "Video pinned successfully",
           description: "Your video has been added to your collection.",
         });
-      } catch (error) {
-        toast({
-          title: "Error adding video",
-          description: "Please check the URL and try again.",
-          variant: "destructive",
-        });
+      } catch (error: any) {
+        // Check if the error message indicates a duplicate video
+        if (error.message?.includes('already exists')) {
+          toast({
+            title: "Video already pinned",
+            description: "This video is already in your collection. Try adding a different one!",
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "Unable to add video",
+            description: "Please check the URL and try again.",
+            variant: "destructive",
+          });
+        }
       } finally {
         setIsLoading(false);
       }
