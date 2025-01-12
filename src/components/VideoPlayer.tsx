@@ -16,12 +16,35 @@ export const VideoPlayer = ({ videoId, isOpen, onClose, thumbnail }: VideoPlayer
 
   // Extract YouTube video ID from URL if full URL is passed
   const getYouTubeId = (url: string) => {
-    const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const match = url.match(regex);
-    return match ? match[1] : url;
+    if (!url) return '';
+    
+    // If it's already just an ID (11 characters), return it
+    if (url.length === 11) return url;
+    
+    try {
+      // Handle full URLs
+      const urlObj = new URL(url);
+      if (urlObj.hostname.includes('youtube.com')) {
+        return urlObj.searchParams.get('v') || '';
+      } else if (urlObj.hostname === 'youtu.be') {
+        return urlObj.pathname.slice(1);
+      }
+    } catch {
+      // If URL parsing fails, try regex as fallback
+      const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = url.match(regex);
+      return match ? match[1] : url;
+    }
+    
+    return url;
   };
 
   const actualVideoId = getYouTubeId(videoId);
+
+  if (!actualVideoId) {
+    console.error('Invalid YouTube video ID:', videoId);
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
