@@ -52,9 +52,9 @@ export default {
           foreground: "#ffffff",
         },
         toast: {
-          DEFAULT: "#2A2F3C",
-          destructive: "#991B1B",
-          success: "#065F46",
+          DEFAULT: "#9334E9",
+          destructive: "#dc2626",
+          success: "#9334E9",
         }
       },
       keyframes: {

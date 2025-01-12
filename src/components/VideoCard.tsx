@@ -10,7 +10,7 @@ import { VideoActions } from './VideoCard/VideoActions';
 import { VideoTags } from './VideoCard/VideoTags';
 import { TagDialog } from './VideoCard/TagDialog';
 import { BoardDialog } from './VideoCard/BoardDialog';
-import { Check, AlertCircle } from "lucide-react";
+import { Check } from "lucide-react";
 
 interface VideoCardProps {
   video: Video;
@@ -33,10 +33,10 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
     toast({
       title,
       description,
-      className: "bg-purple-600/90 text-white border-none",
+      className: "bg-toast text-white border-none",
       action: (
-        <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
-          <Check className="h-4 w-4 text-white" />
+        <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center">
+          <Check className="h-5 w-5 text-white" />
         </div>
       ),
     });
@@ -47,12 +47,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
       title,
       description,
       variant: "destructive",
-      className: "bg-red-600/90 text-white border-none",
-      action: (
-        <div className="h-6 w-6 bg-white/20 rounded-full flex items-center justify-center">
-          <AlertCircle className="h-4 w-4 text-white" />
-        </div>
-      ),
+      className: "bg-toast-destructive text-white border-none",
     });
   };
 
@@ -178,7 +173,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
         onSelectTag={handleAddTag}
         newTag={newTag}
         onNewTagChange={setNewTag}
-        existingTags={allTags}
+        existingTags={Array.from(new Set(useVideos.getState().videos.flatMap((v) => v.tags || [])))}
       />
 
       <BoardDialog
