@@ -4,7 +4,7 @@ import { Pin } from '@/components/icons/Pin';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useVideos } from '@/store/useVideos';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export function AddVideo() {
   const [videoUrl, setVideoUrl] = useState('');
@@ -24,17 +24,16 @@ export function AddVideo() {
           description: "Your video has been added to your collection.",
         });
       } catch (error: any) {
-        // Check if the error message indicates a duplicate video
         if (error.message?.includes('already exists')) {
           toast({
-            title: "Video already pinned",
-            description: "This video is already in your collection. Try adding a different one!",
+            title: "Already in your collection",
+            description: "Looks like you've already pinned this video! Try adding a different one.",
             variant: "default",
           });
         } else {
           toast({
             title: "Unable to add video",
-            description: "Please check the URL and try again.",
+            description: "Please check if this is a valid YouTube URL and try again.",
             variant: "destructive",
           });
         }
