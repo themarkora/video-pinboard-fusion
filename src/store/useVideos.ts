@@ -51,7 +51,22 @@ export const useVideos = create<VideosState>((set) => ({
       return;
     }
 
-    set({ videos: videos || [] });
+    // Map the Supabase response to match our Video type
+    const mappedVideos: Video[] = videos.map(video => ({
+      id: video.id,
+      url: video.url,
+      title: video.title,
+      thumbnail: video.thumbnail,
+      isPinned: video.is_pinned,
+      addedAt: new Date(video.added_at),
+      notes: video.notes || [],
+      boardIds: video.board_ids || [],
+      views: video.views || 0,
+      votes: video.votes || 0,
+      tags: video.tags || []
+    }));
+
+    set({ videos: mappedVideos });
   },
 
   fetchUserBoards: async () => {
@@ -69,7 +84,14 @@ export const useVideos = create<VideosState>((set) => ({
       return;
     }
 
-    set({ boards: boards || [] });
+    // Map the Supabase response to match our Board type
+    const mappedBoards: Board[] = boards.map(board => ({
+      id: board.id,
+      name: board.name,
+      createdAt: new Date(board.created_at)
+    }));
+
+    set({ boards: mappedBoards });
   },
 
   clearStore: () => set({ videos: [], boards: [], activeTab: 'recent' }),
