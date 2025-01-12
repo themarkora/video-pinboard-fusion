@@ -195,6 +195,7 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
         videoId={video.id}
         isOpen={isPlaying}
         onClose={() => setIsPlaying(false)}
+        thumbnail={video.thumbnail}
       />
     </>
   );
