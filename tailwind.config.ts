@@ -51,6 +51,11 @@ export default {
           DEFAULT: "#2A2F3C",
           foreground: "#ffffff",
         },
+        toast: {
+          DEFAULT: "#2A2F3C",
+          destructive: "#991B1B",
+          success: "#065F46",
+        }
       },
       keyframes: {
         "float-pin": {
