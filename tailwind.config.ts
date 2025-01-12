@@ -52,9 +52,9 @@ export default {
           foreground: "#ffffff",
         },
         toast: {
-          DEFAULT: "#1A1F2E",
-          destructive: "#1A1F2E",
-          success: "#1A1F2E",
+          DEFAULT: "rgba(26, 31, 46, 0.6)",
+          destructive: "rgba(26, 31, 46, 0.6)",
+          success: "rgba(26, 31, 46, 0.6)",
         }
       },
       keyframes: {
