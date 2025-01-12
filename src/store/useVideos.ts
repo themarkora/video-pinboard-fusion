@@ -38,20 +38,38 @@ export const useVideos = create<VideosState>((set, get) => ({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: videos } = await supabase
+    const { data: videosData } = await supabase
       .from('videos')
       .select('*')
       .eq('user_id', user.id);
 
-    const { data: boards } = await supabase
+    const { data: boardsData } = await supabase
       .from('boards')
       .select('*')
       .eq('user_id', user.id);
 
-    set({ 
-      videos: videos || [], 
-      boards: boards || [] 
-    });
+    // Map database fields to frontend types
+    const videos = videosData?.map(video => ({
+      id: video.id,
+      url: video.url,
+      title: video.title,
+      thumbnail: video.thumbnail,
+      isPinned: video.is_pinned || false,
+      addedAt: new Date(video.added_at),
+      notes: video.notes || [],
+      boardIds: video.board_ids || [],
+      views: video.views || 0,
+      votes: video.votes || 0,
+      tags: video.tags || [],
+    })) || [];
+
+    const boards = boardsData?.map(board => ({
+      id: board.id,
+      name: board.name,
+      createdAt: new Date(board.created_at),
+    })) || [];
+
+    set({ videos, boards });
   },
 
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
