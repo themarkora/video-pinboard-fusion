@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { addVideoActions } from './actions/videoActions';
 import { boardActions } from './actions/boardActions';
 import { Video, Board } from './types';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface VideosState {
   videos: Video[];
@@ -23,15 +24,72 @@ export interface VideosState {
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
   togglePin: (id: string) => void;
   clearState: () => void;
+  fetchUserData: () => Promise<void>;
 }
 
-export const useVideos = create<VideosState>((set) => ({
+export const useVideos = create<VideosState>((set, get) => ({
   videos: [],
   boards: [],
   activeTab: 'recent',
   ...addVideoActions(set),
   ...boardActions(set),
+
+  fetchUserData: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: videos } = await supabase
+      .from('videos')
+      .select('*')
+      .eq('user_id', user.id);
+
+    const { data: boards } = await supabase
+      .from('boards')
+      .select('*')
+      .eq('user_id', user.id);
+
+    set({ 
+      videos: videos || [], 
+      boards: boards || [] 
+    });
+  },
+
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
+
+  togglePin: async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const currentVideos = get().videos;
+    const videoToUpdate = currentVideos.find(v => v.id === id);
+    if (!videoToUpdate) return;
+
+    const newIsPinned = !videoToUpdate.isPinned;
+
+    // Optimistically update local state
+    set({
+      videos: currentVideos.map(video =>
+        video.id === id ? { ...video, isPinned: newIsPinned } : video
+      ),
+    });
+
+    // Update in Supabase
+    const { error } = await supabase
+      .from('videos')
+      .update({ is_pinned: newIsPinned })
+      .eq('id', id)
+      .eq('user_id', user.id);
+
+    // Revert on error
+    if (error) {
+      console.error('Error updating pin status:', error);
+      set({
+        videos: currentVideos.map(video =>
+          video.id === id ? { ...video, isPinned: !newIsPinned } : video
+        ),
+      });
+    }
+  },
 
   removeTag: (videoId: string, tag: string) =>
     set((state) => ({
@@ -45,19 +103,55 @@ export const useVideos = create<VideosState>((set) => ({
       ),
     })),
 
-  deleteVideo: (id: string) =>
-    set((state) => ({
-      videos: state.videos.filter((video) => video.id !== id),
-    })),
+  deleteVideo: async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-  addNote: (videoId: string, note: string) =>
-    set((state) => ({
-      videos: state.videos.map((video) =>
+    const { error } = await supabase
+      .from('videos')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id);
+
+    if (!error) {
+      set((state) => ({
+        videos: state.videos.filter((video) => video.id !== id),
+      }));
+    }
+  },
+
+  addNote: async (videoId: string, note: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const currentState = get();
+    const video = currentState.videos.find(v => v.id === videoId);
+    if (!video) return;
+
+    const updatedNotes = [...(video.notes || []), note];
+
+    // Optimistically update local state
+    set({
+      videos: currentState.videos.map((video) =>
         video.id === videoId
-          ? { ...video, notes: [...(video.notes || []), note] }
+          ? { ...video, notes: updatedNotes }
           : video
       ),
-    })),
+    });
+
+    // Update in Supabase
+    const { error } = await supabase
+      .from('videos')
+      .update({ notes: updatedNotes })
+      .eq('id', videoId)
+      .eq('user_id', user.id);
+
+    // Revert on error
+    if (error) {
+      console.error('Error adding note:', error);
+      set({ videos: currentState.videos });
+    }
+  },
 
   addVote: (videoId: string) =>
     set((state) => ({
@@ -112,13 +206,6 @@ export const useVideos = create<VideosState>((set) => ({
               ),
             }
           : video
-      ),
-    })),
-
-  togglePin: (id: string) =>
-    set((state) => ({
-      videos: state.videos.map((video) =>
-        video.id === id ? { ...video, isPinned: !video.isPinned } : video
       ),
     })),
 
