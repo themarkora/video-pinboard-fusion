@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
+import { useVideos } from './useVideos';
 
 interface AuthState {
   user: User | null;
@@ -53,11 +54,14 @@ export const useAuth = create<AuthState>((set) => ({
         console.error('Sign out error:', error);
         throw error;
       }
+      // Clear videos state when signing out
+      useVideos.getState().clearState();
       set({ user: null });
       console.log('Sign out successful');
     } catch (error) {
       console.error('Sign out error:', error);
       // Even if there's an error, clear the local state
+      useVideos.getState().clearState();
       set({ user: null });
       throw error;
     }
