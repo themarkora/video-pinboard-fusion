@@ -35,132 +35,152 @@ export const useVideos = create<VideosState>((set, get) => ({
   ...boardActions(set),
 
   fetchUserData: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) throw authError;
+      if (!user) {
+        console.error('No authenticated user found');
+        set({ videos: [], boards: [] });
+        return;
+      }
 
-    const { data: videosData } = await supabase
-      .from('videos')
-      .select('*')
-      .eq('user_id', user.id);
+      const { data: videosData, error: videosError } = await supabase
+        .from('videos')
+        .select('*')
+        .eq('user_id', user.id);
 
-    const { data: boardsData } = await supabase
-      .from('boards')
-      .select('*')
-      .eq('user_id', user.id);
+      if (videosError) throw videosError;
 
-    // Map database fields to frontend types
-    const videos = videosData?.map(video => ({
-      id: video.id,
-      url: video.url,
-      title: video.title,
-      thumbnail: video.thumbnail,
-      isPinned: video.is_pinned || false,
-      addedAt: new Date(video.added_at),
-      notes: video.notes || [],
-      boardIds: video.board_ids || [],
-      views: video.views || 0,
-      votes: video.votes || 0,
-      tags: video.tags || [],
-      channel: video.channel,
-      publishedAt: video.published_at,
-    })) || [];
+      const { data: boardsData, error: boardsError } = await supabase
+        .from('boards')
+        .select('*')
+        .eq('user_id', user.id);
 
-    const boards = boardsData?.map(board => ({
-      id: board.id,
-      name: board.name,
-      createdAt: new Date(board.created_at),
-    })) || [];
+      if (boardsError) throw boardsError;
 
-    set({ videos, boards });
+      // Map database fields to frontend types
+      const videos = videosData?.map(video => ({
+        id: video.id,
+        url: video.url,
+        title: video.title,
+        thumbnail: video.thumbnail,
+        isPinned: video.is_pinned || false,
+        addedAt: new Date(video.added_at),
+        notes: video.notes || [],
+        boardIds: video.board_ids || [],
+        views: video.views || 0,
+        votes: video.votes || 0,
+        tags: video.tags || [],
+      })) || [];
+
+      const boards = boardsData?.map(board => ({
+        id: board.id,
+        name: board.name,
+        createdAt: new Date(board.created_at),
+      })) || [];
+
+      set({ videos, boards });
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      set({ videos: [], boards: [] });
+    }
   },
 
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
 
   togglePin: async (id: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) throw authError;
+      if (!user) return;
 
-    const currentVideos = get().videos;
-    const videoToUpdate = currentVideos.find(v => v.id === id);
-    if (!videoToUpdate) return;
+      const currentVideos = get().videos;
+      const videoToUpdate = currentVideos.find(v => v.id === id);
+      if (!videoToUpdate) return;
 
-    const newIsPinned = !videoToUpdate.isPinned;
+      const newIsPinned = !videoToUpdate.isPinned;
 
-    // Optimistically update local state
-    set({
-      videos: currentVideos.map(video =>
-        video.id === id ? { ...video, isPinned: newIsPinned } : video
-      ),
-    });
-
-    // Update in Supabase
-    const { error } = await supabase
-      .from('videos')
-      .update({ is_pinned: newIsPinned })
-      .eq('id', id)
-      .eq('user_id', user.id);
-
-    if (error) {
-      console.error('Error updating pin status:', error);
+      // Optimistically update local state
       set({
         videos: currentVideos.map(video =>
-          video.id === id ? { ...video, isPinned: !newIsPinned } : video
+          video.id === id ? { ...video, isPinned: newIsPinned } : video
         ),
       });
+
+      // Update in Supabase
+      const { error } = await supabase
+        .from('videos')
+        .update({ is_pinned: newIsPinned })
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error updating pin status:', error);
+        // Revert on error
+        set({
+          videos: currentVideos.map(video =>
+            video.id === id ? { ...video, isPinned: !newIsPinned } : video
+          ),
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling pin:', error);
     }
   },
 
   addVideo: async (url: string, isPinned: boolean = false) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) throw authError;
+      if (!user) throw new Error('User not authenticated');
 
-    const videoId = getYouTubeVideoId(url);
-    if (!videoId) throw new Error('Invalid YouTube URL');
+      const videoId = getYouTubeVideoId(url);
+      if (!videoId) throw new Error('Invalid YouTube URL');
 
-    const details = await fetchVideoDetails(videoId);
-    
-    const newVideo = {
-      id: videoId,
-      url,
-      title: details.title,
-      thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
-      is_pinned: isPinned,
-      user_id: user.id,
-      notes: [],
-      board_ids: [],
-      views: 0,
-      votes: 0,
-      tags: [],
-    };
+      const details = await fetchVideoDetails(videoId);
+      
+      const newVideo = {
+        id: videoId,
+        url,
+        title: details.title,
+        thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        is_pinned: isPinned,
+        user_id: user.id,
+        notes: [],
+        board_ids: [],
+        views: 0,
+        votes: 0,
+        tags: [],
+      };
 
-    // Insert into Supabase
-    const { error } = await supabase
-      .from('videos')
-      .insert(newVideo);
+      const { error } = await supabase
+        .from('videos')
+        .insert(newVideo);
 
-    if (error) {
+      if (error) throw error;
+
+      // Map to frontend type and update local state
+      const frontendVideo: Video = {
+        id: videoId,
+        url,
+        title: details.title,
+        thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        isPinned,
+        addedAt: new Date(),
+        notes: [],
+        boardIds: [],
+        views: 0,
+        votes: 0,
+        tags: [],
+      };
+
+      set(state => ({
+        videos: [frontendVideo, ...state.videos],
+      }));
+    } catch (error) {
       console.error('Error adding video:', error);
       throw error;
     }
-
-    // Map to frontend type and update local state
-    const frontendVideo: Video = {
-      id: videoId,
-      url,
-      title: details.title,
-      thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
-      isPinned,
-      addedAt: new Date(),
-      notes: [],
-      boardIds: [],
-      views: 0,
-      votes: 0,
-      tags: [],
-    };
-
-    set(state => ({
-      videos: [frontendVideo, ...state.videos],
-    }));
   },
 
   removeTag: (videoId: string, tag: string) =>
