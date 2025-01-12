@@ -7,6 +7,16 @@ import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "./ui/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface BoardCardProps {
   id: string;
@@ -16,6 +26,7 @@ interface BoardCardProps {
 export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [newBoardName, setNewBoardName] = useState(name);
   const { videos, deleteBoard, renameBoard } = useVideos();
   const { toast } = useToast();
@@ -23,13 +34,11 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this board?')) {
-      deleteBoard(id);
-      toast({
-        title: "Board deleted",
-        description: "The board has been successfully deleted",
-      });
-    }
+    deleteBoard(id);
+    toast({
+      title: "Board deleted",
+      description: "The board has been successfully deleted",
+    });
   };
 
   const handleRename = () => {
@@ -72,7 +81,7 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
               size="icon"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDelete();
+                setIsDeleteDialogOpen(true);
               }}
               className="h-8 w-8 p-0 hover:bg-secondary/50"
             >
@@ -132,6 +141,26 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent className="bg-[#2A2F3C] text-white border-none">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Board</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              Are you sure you want to delete this board? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-secondary hover:bg-secondary/80">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDelete}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
