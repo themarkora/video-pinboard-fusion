@@ -57,13 +57,14 @@ export const useVideos = create<VideosState>((set) => ({
       url: video.url,
       title: video.title,
       thumbnail: video.thumbnail,
-      isPinned: video.is_pinned,
+      isPinned: video.is_pinned || false,
       addedAt: new Date(video.added_at),
       notes: video.notes || [],
       boardIds: video.board_ids || [],
       views: video.views || 0,
       votes: video.votes || 0,
-      tags: video.tags || []
+      tags: video.tags || [],
+      user_id: video.user_id
     }));
 
     set({ videos: mappedVideos });
@@ -88,13 +89,45 @@ export const useVideos = create<VideosState>((set) => ({
     const mappedBoards: Board[] = boards.map(board => ({
       id: board.id,
       name: board.name,
-      createdAt: new Date(board.created_at)
+      createdAt: new Date(board.created_at),
+      user_id: board.user_id
     }));
 
     set({ boards: mappedBoards });
   },
 
   clearStore: () => set({ videos: [], boards: [], activeTab: 'recent' }),
+
+  togglePin: async (id: string) => {
+    set((state) => ({
+      videos: state.videos.map((video) =>
+        video.id === id ? { ...video, isPinned: !video.isPinned } : video
+      ),
+    }));
+
+    // Update the pinned status in Supabase
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const video = useVideos.getState().videos.find(v => v.id === id);
+    if (!video) return;
+
+    const { error } = await supabase
+      .from('videos')
+      .update({ is_pinned: !video.isPinned })
+      .eq('id', id)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Error updating pin status:', error);
+      // Revert the optimistic update if there was an error
+      set((state) => ({
+        videos: state.videos.map((video) =>
+          video.id === id ? { ...video, isPinned: !video.isPinned } : video
+        ),
+      }));
+    }
+  },
 
   removeTag: (videoId: string, tag: string) =>
     set((state) => ({
@@ -175,13 +208,6 @@ export const useVideos = create<VideosState>((set) => ({
               ),
             }
           : video
-      ),
-    })),
-
-  togglePin: (id: string) =>
-    set((state) => ({
-      videos: state.videos.map((video) =>
-        video.id === id ? { ...video, isPinned: !video.isPinned } : video
       ),
     })),
 }));
