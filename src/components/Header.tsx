@@ -4,24 +4,28 @@ import { useAuth } from "@/store/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useVideos } from "@/store/useVideos";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { clearStore } = useVideos();
 
   const handleSignOut = async () => {
     try {
-      // First clear local state
+      // Clear the store first
+      clearStore();
+      
+      // Then clear auth state
       signOut();
       
-      // Attempt to sign out from Supabase in both iframe and main window contexts
+      // Attempt to sign out from Supabase
       const { error } = await supabase.auth.signOut({
-        scope: 'local'  // Changed to local to avoid cross-origin issues in iframe
+        scope: 'local'
       });
       
       if (error) {
         console.error("Sign out error:", error);
-        // Don't show error to user since we've already cleared local state
       }
       
       // Clear any remaining auth data from localStorage
@@ -31,7 +35,6 @@ export const Header = () => {
       navigate("/");
     } catch (error: any) {
       console.error("Sign out error:", error);
-      // Don't show error to user since we've already cleared local state
       navigate("/");
     }
   };
