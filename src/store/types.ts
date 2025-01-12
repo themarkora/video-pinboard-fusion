@@ -20,3 +20,27 @@ export interface Board {
   name: string;
   createdAt: Date;
 }
+
+export interface VideosState {
+  videos: Video[];
+  boards: Board[];
+  activeTab: 'recent' | 'pinned' | 'notes' | 'boards';
+  addVideo: (url: string, isPinned?: boolean) => Promise<void>;
+  deleteVideo: (id: string) => void;
+  addNote: (videoId: string, note: string) => void;
+  updateNote: (videoId: string, noteIndex: number, updatedNote: string) => void;
+  deleteNote: (videoId: string, noteIndex: number) => void;
+  addVote: (videoId: string) => void;
+  addView: (videoId: string) => void;
+  addTag: (videoId: string, tag: string) => void;
+  removeTag: (videoId: string, tag: string) => void;
+  addBoard: (name: string) => string;
+  deleteBoard: (boardId: string) => Promise<void>;
+  addToBoard: (videoId: string, boardId: string) => void;
+  removeFromBoard: (videoId: string, boardId: string) => void;
+  setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
+  togglePin: (id: string) => Promise<void>;
+  clearState: () => void;
+  fetchUserData: () => Promise<void>;
+  renameBoard: (boardId: string, newName: string) => Promise<void>;
+}
