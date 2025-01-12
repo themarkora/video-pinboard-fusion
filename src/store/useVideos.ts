@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { addVideoActions } from './actions/videoActions';
 import { boardActions } from './actions/boardActions';
 import { Video, Board } from './types';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface VideosState {
   videos: Video[];
@@ -23,6 +24,8 @@ export interface VideosState {
   removeFromBoard: (videoId: string, boardId: string) => void;
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
   togglePin: (id: string) => void;
+  fetchUserVideos: () => Promise<void>;
+  fetchUserBoards: () => Promise<void>;
 }
 
 export const useVideos = create<VideosState>()(
@@ -34,6 +37,42 @@ export const useVideos = create<VideosState>()(
       ...addVideoActions(set),
       ...boardActions(set),
       setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => set({ activeTab: tab }),
+
+      fetchUserVideos: async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: videos, error } = await supabase
+          .from('videos')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('added_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching videos:', error);
+          return;
+        }
+
+        set({ videos: videos || [] });
+      },
+
+      fetchUserBoards: async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: boards, error } = await supabase
+          .from('boards')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching boards:', error);
+          return;
+        }
+
+        set({ boards: boards || [] });
+      },
 
       removeTag: (videoId: string, tag: string) =>
         set((state) => ({
