@@ -10,6 +10,18 @@ export const addVideoActions = (set: any) => ({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User must be logged in to add videos');
 
+    // Check if video already exists for this user
+    const { data: existingVideo } = await supabase
+      .from('videos')
+      .select()
+      .eq('id', videoId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (existingVideo) {
+      throw new Error('Video already exists in your collection');
+    }
+
     const details = await fetchVideoDetails(videoId);
     
     // Insert into Supabase with user_id
@@ -21,7 +33,7 @@ export const addVideoActions = (set: any) => ({
         title: details.title,
         thumbnail: details.thumbnail,
         is_pinned: isPinned,
-        user_id: user.id, // Explicitly set the user_id
+        user_id: user.id,
         added_at: new Date().toISOString(),
       })
       .select()
