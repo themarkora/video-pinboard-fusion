@@ -137,6 +137,18 @@ export const useVideos = create<VideosState>((set, get) => ({
       const videoId = getYouTubeVideoId(url);
       if (!videoId) throw new Error('Invalid YouTube URL');
 
+      // First check if video already exists for this user
+      const { data: existingVideo } = await supabase
+        .from('videos')
+        .select('id')
+        .eq('id', videoId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingVideo) {
+        throw new Error('Video already exists in your collection');
+      }
+
       const details = await fetchVideoDetails(videoId);
       
       const newVideo = {
