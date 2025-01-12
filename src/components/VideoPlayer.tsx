@@ -1,6 +1,7 @@
 import React from 'react';
 import YouTube from 'react-youtube';
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 interface VideoPlayerProps {
   videoId: string;
@@ -9,13 +10,25 @@ interface VideoPlayerProps {
 }
 
 export const VideoPlayer = ({ videoId, isOpen, onClose }: VideoPlayerProps) => {
+  // Extract video ID if full URL is provided
+  const getYouTubeVideoId = (url: string) => {
+    const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : url; // Returns the ID or original string if it's already an ID
+  };
+
+  const actualVideoId = getYouTubeVideoId(videoId);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[800px] p-0 bg-[#2A2F3C] border-none">
+        <VisuallyHidden>
+          <DialogTitle>YouTube Video Player</DialogTitle>
+        </VisuallyHidden>
         <div className="relative w-full pt-[56.25%]">
           <div className="absolute inset-0">
             <YouTube
-              videoId={videoId}
+              videoId={actualVideoId}
               opts={{
                 width: '100%',
                 height: '100%',
