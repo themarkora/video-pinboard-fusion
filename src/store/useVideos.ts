@@ -135,11 +135,8 @@ export const useVideos = create<VideosState>((set, get) => ({
 
       const details = await fetchVideoDetails(videoId);
       
-      const timestamp = new Date().getTime();
-      const uniqueId = `${videoId}_${timestamp}`;
-
       const newVideo = {
-        id: uniqueId,
+        id: videoId,
         url,
         title: details.title,
         thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
@@ -159,7 +156,7 @@ export const useVideos = create<VideosState>((set, get) => ({
       if (error) throw error;
 
       const frontendVideo: Video = {
-        id: uniqueId,
+        id: videoId,
         url,
         title: details.title,
         thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
