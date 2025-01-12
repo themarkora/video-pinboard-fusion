@@ -10,14 +10,12 @@ import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { useState, useMemo, useEffect } from "react";
 
 const Index = () => {
-  const { videos, togglePin, activeTab, setActiveTab, boards, fetchUserVideos, fetchUserBoards } = useVideos();
+  const { videos, togglePin, activeTab, setActiveTab, boards, fetchUserVideos } = useVideos();
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    // Fetch user's videos and boards when component mounts
     fetchUserVideos();
-    fetchUserBoards();
-  }, [fetchUserVideos, fetchUserBoards]);
+  }, [fetchUserVideos]);
 
   // Filter videos based on search query and active tab
   const filteredVideos = useMemo(() => {

@@ -6,14 +6,14 @@ export const addVideoActions = (set: any) => ({
     const videoId = getYouTubeVideoId(url);
     if (!videoId) throw new Error('Invalid YouTube URL');
 
-    // Get the current user
+    const details = await fetchVideoDetails(videoId);
+    
+    // Get the current user's ID
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User must be logged in to add videos');
 
-    const details = await fetchVideoDetails(videoId);
-    
-    // Insert into Supabase with user_id
-    const { data, error } = await supabase
+    // Insert into Supabase first
+    const { error: dbError } = await supabase
       .from('videos')
       .insert({
         id: videoId,
@@ -21,20 +21,28 @@ export const addVideoActions = (set: any) => ({
         title: details.title,
         thumbnail: details.thumbnail,
         is_pinned: isPinned,
-        user_id: user.id, // Explicitly set the user_id
-        added_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
+        user_id: user.id,  // Set the user_id to the current user's ID
+      });
 
-    if (error) {
-      console.error('Error adding video:', error);
-      throw error;
-    }
+    if (dbError) throw dbError;
 
-    // Update local state
+    // Update local state after successful DB insert
     set((state: any) => ({
-      videos: [data, ...state.videos],
+      videos: [
+        {
+          id: videoId,
+          url,
+          title: details.title,
+          thumbnail: details.thumbnail,
+          isPinned,
+          addedAt: new Date(),
+          notes: [],
+          boardIds: [],
+          views: 0,
+          votes: 0,
+        },
+        ...state.videos,
+      ],
     }));
   },
 });
