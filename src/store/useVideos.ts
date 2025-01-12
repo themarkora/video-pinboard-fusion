@@ -25,6 +25,8 @@ export interface VideosState {
   togglePin: (id: string) => void;
   clearState: () => void;
   fetchUserData: () => Promise<void>;
+  renameBoard: (boardId: string, newName: string) => Promise<void>;
+  deleteBoard: (boardId: string) => Promise<void>;
 }
 
 export const useVideos = create<VideosState>((set, get) => ({
@@ -297,6 +299,72 @@ export const useVideos = create<VideosState>((set, get) => ({
     })),
 
   clearState: () => set({ videos: [], boards: [], activeTab: 'recent' }),
+
+  renameBoard: async (boardId: string, newName: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('boards')
+        .update({ name: newName })
+        .eq('id', boardId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      set((state) => ({
+        boards: state.boards.map((board) =>
+          board.id === boardId ? { ...board, name: newName } : board
+        ),
+      }));
+    } catch (error) {
+      console.error('Error renaming board:', error);
+      throw error;
+    }
+  },
+
+  deleteBoard: async (boardId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('boards')
+        .delete()
+        .eq('id', boardId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Remove board from videos' boardIds arrays
+      const updatedVideos = get().videos.map(video => ({
+        ...video,
+        boardIds: video.boardIds?.filter(id => id !== boardId) || []
+      }));
+
+      // Update videos in Supabase
+      await Promise.all(
+        updatedVideos
+          .filter(video => video.boardIds !== undefined)
+          .map(video =>
+            supabase
+              .from('videos')
+              .update({ board_ids: video.boardIds })
+              .eq('id', video.id)
+              .eq('user_id', user.id)
+          )
+      );
+
+      set((state) => ({
+        boards: state.boards.filter((board) => board.id !== boardId),
+        videos: updatedVideos,
+      }));
+    } catch (error) {
+      console.error('Error deleting board:', error);
+      throw error;
+    }
+  },
 }));
 
 const getYouTubeVideoId = (url: string) => {
