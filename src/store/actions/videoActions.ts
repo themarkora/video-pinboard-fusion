@@ -1,5 +1,4 @@
 import { Video } from '../types';
-import { supabase } from '@/integrations/supabase/client';
 
 export const addVideoActions = (set: any) => ({
   addVideo: async (url: string, isPinned: boolean = true) => {
@@ -8,25 +7,6 @@ export const addVideoActions = (set: any) => ({
 
     const details = await fetchVideoDetails(videoId);
     
-    // Get the current user's ID
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User must be logged in to add videos');
-
-    // Insert into Supabase first
-    const { error: dbError } = await supabase
-      .from('videos')
-      .insert({
-        id: videoId,
-        url,
-        title: details.title,
-        thumbnail: details.thumbnail,
-        is_pinned: isPinned,
-        user_id: user.id,  // Set the user_id to the current user's ID
-      });
-
-    if (dbError) throw dbError;
-
-    // Update local state after successful DB insert
     set((state: any) => ({
       videos: [
         {
