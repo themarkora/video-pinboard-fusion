@@ -26,14 +26,14 @@ export function AddVideo() {
       } catch (error: any) {
         if (error.message?.includes('already exists')) {
           toast({
-            title: "Already in your collection",
-            description: "Looks like you've already pinned this video! Try adding a different one.",
+            title: "Video already exists",
+            description: "You've already pinned this video to your collection.",
             variant: "default",
           });
         } else {
           toast({
-            title: "Unable to add video",
-            description: "Please check if this is a valid YouTube URL and try again.",
+            title: "Invalid URL",
+            description: "Please make sure you're using a valid YouTube URL.",
             variant: "destructive",
           });
         }
