@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { VideoPlayer } from './VideoPlayer';
-import { Video } from '@/store/types';
+import { Video } from '@/store/useVideos';
 import { useVideos } from '@/store/useVideos';
 import { useToast } from '@/hooks/use-toast';
 import { VideoThumbnail } from './VideoCard/VideoThumbnail';
@@ -195,7 +195,6 @@ export const VideoCard = ({ video, onTogglePin, boardId }: VideoCardProps) => {
         videoId={video.id}
         isOpen={isPlaying}
         onClose={() => setIsPlaying(false)}
-        thumbnail={video.thumbnail}
       />
     </>
   );
