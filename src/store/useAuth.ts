@@ -46,7 +46,10 @@ export const useAuth = create<AuthState>((set) => ({
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: window.location.origin + '/app',
+        data: {
+          email_confirmed_at: new Date().toISOString(), // Add this line to auto-confirm email
+        }
       }
     });
     
@@ -55,8 +58,19 @@ export const useAuth = create<AuthState>((set) => ({
       throw error;
     }
     
-    set({ user: data.user });
-    console.log('Sign up successful:', data);
+    // Automatically sign in after signup
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      console.error('Auto sign in error:', signInError);
+      throw signInError;
+    }
+
+    set({ user: signInData.user });
+    console.log('Sign up and auto sign in successful:', signInData);
   },
   signOut: async () => {
     try {
