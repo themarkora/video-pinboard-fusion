@@ -6,6 +6,7 @@ import { useAuth } from "@/store/useAuth";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { AuthError, AuthApiError } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 
 export const AuthForm = () => {
   const [email, setEmail] = useState("");
@@ -24,19 +25,47 @@ export const AuthForm = () => {
           await signIn(email, password);
           toast.success("Successfully signed in!");
         } catch (error: any) {
-          // If we get "Email not confirmed" error but email verification is disabled,
-          // try signing in again
+          // If we get "Email not confirmed" error, try signing in anyway
           if (error instanceof AuthApiError && 
               error.message.includes('Email not confirmed')) {
-            await signIn(email, password);
-            toast.success("Successfully signed in!");
+            // Force sign in even if email isn't verified
+            const { data, error: signInError } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+              options: {
+                emailRedirectTo: window.location.origin,
+              }
+            });
+            
+            if (signInError) throw signInError;
+            if (data.user) {
+              toast.success("Successfully signed in!");
+            }
           } else {
             throw error;
           }
         }
       } else {
-        await signUp(email, password);
-        toast.success("Successfully signed up!");
+        // For signup, we'll sign up and then immediately sign in
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin,
+          }
+        });
+
+        if (signUpError) throw signUpError;
+
+        // Immediately sign in after signup
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (signInError) throw signInError;
+
+        toast.success("Successfully signed up and logged in!");
       }
     } catch (error: any) {
       console.error(`${mode} error:`, error);
