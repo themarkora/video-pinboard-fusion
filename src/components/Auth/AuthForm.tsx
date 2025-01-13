@@ -56,11 +56,14 @@ export const AuthForm = () => {
           }
         }
       } else {
-        // For signup, we'll sign up and then immediately sign in
+        // For signup, we'll sign up and then show email confirmation screen
         try {
           const { error: signUpError } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+              emailRedirectTo: 'https://vidpin.netlify.app/app'
+            }
           });
 
           if (signUpError) {

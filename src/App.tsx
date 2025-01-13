@@ -7,6 +7,8 @@ import { useAuth } from "@/store/useAuth";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import { AuthForm } from "./components/Auth/AuthForm";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,18 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   const { user } = useAuth();
+
+  // Handle auth state changes and redirects
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        // If user is verified, redirect to app
+        if (session?.user?.email_confirmed_at) {
+          window.location.href = '/app';
+        }
+      }
+    });
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
