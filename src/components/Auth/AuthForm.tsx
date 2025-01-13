@@ -188,11 +188,7 @@ export const AuthForm = () => {
                 Don't have an account?{" "}
                 <button
                   type="button"
-                  onClick={() => {
-                    setMode("signup");
-                    setEmail("");
-                    setPassword("");
-                  }}
+                  onClick={() => setMode("signup")}
                   className="text-purple-400 hover:text-purple-300"
                 >
                   Sign up
@@ -203,11 +199,7 @@ export const AuthForm = () => {
                 Already have an account?{" "}
                 <button
                   type="button"
-                  onClick={() => {
-                    setMode("signin");
-                    setEmail("");
-                    setPassword("");
-                  }}
+                  onClick={() => setMode("signin")}
                   className="text-purple-400 hover:text-purple-300"
                 >
                   Sign in
