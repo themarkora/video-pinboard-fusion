@@ -47,29 +47,49 @@ export const AuthForm = () => {
         }
       } else {
         // For signup, we'll sign up and then immediately sign in
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: window.location.origin,
+        try {
+          const { error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: window.location.origin,
+            }
+          });
+
+          if (signUpError) {
+            // Check for rate limiting error
+            if (signUpError.message.includes('For security purposes')) {
+              toast.error("Please wait a moment before trying to sign up again. This helps us prevent spam and protect our users.");
+              return;
+            }
+            throw signUpError;
           }
-        });
 
-        if (signUpError) throw signUpError;
+          // Immediately sign in after signup
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
 
-        // Immediately sign in after signup
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
+          if (signInError) throw signInError;
 
-        if (signInError) throw signInError;
-
-        toast.success("Successfully signed up and logged in!");
+          toast.success("Successfully signed up and logged in!");
+        } catch (error: any) {
+          console.error('Signup/signin error:', error);
+          if (error.message.includes('For security purposes')) {
+            toast.error("Please wait a moment before trying to sign up again. This helps us prevent spam and protect our users.");
+          } else {
+            toast.error(`Failed to ${mode}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
+          throw error;
+        }
       }
     } catch (error: any) {
       console.error(`${mode} error:`, error);
-      toast.error(`Failed to ${mode}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      // Don't show the rate limiting error message again if we've already shown it
+      if (!error.message.includes('For security purposes')) {
+        toast.error(`Failed to ${mode}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     } finally {
       setIsLoading(false);
     }
