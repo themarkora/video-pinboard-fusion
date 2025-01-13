@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/store/useAuth";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
@@ -26,12 +26,41 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const App = () => {
+// Helper component to handle auth redirects
+const AuthRedirectHandler = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
 
+  useEffect(() => {
+    // Check if we have a hash in the URL (from email confirmation)
+    if (location.hash && location.hash.includes('access_token')) {
+      // Extract the access token
+      const hashParams = new URLSearchParams(location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      
+      if (accessToken) {
+        // If we have a token, redirect to /app
+        navigate('/app', { replace: true });
+      }
+    }
+  }, [location.hash, navigate]);
+
+  // If user is already authenticated, redirect to app
+  useEffect(() => {
+    if (user) {
+      navigate('/app', { replace: true });
+    }
+  }, [user, navigate]);
+
+  return null;
+};
+
+const App = () => {
   // Handle auth state changes and redirects
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         // If user is verified, redirect to app
         if (session?.user?.email_confirmed_at) {
@@ -47,6 +76,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <AuthRedirectHandler />
           <Routes>
             <Route
               path="/app"
@@ -58,11 +88,11 @@ const App = () => {
             />
             <Route
               path="/"
-              element={user ? <Navigate to="/app" /> : <Landing />}
+              element={<Landing />}
             />
             <Route
               path="/auth"
-              element={user ? <Navigate to="/app" /> : <AuthForm />}
+              element={<AuthForm />}
             />
           </Routes>
         </BrowserRouter>
