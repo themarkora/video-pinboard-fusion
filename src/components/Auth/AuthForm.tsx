@@ -62,7 +62,7 @@ export const AuthForm = () => {
             email,
             password,
             options: {
-              emailRedirectTo: 'https://vidpin.netlify.app/app',
+              emailRedirectTo: window.location.origin + '/app',
               data: {
                 email_confirmed_at: new Date().toISOString(),
               }
