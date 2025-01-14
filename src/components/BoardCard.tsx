@@ -3,7 +3,6 @@ import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
 import { useVideos } from '@/store/useVideos';
-import { BoardMenu } from './BoardMenu';
 
 interface BoardCardProps {
   id: string;
@@ -16,16 +15,11 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
-  const handleToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsExpanded(!isExpanded);
-  };
-
   return (
     <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">
       <div 
         className="p-4 flex items-center justify-between cursor-pointer hover:bg-secondary/50"
-        onClick={handleToggle}
+        onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center space-x-3">
           <Folder className="w-6 h-6 text-purple-500" />
@@ -33,7 +27,6 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
         </div>
         <div className="flex items-center space-x-3">
           <span className="text-sm text-gray-400">{boardVideos.length} videos</span>
-          <BoardMenu boardId={id} boardName={name} />
           {isExpanded ? (
             <ChevronUp className="w-5 h-5 text-gray-400" />
           ) : (
@@ -49,7 +42,7 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
             ))}
           </div>
           {boardVideos.length === 0 && (
-            <p className="text-center text-gray-400 py-4">No videos in this board yet.</p>
+            <p className="text-gray-400 text-center py-4">No videos in this board yet.</p>
           )}
         </div>
       )}
