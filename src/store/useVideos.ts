@@ -333,6 +333,17 @@ export const useVideos = create<VideosState>((set, get) => ({
 
       if (error) throw error;
 
+      // Update videos to remove the deleted board ID
+      const { error: videosError } = await supabase
+        .from('videos')
+        .update({ board_ids: [] })
+        .eq('user_id', user.id)
+        .contains('board_ids', [id]);
+
+      if (videosError) {
+        console.error('Error updating videos after board deletion:', videosError);
+      }
+
       set((state) => ({
         boards: state.boards.filter((board) => board.id !== id),
         videos: state.videos.map((video) => ({
@@ -340,18 +351,6 @@ export const useVideos = create<VideosState>((set, get) => ({
           boardIds: video.boardIds?.filter((boardId) => boardId !== id) || []
         }))
       }));
-
-      const { error: videosError } = await supabase
-        .from('videos')
-        .update({
-          board_ids: supabase.sql`array_remove(board_ids, ${id})`
-        })
-        .eq('user_id', user.id)
-        .contains('board_ids', [id]);
-
-      if (videosError) {
-        console.error('Error updating videos after board deletion:', videosError);
-      }
     } catch (error) {
       console.error('Error deleting board:', error);
       throw error;
