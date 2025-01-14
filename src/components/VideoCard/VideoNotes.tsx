@@ -43,7 +43,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
       toast({
         title: "Note updated",
         description: "Your note has been updated successfully.",
-        className: "bg-toast text-white border-none",
+        className: "bg-purple-600/90 text-white border-none",
       });
     }
   };
@@ -53,7 +53,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
     toast({
       title: "Note deleted",
       description: "Your note has been deleted successfully.",
-      className: "bg-toast text-white border-none",
+      className: "bg-purple-600/90 text-white border-none",
     });
   };
 

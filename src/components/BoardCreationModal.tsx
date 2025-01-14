@@ -29,7 +29,6 @@ export const BoardCreationModal: React.FC<BoardCreationModalProps> = ({
       toast({
         title: "Board created",
         description: `Video added to "${boardName}"`,
-        className: "bg-toast text-white border-none",
       });
     }
   };

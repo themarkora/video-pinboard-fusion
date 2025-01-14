@@ -51,11 +51,6 @@ export default {
           DEFAULT: "#2A2F3C",
           foreground: "#ffffff",
         },
-        toast: {
-          DEFAULT: "rgba(26, 31, 46, 0.8)",
-          destructive: "rgba(26, 31, 46, 0.8)",
-          success: "rgba(26, 31, 46, 0.8)",
-        }
       },
       keyframes: {
         "float-pin": {
