@@ -3,7 +3,6 @@ import { ChevronDown, ChevronUp, Folder, MoreVertical, Pencil, Trash2 } from 'lu
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
 import { useVideos } from '@/store/useVideos';
-import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,33 +12,26 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface BoardCardProps {
   id: string;
   name: string;
 }
 
-export const BoardCard = ({ id, name }: BoardCardProps) => {
+export const BoardCard = ({ id, name: initialName }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
-  const [newBoardName, setNewBoardName] = useState(name);
+  const [newBoardName, setNewBoardName] = useState(initialName);
   const { videos, deleteBoard, updateBoardName } = useVideos();
   const { toast } = useToast();
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
   const handleRename = async () => {
-    if (newBoardName.trim() && newBoardName !== name) {
+    if (newBoardName.trim() && newBoardName !== initialName) {
       try {
-        const { error } = await supabase
-          .from('boards')
-          .update({ name: newBoardName })
-          .eq('id', id);
-
-        if (error) throw error;
-
-        updateBoardName(id, newBoardName);
+        await updateBoardName(id, newBoardName);
         setIsRenaming(false);
         toast({
           title: "Board renamed",
@@ -47,7 +39,6 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
           className: "bg-toast text-white border-none",
         });
       } catch (error) {
-        console.error('Error renaming board:', error);
         toast({
           title: "Error",
           description: "Failed to rename board. Please try again.",
@@ -57,13 +48,21 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
     }
   };
 
-  const handleDelete = () => {
-    deleteBoard(id);
-    toast({
-      title: "Board deleted",
-      description: "The board has been deleted",
-      className: "bg-toast text-white border-none",
-    });
+  const handleDelete = async () => {
+    try {
+      await deleteBoard(id);
+      toast({
+        title: "Board deleted",
+        description: "The board has been deleted",
+        className: "bg-toast text-white border-none",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete board. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -75,7 +74,7 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
             onClick={() => setIsExpanded(!isExpanded)}
           >
             <Folder className="w-6 h-6 text-purple-500" />
-            <h3 className="text-lg font-semibold text-white">{name}</h3>
+            <h3 className="text-lg font-semibold text-white">{newBoardName}</h3>
             <span className="text-sm text-gray-400">{boardVideos.length} videos</span>
             {isExpanded ? (
               <ChevronUp className="w-5 h-5 text-gray-400" />
@@ -144,13 +143,16 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
           <div className="flex justify-end gap-2">
             <Button
               variant="secondary"
-              onClick={() => setIsRenaming(false)}
+              onClick={() => {
+                setNewBoardName(initialName);
+                setIsRenaming(false);
+              }}
             >
               Cancel
             </Button>
             <Button
               onClick={handleRename}
-              disabled={!newBoardName.trim() || newBoardName === name}
+              disabled={!newBoardName.trim() || newBoardName === initialName}
             >
               Rename
             </Button>
