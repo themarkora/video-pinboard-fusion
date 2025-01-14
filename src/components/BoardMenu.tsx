@@ -27,39 +27,38 @@ export const BoardMenu = ({ boardId, boardName }: BoardMenuProps) => {
   const [newBoardName, setNewBoardName] = useState(boardName);
   const { renameBoard, deleteBoard } = useVideos();
 
-  const handleRename = async (e?: React.MouseEvent) => {
-    e?.stopPropagation();
+  const handleRename = async () => {
     if (newBoardName.trim() && newBoardName !== boardName) {
-      await renameBoard(boardId, newBoardName.trim());
-      toast.success("Board renamed successfully");
-      setIsRenameDialogOpen(false);
+      try {
+        await renameBoard(boardId, newBoardName.trim());
+        toast.success("Board renamed successfully");
+        setIsRenameDialogOpen(false);
+      } catch (error) {
+        toast.error("Failed to rename board");
+      }
     }
   };
 
-  const handleDelete = async (e?: React.MouseEvent) => {
-    e?.stopPropagation();
+  const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this board?")) {
-      await deleteBoard(boardId);
-      toast.success("Board deleted successfully");
+      try {
+        await deleteBoard(boardId);
+        toast.success("Board deleted successfully");
+      } catch (error) {
+        toast.error("Failed to delete board");
+      }
     }
-  };
-
-  const handleMenuClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
   };
 
   return (
-    <>
+    <div onClick={(e) => e.stopPropagation()}>
       <DropdownMenu>
-        <DropdownMenuTrigger className="focus:outline-none" onClick={handleMenuClick}>
+        <DropdownMenuTrigger className="focus:outline-none">
           <MoreVertical className="h-5 w-5 text-gray-400 hover:text-gray-300" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="bg-[#2A2F3C] border-[#1A1F2E]">
           <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsRenameDialogOpen(true);
-            }}
+            onClick={() => setIsRenameDialogOpen(true)}
             className="text-gray-200 focus:text-white focus:bg-purple-600/20 cursor-pointer"
           >
             <Pencil className="mr-2 h-4 w-4" />
@@ -76,7 +75,7 @@ export const BoardMenu = ({ boardId, boardName }: BoardMenuProps) => {
       </DropdownMenu>
 
       <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
-        <DialogContent className="bg-[#2A2F3C] text-white border-none" onClick={e => e.stopPropagation()}>
+        <DialogContent className="bg-[#2A2F3C] text-white border-none">
           <DialogHeader>
             <DialogTitle>Rename Board</DialogTitle>
           </DialogHeader>
@@ -94,10 +93,7 @@ export const BoardMenu = ({ boardId, boardName }: BoardMenuProps) => {
           <div className="flex justify-end gap-2">
             <Button
               variant="secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsRenameDialogOpen(false);
-              }}
+              onClick={() => setIsRenameDialogOpen(false)}
             >
               Cancel
             </Button>
@@ -110,6 +106,6 @@ export const BoardMenu = ({ boardId, boardName }: BoardMenuProps) => {
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 };
