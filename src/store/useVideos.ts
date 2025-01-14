@@ -19,6 +19,7 @@ export interface VideosState {
   removeTag: (videoId: string, tag: string) => void;
   addBoard: (name: string) => string;
   deleteBoard: (id: string) => void;
+  updateBoardName: (id: string, newName: string) => void;
   addToBoard: (videoId: string, boardId: string) => void;
   removeFromBoard: (videoId: string, boardId: string) => void;
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
@@ -58,7 +59,6 @@ export const useVideos = create<VideosState>((set, get) => ({
 
       if (boardsError) throw boardsError;
 
-      // Map database fields to frontend types
       const videos = videosData?.map(video => ({
         id: video.id,
         url: video.url,
@@ -100,14 +100,12 @@ export const useVideos = create<VideosState>((set, get) => ({
 
       const newIsPinned = !videoToUpdate.isPinned;
 
-      // Optimistically update local state
       set({
         videos: currentVideos.map(video =>
           video.id === id ? { ...video, isPinned: newIsPinned } : video
         ),
       });
 
-      // Update in Supabase
       const { error } = await supabase
         .from('videos')
         .update({ is_pinned: newIsPinned })
@@ -116,7 +114,6 @@ export const useVideos = create<VideosState>((set, get) => ({
 
       if (error) {
         console.error('Error updating pin status:', error);
-        // Revert on error
         set({
           videos: currentVideos.map(video =>
             video.id === id ? { ...video, isPinned: !newIsPinned } : video
@@ -159,7 +156,6 @@ export const useVideos = create<VideosState>((set, get) => ({
 
       if (error) throw error;
 
-      // Map to frontend type and update local state
       const frontendVideo: Video = {
         id: videoId,
         url,
@@ -222,7 +218,6 @@ export const useVideos = create<VideosState>((set, get) => ({
 
     const updatedNotes = [...(video.notes || []), note];
 
-    // Optimistically update local state
     set({
       videos: currentState.videos.map((video) =>
         video.id === videoId
@@ -231,14 +226,12 @@ export const useVideos = create<VideosState>((set, get) => ({
       ),
     });
 
-    // Update in Supabase
     const { error } = await supabase
       .from('videos')
       .update({ notes: updatedNotes })
       .eq('id', videoId)
       .eq('user_id', user.id);
 
-    // Revert on error
     if (error) {
       console.error('Error adding note:', error);
       set({ videos: currentState.videos });
@@ -302,6 +295,14 @@ export const useVideos = create<VideosState>((set, get) => ({
     })),
 
   clearState: () => set({ videos: [], boards: [], activeTab: 'recent' }),
+
+  updateBoardName: (id: string, newName: string) => {
+    set((state) => ({
+      boards: state.boards.map((board) =>
+        board.id === id ? { ...board, name: newName } : board
+      ),
+    }));
+  },
 }));
 
 const getYouTubeVideoId = (url: string) => {

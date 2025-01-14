@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, Folder, MoreVertical, Pencil, Trash2 } from 'lu
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
 import { useVideos } from '@/store/useVideos';
+import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,20 +24,36 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [newBoardName, setNewBoardName] = useState(name);
-  const { videos, deleteBoard } = useVideos();
+  const { videos, deleteBoard, updateBoardName } = useVideos();
   const { toast } = useToast();
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
-  const handleRename = () => {
+  const handleRename = async () => {
     if (newBoardName.trim() && newBoardName !== name) {
-      // Update board name logic will be implemented here
-      setIsRenaming(false);
-      toast({
-        title: "Board renamed",
-        description: `Board renamed to "${newBoardName}"`,
-        className: "bg-toast text-white border-none",
-      });
+      try {
+        const { error } = await supabase
+          .from('boards')
+          .update({ name: newBoardName })
+          .eq('id', id);
+
+        if (error) throw error;
+
+        updateBoardName(id, newBoardName);
+        setIsRenaming(false);
+        toast({
+          title: "Board renamed",
+          description: `Board renamed to "${newBoardName}"`,
+          className: "bg-toast text-white border-none",
+        });
+      } catch (error) {
+        console.error('Error renaming board:', error);
+        toast({
+          title: "Error",
+          description: "Failed to rename board. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
