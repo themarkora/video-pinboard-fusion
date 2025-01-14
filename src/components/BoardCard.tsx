@@ -3,7 +3,6 @@ import { ChevronDown, ChevronUp, Folder } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { VideoCard } from './VideoCard';
 import { useVideos } from '@/store/useVideos';
-import { BoardMenu } from './BoardMenu';
 
 interface BoardCardProps {
   id: string;
@@ -22,20 +21,17 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
         className="p-4 flex items-center justify-between cursor-pointer hover:bg-secondary/50"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex-1 flex items-center space-x-3">
+        <div className="flex items-center space-x-3">
           <Folder className="w-6 h-6 text-purple-500" />
           <h3 className="text-lg font-semibold text-white">{name}</h3>
         </div>
         <div className="flex items-center space-x-3">
           <span className="text-sm text-gray-400">{boardVideos.length} videos</span>
-          <div className="flex items-center space-x-2">
-            {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-gray-400" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-gray-400" />
-            )}
-            <BoardMenu boardId={id} boardName={name} />
-          </div>
+          {isExpanded ? (
+            <ChevronUp className="w-5 h-5 text-gray-400" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-gray-400" />
+          )}
         </div>
       </div>
       {isExpanded && (
