@@ -16,11 +16,16 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
 
   const boardVideos = videos.filter(video => video.boardIds?.includes(id));
 
+  const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">
       <div 
         className="p-4 flex items-center justify-between cursor-pointer hover:bg-secondary/50"
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleToggle}
       >
         <div className="flex items-center space-x-3">
           <Folder className="w-6 h-6 text-purple-500" />
