@@ -35,6 +35,212 @@ export const useVideos = create<VideosState>((set, get) => ({
   ...addVideoActions(set),
   ...boardActions(set),
 
+  deleteVideo: async (id: string) => {
+    const { error } = await supabase
+      .from('videos')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.filter(video => video.id !== id)
+    }));
+  },
+
+  addNote: async (videoId: string, note: string) => {
+    const video = get().videos.find(v => v.id === videoId);
+    if (!video) return;
+
+    const updatedNotes = [...(video.notes || []), note];
+    const { error } = await supabase
+      .from('videos')
+      .update({ notes: updatedNotes })
+      .eq('id', videoId);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.map(v =>
+        v.id === videoId ? { ...v, notes: updatedNotes } : v
+      )
+    }));
+  },
+
+  updateNote: async (videoId: string, noteIndex: number, updatedNote: string) => {
+    const video = get().videos.find(v => v.id === videoId);
+    if (!video || !video.notes) return;
+
+    const updatedNotes = [...video.notes];
+    updatedNotes[noteIndex] = updatedNote;
+
+    const { error } = await supabase
+      .from('videos')
+      .update({ notes: updatedNotes })
+      .eq('id', videoId);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.map(v =>
+        v.id === videoId ? { ...v, notes: updatedNotes } : v
+      )
+    }));
+  },
+
+  deleteNote: async (videoId: string, noteIndex: number) => {
+    const video = get().videos.find(v => v.id === videoId);
+    if (!video || !video.notes) return;
+
+    const updatedNotes = video.notes.filter((_, index) => index !== noteIndex);
+
+    const { error } = await supabase
+      .from('videos')
+      .update({ notes: updatedNotes })
+      .eq('id', videoId);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.map(v =>
+        v.id === videoId ? { ...v, notes: updatedNotes } : v
+      )
+    }));
+  },
+
+  addVote: async (videoId: string) => {
+    const video = get().videos.find(v => v.id === videoId);
+    if (!video) return;
+
+    const newVotes = (video.votes || 0) + 1;
+    const { error } = await supabase
+      .from('videos')
+      .update({ votes: newVotes })
+      .eq('id', videoId);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.map(v =>
+        v.id === videoId ? { ...v, votes: newVotes } : v
+      )
+    }));
+  },
+
+  addView: async (videoId: string) => {
+    const video = get().videos.find(v => v.id === videoId);
+    if (!video) return;
+
+    const newViews = (video.views || 0) + 1;
+    const { error } = await supabase
+      .from('videos')
+      .update({ views: newViews })
+      .eq('id', videoId);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.map(v =>
+        v.id === videoId ? { ...v, views: newViews } : v
+      )
+    }));
+  },
+
+  addTag: async (videoId: string, tag: string) => {
+    const video = get().videos.find(v => v.id === videoId);
+    if (!video) return;
+
+    const updatedTags = [...(video.tags || []), tag];
+    const { error } = await supabase
+      .from('videos')
+      .update({ tags: updatedTags })
+      .eq('id', videoId);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.map(v =>
+        v.id === videoId ? { ...v, tags: updatedTags } : v
+      )
+    }));
+  },
+
+  removeTag: async (videoId: string, tag: string) => {
+    const video = get().videos.find(v => v.id === videoId);
+    if (!video || !video.tags) return;
+
+    const updatedTags = video.tags.filter(t => t !== tag);
+    const { error } = await supabase
+      .from('videos')
+      .update({ tags: updatedTags })
+      .eq('id', videoId);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.map(v =>
+        v.id === videoId ? { ...v, tags: updatedTags } : v
+      )
+    }));
+  },
+
+  addToBoard: async (videoId: string, boardId: string) => {
+    const video = get().videos.find(v => v.id === videoId);
+    if (!video) return;
+
+    const updatedBoardIds = [...(video.boardIds || []), boardId];
+    const { error } = await supabase
+      .from('videos')
+      .update({ board_ids: updatedBoardIds })
+      .eq('id', videoId);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.map(v =>
+        v.id === videoId ? { ...v, boardIds: updatedBoardIds } : v
+      )
+    }));
+  },
+
+  removeFromBoard: async (videoId: string, boardId: string) => {
+    const video = get().videos.find(v => v.id === videoId);
+    if (!video || !video.boardIds) return;
+
+    const updatedBoardIds = video.boardIds.filter(id => id !== boardId);
+    const { error } = await supabase
+      .from('videos')
+      .update({ board_ids: updatedBoardIds })
+      .eq('id', videoId);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.map(v =>
+        v.id === videoId ? { ...v, boardIds: updatedBoardIds } : v
+      )
+    }));
+  },
+
+  togglePin: async (id: string) => {
+    const video = get().videos.find(v => v.id === id);
+    if (!video) return;
+
+    const isPinned = !video.isPinned;
+    const { error } = await supabase
+      .from('videos')
+      .update({ is_pinned: isPinned })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    set(state => ({
+      videos: state.videos.map(v =>
+        v.id === id ? { ...v, isPinned } : v
+      )
+    }));
+  },
+
   fetchUserData: async () => {
     try {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -90,21 +296,3 @@ export const useVideos = create<VideosState>((set, get) => ({
 
   clearState: () => set({ videos: [], boards: [], activeTab: 'recent' }),
 }));
-
-const getYouTubeVideoId = (url: string) => {
-  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
-};
-
-const fetchVideoDetails = async (videoId: string) => {
-  const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
-  const data = await response.json();
-  
-  return {
-    title: data.title || 'Untitled Video',
-    thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
-  };
-};
-
-export type { Video, Board };
