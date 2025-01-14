@@ -18,7 +18,8 @@ export interface VideosState {
   addTag: (videoId: string, tag: string) => void;
   removeTag: (videoId: string, tag: string) => void;
   addBoard: (name: string) => string;
-  deleteBoard: (id: string) => void;
+  deleteBoard: (id: string) => Promise<void>;
+  renameBoard: (id: string, newName: string) => Promise<void>;
   addToBoard: (videoId: string, boardId: string) => void;
   removeFromBoard: (videoId: string, boardId: string) => void;
   setActiveTab: (tab: 'recent' | 'pinned' | 'notes' | 'boards') => void;
@@ -58,7 +59,6 @@ export const useVideos = create<VideosState>((set, get) => ({
 
       if (boardsError) throw boardsError;
 
-      // Map database fields to frontend types
       const videos = videosData?.map(video => ({
         id: video.id,
         url: video.url,
@@ -100,14 +100,12 @@ export const useVideos = create<VideosState>((set, get) => ({
 
       const newIsPinned = !videoToUpdate.isPinned;
 
-      // Optimistically update local state
       set({
         videos: currentVideos.map(video =>
           video.id === id ? { ...video, isPinned: newIsPinned } : video
         ),
       });
 
-      // Update in Supabase
       const { error } = await supabase
         .from('videos')
         .update({ is_pinned: newIsPinned })
@@ -116,7 +114,6 @@ export const useVideos = create<VideosState>((set, get) => ({
 
       if (error) {
         console.error('Error updating pin status:', error);
-        // Revert on error
         set({
           videos: currentVideos.map(video =>
             video.id === id ? { ...video, isPinned: !newIsPinned } : video
@@ -159,7 +156,6 @@ export const useVideos = create<VideosState>((set, get) => ({
 
       if (error) throw error;
 
-      // Map to frontend type and update local state
       const frontendVideo: Video = {
         id: videoId,
         url,
@@ -222,7 +218,6 @@ export const useVideos = create<VideosState>((set, get) => ({
 
     const updatedNotes = [...(video.notes || []), note];
 
-    // Optimistically update local state
     set({
       videos: currentState.videos.map((video) =>
         video.id === videoId
@@ -231,14 +226,12 @@ export const useVideos = create<VideosState>((set, get) => ({
       ),
     });
 
-    // Update in Supabase
     const { error } = await supabase
       .from('videos')
       .update({ notes: updatedNotes })
       .eq('id', videoId)
       .eq('user_id', user.id);
 
-    // Revert on error
     if (error) {
       console.error('Error adding note:', error);
       set({ videos: currentState.videos });
@@ -302,6 +295,56 @@ export const useVideos = create<VideosState>((set, get) => ({
     })),
 
   clearState: () => set({ videos: [], boards: [], activeTab: 'recent' }),
+
+  renameBoard: async (id: string, newName: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('boards')
+        .update({ name: newName })
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      set((state) => ({
+        boards: state.boards.map((board) =>
+          board.id === id ? { ...board, name: newName } : board
+        ),
+      }));
+    } catch (error) {
+      console.error('Error renaming board:', error);
+      throw error;
+    }
+  },
+
+  deleteBoard: async (id: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('boards')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      set((state) => ({
+        boards: state.boards.filter((board) => board.id !== id),
+        videos: state.videos.map((video) => ({
+          ...video,
+          boardIds: video.boardIds?.filter((boardId) => boardId !== id) || []
+        }))
+      }));
+    } catch (error) {
+      console.error('Error deleting board:', error);
+      throw error;
+    }
+  },
 }));
 
 const getYouTubeVideoId = (url: string) => {
