@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -51,16 +51,14 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
 
   return (
     <Card className="bg-[#1A1F2E] border-2 border-[#2A2F3C] overflow-hidden">
-      <div className="p-4 flex items-center justify-between">
-        <div 
-          className="flex-1 flex items-center space-x-3 cursor-pointer hover:bg-secondary/50"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <div className="flex items-center space-x-3">
+      <div className="p-4">
+        <div className="flex items-center justify-between">
+          <div 
+            className="flex-1 flex items-center space-x-3 cursor-pointer hover:bg-secondary/50 rounded-lg p-2"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
             <Folder className="w-6 h-6 text-purple-500" />
             <h3 className="text-lg font-semibold text-white">{name}</h3>
-          </div>
-          <div className="flex items-center space-x-3">
             <span className="text-sm text-gray-400">{boardVideos.length} videos</span>
             {isExpanded ? (
               <ChevronUp className="w-5 h-5 text-gray-400" />
@@ -68,31 +66,32 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
               <ChevronDown className="w-5 h-5 text-gray-400" />
             )}
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreVertical className="h-4 w-4 text-gray-400" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-[#2A2F3C] border-[#3A3F4C] text-white">
+              <DropdownMenuItem 
+                onClick={() => setIsRenaming(true)}
+                className="flex items-center gap-2 cursor-pointer hover:bg-secondary/50"
+              >
+                <Pencil className="h-4 w-4" />
+                Rename
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={handleDelete}
+                className="flex items-center gap-2 cursor-pointer text-red-400 hover:bg-secondary/50 hover:text-red-400"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreVertical className="h-4 w-4 text-gray-400" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-[#2A2F3C] border-[#3A3F4C] text-white">
-            <DropdownMenuItem 
-              onClick={() => setIsRenaming(true)}
-              className="flex items-center gap-2 cursor-pointer hover:bg-secondary/50"
-            >
-              <Pencil className="h-4 w-4" />
-              Rename
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={handleDelete}
-              className="flex items-center gap-2 cursor-pointer text-red-400 hover:bg-secondary/50 hover:text-red-400"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
+
       {isExpanded && (
         <div className="p-4 bg-background border-t border-[#2A2F3C]">
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -110,6 +109,9 @@ export const BoardCard = ({ id, name }: BoardCardProps) => {
         <DialogContent className="bg-[#2A2F3C] text-white border-none">
           <DialogHeader>
             <DialogTitle>Rename Board</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Enter a new name for this board
+            </DialogDescription>
           </DialogHeader>
           <Input
             value={newBoardName}
