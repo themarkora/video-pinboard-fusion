@@ -1,8 +1,12 @@
 import { create } from 'zustand';
 import { addVideoActions } from './actions/videoActions';
 import { boardActions } from './actions/boardActions';
-import { Video, Board } from './types';
+import { Video as VideoType, Board as BoardType } from './types';
 import { supabase } from '@/integrations/supabase/client';
+
+// Re-export the types
+export type Video = VideoType;
+export type Board = BoardType;
 
 export interface VideosState {
   videos: Video[];
